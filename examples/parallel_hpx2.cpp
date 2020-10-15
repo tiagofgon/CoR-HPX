@@ -20,7 +20,7 @@
 
 
 
-#include "cor/cor_hpx.hpp"
+#include "cor/cor.hpp"
 // #include <hpx/hpx.hpp>
 
 

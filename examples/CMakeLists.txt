@@ -1,37 +1,19 @@
 
 # module
-# add_library(module SHARED module.cpp)
-# target_compile_features(module PUBLIC cxx_std_17)
-# set_target_properties(module PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(module PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# set_target_properties(module PROPERTIES COMPILE_FLAGS -O2)
-# set_target_properties(module PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-#     module
-#     PRIVATE
-#         libcor
-#         # Spread
-#         # SSRCSpread
-#         # Cereal
-# 	hpx
-# )
-
-# module_hpx
-add_library(module_hpx SHARED module_hpx.cpp)
-target_compile_features(module_hpx PUBLIC cxx_std_17)
-set_target_properties(module_hpx PROPERTIES CXX_EXTENSIONS OFF)
-set_target_properties(module_hpx PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(module_hpx PROPERTIES COMPILE_FLAGS -O2)
-set_target_properties(module_hpx PROPERTIES PREFIX "lib" SUFFIX ".so")
+add_library(module SHARED module.cpp)
+target_compile_features(module PUBLIC cxx_std_17)
+set_target_properties(module PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(module PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(module PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(module PROPERTIES PREFIX "lib" SUFFIX ".so")
 target_link_libraries(
-    module_hpx
+    module
     PRIVATE
         libcor
-        # Spread
-        # SSRCSpread
-        # Cereal
-        hpx
+	hpx
 )
+
+
 
 # # add module_hpx hpx components
 # # add_hpx_component(module_hpx
@@ -46,122 +28,73 @@ target_link_libraries(
 # #         -O2
 # # )
 
-# # basicOperations
-# add_library(basicOperations SHARED basicOperations.cpp)
-# target_compile_features(basicOperations PUBLIC cxx_std_17)
-# set_target_properties(basicOperations PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(basicOperations PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# set_target_properties(basicOperations PROPERTIES COMPILE_FLAGS -O2)
-# set_target_properties(basicOperations PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-#     basicOperations
-#     PRIVATE
-#         libcor
-#         # Spread
-#         # SSRCSpread
-#         # Cereal
-# 	hpx
-# )
-
-# # basicOperations hpx
-# add_library(basicOperations_hpx SHARED basicOperations_hpx.cpp)
-# target_compile_features(basicOperations_hpx PUBLIC cxx_std_17)
-# set_target_properties(basicOperations_hpx PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(basicOperations_hpx PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# set_target_properties(basicOperations_hpx PROPERTIES COMPILE_FLAGS -O2)
-# set_target_properties(basicOperations_hpx PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-#     basicOperations_hpx
-#     PRIVATE
-#         libcor
-#         # Spread
-#         # SSRCSpread
-#         # Cereal
-# 	    hpx
-# )
-
-# # callableModule
-# add_library(callableModule SHARED callableModule.cpp)
-# target_compile_features(callableModule PUBLIC cxx_std_17)
-# set_target_properties(callableModule PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(callableModule PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# set_target_properties(callableModule PROPERTIES COMPILE_FLAGS -O2)
-# set_target_properties(callableModule PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-#     callableModule
-#     PRIVATE
-#         libcor
-#         # Spread
-#         # SSRCSpread
-#         # Cereal
-# 	hpx
-# )
-
-# # callableModule hpx
-# add_library(callableModule_hpx SHARED callableModule_hpx.cpp)
-# target_compile_features(callableModule_hpx PUBLIC cxx_std_17)
-# set_target_properties(callableModule_hpx PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(callableModule_hpx PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# set_target_properties(callableModule_hpx PROPERTIES COMPILE_FLAGS -O2)
-# set_target_properties(callableModule_hpx PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-#     callableModule_hpx
-#     PRIVATE
-#         libcor
-#         # Spread
-#         # SSRCSpread
-#         # Cereal
-# 	    hpx
-# )
-
-# # parallel
-# add_library(parallel SHARED parallel.cpp)
-# target_compile_features(parallel PUBLIC cxx_std_17)
-# set_target_properties(parallel PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(parallel PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# set_target_properties(parallel PROPERTIES COMPILE_FLAGS -O2)
-# set_target_properties(parallel PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-#     parallel
-#     PRIVATE
-#         libcor
-#         # Spread
-#         # SSRCSpread
-#         # Cereal
-# 	hpx
-# )
-
-
-# parallel - HPX
-add_library(parallel_hpx SHARED parallel_hpx.cpp)
-target_compile_features(parallel_hpx PUBLIC cxx_std_17)
-set_target_properties(parallel_hpx PROPERTIES CXX_EXTENSIONS OFF)
-set_target_properties(parallel_hpx PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(parallel_hpx PROPERTIES COMPILE_FLAGS -O2)
-set_target_properties(parallel_hpx PROPERTIES PREFIX "lib" SUFFIX ".so")
+# basicOperations
+add_library(basicOperations SHARED basicOperations.cpp)
+target_compile_features(basicOperations PUBLIC cxx_std_17)
+set_target_properties(basicOperations PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(basicOperations PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(basicOperations PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(basicOperations PROPERTIES PREFIX "lib" SUFFIX ".so")
 target_link_libraries(
-    parallel_hpx
+    basicOperations
     PRIVATE
         libcor
-    PUBLIC
-        hpx
+        # Spread
+        # SSRCSpread
+        # Cereal
+	hpx
+)
+
+# callableModule
+add_library(callableModule SHARED callableModule.cpp)
+target_compile_features(callableModule PUBLIC cxx_std_17)
+set_target_properties(callableModule PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(callableModule PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(callableModule PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(callableModule PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    callableModule
+    PRIVATE
+        libcor
+        # Spread
+        # SSRCSpread
+        # Cereal
+	hpx
 )
 
 
-# parallel2 - HPX
-add_library(parallel_hpx2 SHARED parallel_hpx2.cpp)
-target_compile_features(parallel_hpx2 PUBLIC cxx_std_17)
-set_target_properties(parallel_hpx2 PROPERTIES CXX_EXTENSIONS OFF)
-set_target_properties(parallel_hpx2 PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(parallel_hpx2 PROPERTIES COMPILE_FLAGS -O2)
-set_target_properties(parallel_hpx2 PROPERTIES PREFIX "lib" SUFFIX ".so")
+# parallel
+add_library(parallel SHARED parallel.cpp)
+target_compile_features(parallel PUBLIC cxx_std_17)
+set_target_properties(parallel PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(parallel PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(parallel PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(parallel PROPERTIES PREFIX "lib" SUFFIX ".so")
 target_link_libraries(
-    parallel_hpx2
+    parallel
     PRIVATE
         libcor
-    PUBLIC
-        hpx
+        # Spread
+        # SSRCSpread
+        # Cereal
+	hpx
 )
+
+
+# # parallel2 - HPX
+# add_library(parallel_hpx2 SHARED parallel_hpx2.cpp)
+# target_compile_features(parallel_hpx2 PUBLIC cxx_std_17)
+# set_target_properties(parallel_hpx2 PROPERTIES CXX_EXTENSIONS OFF)
+# set_target_properties(parallel_hpx2 PROPERTIES POSITION_INDEPENDENT_CODE ON)
+# set_target_properties(parallel_hpx2 PROPERTIES COMPILE_FLAGS -O2)
+# set_target_properties(parallel_hpx2 PROPERTIES PREFIX "lib" SUFFIX ".so")
+# target_link_libraries(
+#     parallel_hpx2
+#     PRIVATE
+#         libcor
+#     PUBLIC
+#         hpx
+# )
 
 
 # # spawn
@@ -268,15 +201,11 @@ target_link_libraries(
 
 install(
     TARGETS
-        # module
-        module_hpx
-        # basicOperations
-        # callableModule
-        # basicOperations_hpx
-        # callableModule_hpx
-        # parallel
-        parallel_hpx
-        parallel_hpx2
+        module
+        basicOperations
+        callableModule
+        parallel
+        # parallel_hpx2
         # spawn
         # spawn_hpx
         # client

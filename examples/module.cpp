@@ -1,15 +1,15 @@
 
-// #include "cor/cor.hpp"
+#include "cor/cor.hpp"
 
 
-// extern "C"
-// {
-//     void Main(int argc, char *argv[]);
-// }
+extern "C"
+{
+    void Main(int input);
+}
 
-// void Main(int argc, char *argv[]) {
+void Main(int input) {
 
-//     auto domain = cor::GetDomain();
-//     std::cout << domain->GetActiveResourceIdp() << "\n";
+    auto domain = cor::GetDomain();
+    std::cout << domain->GetActiveResourceIdp() << "\n";
 
-// }
+}

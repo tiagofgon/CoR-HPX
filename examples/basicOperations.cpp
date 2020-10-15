@@ -1,44 +1,42 @@
-// #include "cor/cor.hpp"
+#include "cor/cor.hpp"
 
-// extern "C"
-// {
-//     void Main(int argc, char *argv[]);
-// }
+extern "C"
+{
+    void Main(int rsc_idp);
+}
 
-// void Main(int argc, char *argv[])
-// {
-//     // obter o domínio local
-//     auto domain = cor::GetDomain();
+void Main(int rsc_idp)
+{
+    // obter o domínio local
+    auto domain = cor::GetDomain();
 
-//     // obter o idp do agent que está a executar a função de entrada do módulo do utilizador
-//     auto agent_idp = domain->GetActiveResourceIdp();
+    // obter o idp do agent que está a executar a função de entrada do módulo do utilizador
+    auto agent_idp = domain->GetActiveResourceIdp();
 
-//     // obter uma referência para o agente
-//     auto agent = domain->GetLocalResource<cor::Agent<void(int,char**)>>(agent_idp);
+    // obter uma referência para o agente
+    auto agent = domain->GetLocalResource<cor::ProtoAgent_Client<void(int,char**)>>(agent_idp);
 
-//     // criar um grupo para introduzir um novo módulo do utilizador na aplicação
-//     auto group = domain->CreateLocal<cor::Group>(domain->Idp(), "group", "/opt/placor-hpx/examples/libcallableModule.so");
+    // criar um grupo para introduzir um novo módulo do utilizador na aplicação
+    std::string const& path = "/opt/placor-hpx/examples/libcallableModule.so"; // é necessario fazer estas atribuições porque os argumentos de componentes tem de ser const
+    auto group = domain->CreateLocal<cor::Group_Client>(domain->Idp(), "group", path);
 
-//     // criar um dado no qual irá ser escrito o idp do agente que irá ser criado
-//     auto data = domain->CreateLocal<cor::Data<idp_t>>(group->Idp(), "data");
+    // criar um dado no qual irá ser escrito o idp do agente que irá ser criado
+    auto data = domain->CreateLocal<cor::Data_Client<idp_t>>(group->Idp(), "data");
 
-//     // criar um agente que irá carregar dinamicamente e executar uma função presente no novo módulo do utilizador
-//     auto new_agent = domain->CreateLocal<cor::Agent<idp_t(idp_t)>>(group->Idp(), "agent", group->GetModuleName(), "Test");
-//     // executa a função solicitada, passando os parâmetros correspondentes
-//     new_agent->Run(agent_idp);
-//     // espera pelo término da execução da função
-//     new_agent->Wait();
-//     // obtém o resultado da execução da função
-//     auto res1 = new_agent->Get();
+    // criar um agente que irá carregar dinamicamente e executar uma função presente no novo módulo do utilizador
+    std::string const& func = "Test";
+    auto new_agent = domain->CreateLocal<cor::ProtoAgent_Client<idp_t(idp_t)>>(group->Idp(), "agent", group->GetModuleName(), func);
+    // executa a função solicitada, passando os parâmetros correspondentes
+    idp_t const& agent_idpp = agent_idp ;
+    new_agent->Run(agent_idpp);
+    // espera pelo término da execução da função
+    new_agent->Wait();
+    // obtém o resultado da execução da função
+    auto res1 = new_agent->Get();
 
-//     // recebe a mensagem enviado pelo agente criado
-//     auto msg = agent->Receive();
-//     // obtém o idp presente no conteúdo da mensagem
-//     auto res2 = msg.Get<idp_t>();
+    data->Acquire();
+    auto res2 = **data;
+    data->Release();
 
-//     data->AcquireRead();
-//     auto res3 = data->Get();
-//     data->ReleaseRead();
-
-//     std::cout << res1 << "\t" << res2 << "\t" << *res3 << "\n";
-// }
+    std::cout << res1 << "\t" << res2 << "\n";
+}
