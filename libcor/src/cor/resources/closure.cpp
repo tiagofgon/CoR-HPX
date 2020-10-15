@@ -1,0 +1,111 @@
+#include "cor/resources/closure.hpp"
+
+namespace cor {
+
+Closure::Closure() = default;
+
+Closure::Closure(idp_t idp, unsigned int total_members, idp_t parent) :
+    base_type(idp),
+    staticOrganizer{idp, total_members, parent}
+{
+    std::cout << "Criado um componente \"Closure\", com idp: " << idp << std::endl;
+}
+
+Closure::~Closure() = default;
+
+// Closure::Closure(Closure&&) noexcept = default;
+
+// Closure& Closure::operator=(Closure&&) noexcept = default;
+
+
+/* StaticOrganizer interface */
+void Closure::Join(idp_t idp, std::string const& name)
+{
+    return staticOrganizer.Join(idp, name);
+}
+
+void Closure::Leave(idp_t idp)
+{
+    return staticOrganizer.Leave(idp);
+}
+
+idp_t Closure::GetParent()
+{
+    return staticOrganizer.GetParent();
+}
+
+std::size_t Closure::GetTotalMembers()
+{
+    return staticOrganizer.GetTotalMembers();
+}
+
+std::size_t Closure::GetFixedTotalMembers()
+{
+    return staticOrganizer.GetFixedTotalMembers();
+}
+
+std::vector<idp_t> Closure::GetMemberList()
+{
+    return staticOrganizer.GetMemberList();
+}
+
+idp_t Closure::GetIdp1(idm_t idm)
+{
+    return staticOrganizer.GetIdp(idm);
+}
+
+idp_t Closure::GetIdp2(std::string const& name)
+{
+    return staticOrganizer.GetIdp(name);
+}
+
+idm_t Closure::GetIdm1(idp_t idp)
+{
+    return staticOrganizer.GetIdm(idp);
+}
+
+idm_t Closure::GetIdm2(std::string const& name)
+{
+    return staticOrganizer.GetIdm(name);
+}
+
+idp_t Closure::GetStaticIdp()
+{
+    return staticOrganizer.GetStaticIdp();
+}
+
+}
+
+
+
+typedef cor::Closure Closure;
+typedef hpx::components::component<Closure> Closure_type;
+
+HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Closure_type, Closure, "Resource");
+
+
+
+/* StaticOrganizer actions */
+typedef cor::Closure::Join_action_Closure Join_action_Closure;
+typedef cor::Closure::Leave_action_Closure Leave_action_Closure;
+typedef cor::Closure::GetParent_action_Closure GetParent_action_Closure;
+typedef cor::Closure::GetTotalMembers_action_Closure GetTotalMembers_action_Closure;
+typedef cor::Closure::GetFixedTotalMembers_action_Closure GetFixedTotalMembers_action_Closure;
+typedef cor::Closure::GetMemberList_action_Closure GetMemberList_action_Closure;
+typedef cor::Closure::GetIdp1_action_Closure GetIdp1_action_Closure;
+typedef cor::Closure::GetIdp2_action_Closure GetIdp2_action_Closure;
+typedef cor::Closure::GetIdm1_action_Closure GetIdm1_action_Closure;
+typedef cor::Closure::GetIdm2_action_Closure GetIdm2_action_Closure;
+typedef cor::Closure::GetStaticIdp_action_Closure GetStaticIdp_action_Closure;
+
+HPX_REGISTER_ACTION(Join_action_Closure);
+HPX_REGISTER_ACTION(Leave_action_Closure);
+HPX_REGISTER_ACTION(GetParent_action_Closure);
+HPX_REGISTER_ACTION(GetTotalMembers_action_Closure);
+HPX_REGISTER_ACTION(GetFixedTotalMembers_action_Closure);
+HPX_REGISTER_ACTION(GetMemberList_action_Closure);
+HPX_REGISTER_ACTION(GetIdp1_action_Closure);
+HPX_REGISTER_ACTION(GetIdp2_action_Closure);
+HPX_REGISTER_ACTION(GetIdm1_action_Closure);
+HPX_REGISTER_ACTION(GetIdm2_action_Closure);
+HPX_REGISTER_ACTION(GetStaticIdp_action_Closure);
