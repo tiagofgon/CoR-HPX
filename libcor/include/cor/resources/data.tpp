@@ -44,13 +44,6 @@ void Data<T>::Release()
     return _value.Release();
 }
 
-template <typename T>
-void Data<T>::Migrar(hpx::id_type gid, hpx::id_type dest)
-{
-    std::cout << "Migrar2" << std::endl;
-    // return _value.Migrar(gid);
-    return global::pod->Migrar<cor::Data<T>>(gid, dest);
-}
 
 }
 

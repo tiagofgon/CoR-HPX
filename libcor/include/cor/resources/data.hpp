@@ -90,12 +90,10 @@ public:
 	int Acquire();
 	void Release();
 
-    void Migrar(hpx::id_type gid, hpx::id_type dest);
 
     HPX_DEFINE_COMPONENT_ACTION(Data, Fetch, Fetch_action_Data);
     HPX_DEFINE_COMPONENT_ACTION(Data, Acquire, Acquire_action_Data);
     HPX_DEFINE_COMPONENT_ACTION(Data, Release, Release_action_Data);
-    HPX_DEFINE_COMPONENT_ACTION(Data, Migrar, Migrar_action_Data);
 
 
 
@@ -125,9 +123,6 @@ private:
     HPX_REGISTER_ACTION_DECLARATION(                                                                                \
         cor::Data<type>::Release_action_Data,                                                                         \
         HPX_PP_CAT(__Data_Release_action_Data_, type));                                                                \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                                \
-        cor::Data<type>::Migrar_action_Data,                                                                         \
-        HPX_PP_CAT(__Data_Migrar_action_Data_, type));                                                                \
 
 
 #define REGISTER_DATA(type)                                                                                         \
@@ -140,9 +135,6 @@ private:
     HPX_REGISTER_ACTION(                                                                                            \
         cor::Data<type>::Release_action_Data,                                                                         \
         HPX_PP_CAT(__Data_Release_action_Data_, type));                                                               \
-    HPX_REGISTER_ACTION(                                                                                            \
-        cor::Data<type>::Migrar_action_Data,                                                                         \
-        HPX_PP_CAT(__Data_Migrar_action_Data_, type));                                                               \
     typedef ::hpx::components::component<cor::Data<type>>                                                           \
         HPX_PP_CAT(__Data_type, type);                                                                              \
     typedef cor::Data<type>                                                                                         \

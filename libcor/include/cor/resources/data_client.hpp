@@ -232,13 +232,6 @@ public:
 		hpx::components::migrate<Data<T>>(this->get_id(), dest).get();
 	}
 
-	void Migrar(hpx::id_type dest)
-	{
-		std::cout << "Migrar1" << std::endl;
-		typedef typename Data<T>::Migrar_action_Data action_type;
-		return hpx::async<action_type>(base_type::get_id(), this->get_id(), dest).get();
-	}
-
 private:
 	template <typename Archive>
 	void serialize(Archive& ar, unsigned) {   

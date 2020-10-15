@@ -82,12 +82,6 @@ auto Container::Get(idp_t idp)
     // return global::rpc->Get<T>(idp, ctrl);
 }
 
-template <typename T>
-void Container::Migrar(hpx::id_type gid, hpx::id_type dest)
-{
-    return global::pod->Migrar<T>(gid, dest);   
-}
-
 
 }
 

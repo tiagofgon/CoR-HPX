@@ -68,9 +68,6 @@ public:
 
     idp_t GetContainerIdp() const;
 
-    template <typename T>
-    void Migrar(hpx::id_type gid, hpx::id_type dest);
-
 protected:
     Container();
     explicit Container(idp_t idp);

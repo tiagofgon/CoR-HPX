@@ -126,12 +126,6 @@ auto Domain::Get(idp_t idp)
     return container.Get<T>(idp);
 }
 
-template <typename T>
-void Domain::Migrar(hpx::id_type gid, hpx::id_type dest)
-{
-    // return container.Migrar<T>(gid, dest);
-    return global::pod->Migrar<T>(gid, dest);
-}
 
 
 }

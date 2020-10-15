@@ -75,8 +75,6 @@ public:
 
     idp_t Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
 
-    template <typename T>
-    void Migrar(hpx::id_type gid, hpx::id_type dest);
     
     // to remove
     void Debug();
@@ -156,13 +154,6 @@ public:
     >::type
     {};
 
-    template <typename T>
-    struct Migrar_action_pod 
-    : hpx::actions::make_action<
-        decltype(&Pod::Migrar<T>),
-        &Pod::Migrar<T>
-    >::type
-    {};
 
 protected:
     // accessed by Container

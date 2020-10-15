@@ -201,19 +201,11 @@ public:
 		return str;
 	}
 
-	// void Migrar()
-	// {
-	// 	global::pod->GetDomainIdp();
-	// 	// typedef cor::Domain::Migrar_action_Domain<cor::Domain> action_type;
-	// 	// return hpx::async<action_type>(this->get_id(), this->get_id()).get(); 
-	// 	// return cor::global::pod->Migrar<cor::Closure>(this->get_id());
-	// }
 	void Migrate(hpx::id_type dest)
 	{
 		hpx::components::migrate<Closure>(this->get_id(), dest).get();
 	}
 	
-	void Migrar(hpx::id_type dest);
 
 private:
 	template <typename Archive>

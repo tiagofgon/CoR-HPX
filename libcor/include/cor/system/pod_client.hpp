@@ -236,13 +236,6 @@ public:
         return hpx::async<action_type>(this->get_id(), tid).get(); 
     }
 
-    template <typename T>
-    void Migrar(hpx::id_type gid, hpx::id_type dest)
-    {
-        typedef cor::Pod::Migrar_action_pod<T> action_type;
-        return hpx::async<action_type>(this->get_id(), gid, dest).get(); 
-    }
-
 
 };
 

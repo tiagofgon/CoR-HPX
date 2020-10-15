@@ -130,8 +130,6 @@ public:
 
     idp_t GetContainerIdp();
 
-    template <typename T>
-    void Migrar(hpx::id_type gid, hpx::id_type dest);
 
     HPX_DEFINE_COMPONENT_ACTION(Domain, GetGlobalContext, GetGlobalContext_action_Domain);
     HPX_DEFINE_COMPONENT_ACTION(Domain, GetLocalContext, GetLocalContext_action_Domain);
@@ -222,14 +220,6 @@ public:
     : hpx::actions::make_action<
         decltype(&Domain::Get<T>),
         &Domain::Get<T>
-    >::type
-    {};
-
-    template <typename T>
-    struct Migrar_action_Domain
-    : hpx::actions::make_action<
-        decltype(&Domain::Migrar<T>),
-        &Domain::Migrar<T>
     >::type
     {};
 

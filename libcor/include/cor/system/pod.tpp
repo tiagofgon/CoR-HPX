@@ -98,20 +98,6 @@ std::unique_ptr<T> Pod::CreateCollective2(idm_t rank, idp_t comm, idp_t ctx, std
     return _ctrl->CreateCollective<T, Args...>(rank, comm, ctx, name, std::forward<Args>(args)...); 
 }
 
-template <typename T>
-void Pod::Migrar(hpx::id_type gid, hpx::id_type dest)
-{
-    std::cout << "Migrar" << std::endl;
-
-    std::cout << "Localidade***: " << hpx::get_colocation_id(hpx::launch::sync, gid) << std::endl;
-
-    hpx::components::migrate<T>(gid, dest).get();
-
-    std::cout << "MIGRADO!"<< std::endl;
-    std::cout << "Localidade***: " << hpx::get_colocation_id(hpx::launch::sync, gid) << std::endl;
-
-    return;
-}
 
 
 }
