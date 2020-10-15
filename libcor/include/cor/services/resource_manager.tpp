@@ -126,24 +126,38 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
 // std::cout << "aqui 15" << std::endl;
 
     {
-        // lock to access resource manager variables
         std::lock_guard<std::mutex> lk(_mtx);
-        std::vector<std::string> res = rsc->GetComponentHierarchy();
-        bool flag=false;
-        for(auto const& str : res) {
-            if(str == "DynamicOrganizer") { // Se tiver o elemento organiador DynamicOrganizer
-                // dynamicOrganizer_idps.insert(idp);
-                InsertDynamicOrganizer_idps(idp);
-                std::cout << "adicionado ao dynamicOrganizer_idps " << idp << std::endl;
-                break;
-            } 
-            if(str == "StaticOrganizer") { // Se tiver o elemento organiador StaticOrganizer
-                staticOrganizer_idps.insert(idp);
+
+        typedef typename T::organizer organizer;
+        if(typeid(organizer) == typeid(StaticOrganizer)) // Se tiver o elemento organizador StaticOrganizer
+        { 
                 InsertStaticOrganizer_idps(idp);
                 std::cout << "adicionado ao StaticOrganizer " << idp << std::endl;
-                break;
-            }
         }
+        if(typeid(organizer) == typeid(DynamicOrganizer)) // Se tiver o elemento organizador DynamicOrganizer
+        {
+                InsertDynamicOrganizer_idps(idp);
+                std::cout << "adicionado ao dynamicOrganizer_idps " << idp << std::endl;
+        }
+
+        // lock to access resource manager variables
+        
+        // std::vector<std::string> res = rsc->GetComponentHierarchy();
+        // bool flag=false;
+        // for(auto const& str : res) {
+        //     if(str == "DynamicOrganizer") { // Se tiver o elemento organizador DynamicOrganizer
+        //         // dynamicOrganizer_idps.insert(idp);
+        //         InsertDynamicOrganizer_idps(idp);
+        //         std::cout << "adicionado ao dynamicOrganizer_idps " << idp << std::endl;
+        //         break;
+        //     } 
+        //     if(str == "StaticOrganizer") { // Se tiver o elemento organizador StaticOrganizer
+        //         staticOrganizer_idps.insert(idp);
+        //         InsertStaticOrganizer_idps(idp);
+        //         std::cout << "adicionado ao StaticOrganizer " << idp << std::endl;
+        //         break;
+        //     }
+        // }
     }
 
     return rsc;

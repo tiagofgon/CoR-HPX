@@ -32,6 +32,8 @@ public:
 	friend class hpx::serialization::access;
 	friend class Closure;
 
+	typedef StaticOrganizer organizer;
+
 	/// Default construct an empty client side representation (not
 	/// connected to any existing component). Also needed for serialization
 	Closure_Client()

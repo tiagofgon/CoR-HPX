@@ -31,6 +31,8 @@ public:
 	friend class hpx::serialization::access;
 	friend class Barrier;
 
+	typedef nullptr_t organizer;
+	
 	/// Default construct an empty client side representation (not
 	/// connected to any existing component). Also needed for serialization
 	Barrier_Client()

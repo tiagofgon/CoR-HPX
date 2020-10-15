@@ -26,6 +26,8 @@ public:
 
 	friend class hpx::serialization::access;
 
+	typedef DynamicOrganizer organizer;
+
 	/// Default construct an empty client side representation (not
 	/// connected to any existing component). Also needed for serialization
 	Group_Client()

@@ -21,13 +21,16 @@ private:
 		return hpx::new_<Domain>(locality, idp, module);
 	}
 
-	typedef typename Domain::data_type data_type;
+	// typedef typename Domain::data_type data_type;
+	
 
 public:
 	typedef hpx::components::client_base<Domain_Client, Domain> base_type;
 
 	friend class hpx::serialization::access;
 	friend class Domain;
+
+	typedef DynamicOrganizer organizer;
 
 	/// Default construct an empty client side representation (not
 	/// connected to any existing component). Also needed for serialization

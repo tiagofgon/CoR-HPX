@@ -37,6 +37,8 @@ public:
 
 	friend class hpx::serialization::access;
 
+	typedef nullptr_t organizer;
+
 	/// Default construct an empty client side representation (not
 	/// connected to any existing component). Also needed for serialization
     Data_Client()
