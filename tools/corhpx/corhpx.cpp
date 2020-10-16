@@ -100,10 +100,8 @@ int hpx_main(int argc, char *argv[])
     agent->Get();
 
 
-    std::cout << "fim" << std::endl;
+    // std::cout << "fim" << std::endl;
 
-
-    // return EXIT_SUCCESS;
     return hpx::finalize();
 }
 
