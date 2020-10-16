@@ -14,16 +14,16 @@ MutexService::~MutexService() = default;
 
 void MutexService::Acquire()
 {
-    std::cout << "lock()1" << std::endl;
+    // std::cout << "lock()1" << std::endl;
     _mtx.lock();
-    std::cout << "lock()2" << std::endl;
+    // std::cout << "lock()2" << std::endl;
 }
 
 void MutexService::Release()
 {
-    std::cout << "unlock()1" << std::endl;
+    // std::cout << "unlock()1" << std::endl;
     _mtx.unlock();
-    std::cout << "unlock()2" << std::endl;
+    // std::cout << "unlock()2" << std::endl;
 }
 
 }
