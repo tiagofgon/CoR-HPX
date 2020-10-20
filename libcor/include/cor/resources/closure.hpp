@@ -17,15 +17,11 @@ typedef hpx::components::component_base<Closure>::wrapping_type wrapping_type;
 typedef Closure type_holder;
 typedef Resource base_type_holder;
 
-friend class ResourceManager;
-
-// protected:
-//     Closure();
-//     explicit Closure(idp_t idp, unsigned int total_members, idp_t parent);
+protected:
+    explicit Closure(idp_t idp, unsigned int total_members, idp_t parent);
 
 public:
     Closure();
-    explicit Closure(idp_t idp, unsigned int total_members, idp_t parent);
     ~Closure();
 
     // Components that should be migrated using hpx::migrate<> need to
@@ -34,13 +30,13 @@ public:
     // component's constructor.
     Closure(Closure&& rhs) :
         base_type(std::move(rhs)),
-        staticOrganizer(rhs.staticOrganizer)
+        _staticOrganizer(rhs._staticOrganizer)
     {}
 
     Closure& operator=(Closure&& rhs)
     {
         this->Resource::operator=(std::move(static_cast<Resource&>(rhs)));
-        staticOrganizer = rhs.staticOrganizer;
+        _staticOrganizer = rhs._staticOrganizer;
         return *this;
     }
 
@@ -85,11 +81,11 @@ public:
     void serialize(Archive& ar, unsigned version)
     {
         ar & hpx::serialization::base_object<Resource>(*this);
-        ar & staticOrganizer;
+        ar & _staticOrganizer;
     }
 
 private:
-    StaticOrganizer staticOrganizer;
+    StaticOrganizer _staticOrganizer;
 };
 
 }

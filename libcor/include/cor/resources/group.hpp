@@ -19,19 +19,12 @@ typedef hpx::components::component_base<Group>::wrapping_type wrapping_type;
 typedef Group type_holder;
 typedef Resource base_type_holder;
 
-
-friend class ResourceManager;
-
-// // Na versao final vai ter que ficar assim
-// protected:
-//     Group();
-//     explicit Group(idp_t idp, std::string const& module);
-
+protected:
+    explicit Group(idp_t idp, std::string const& module);
 
 public:
     ~Group();
     Group();
-    explicit Group(idp_t idp, std::string const& module);
 
     // Components that should be migrated using hpx::migrate<> need to
     // be Serializable and CopyConstructable. Components can be
@@ -39,22 +32,15 @@ public:
     // component's constructor.
     Group(Group&& rhs) :
         base_type(std::move(rhs)),
-        dynamic_organizer(rhs.dynamic_organizer)
+        _dynamic_organizer(rhs._dynamic_organizer)
     {}
 
     Group& operator=(Group&& rhs)
     {
         this->Resource::operator=(std::move(static_cast<Resource&>(rhs)));
-        dynamic_organizer = rhs.dynamic_organizer;
+        _dynamic_organizer = rhs._dynamic_organizer;
         return *this;
     }
-
-    // Group(const Group&) = delete;
-    // Group& operator=(const Group&) = delete;
-
-    // Group(Group&&) noexcept;
-    // Group& operator=(Group&&) noexcept;
-
 
     /* DynamicOrganizer interface */
     void Join(idp_t idp, std::string const& name);
@@ -87,11 +73,11 @@ public:
     void serialize(Archive& ar, unsigned version)
     {
         ar & hpx::serialization::base_object<Resource>(*this);
-        ar & dynamic_organizer;
+        ar & _dynamic_organizer;
     }
 
 private:
-    DynamicOrganizer dynamic_organizer;
+    DynamicOrganizer _dynamic_organizer;
 
 };
 

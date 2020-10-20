@@ -11,10 +11,6 @@ ResourceNonMigrable::ResourceNonMigrable(idp_t idp) : _idp{idp}
 
 ResourceNonMigrable::~ResourceNonMigrable() = default;
 
-// ResourceNonMigrable::ResourceNonMigrable(ResourceNonMigrable&&) noexcept = default;
-
-// ResourceNonMigrable& ResourceNonMigrable::operator=(ResourceNonMigrable&&) noexcept = default;
-
 idp_t ResourceNonMigrable::Idp() const
 {
     return _idp;
@@ -35,10 +31,6 @@ unsigned int ResourceNonMigrable::GetLocalityID()
 
 
 typedef cor::ResourceNonMigrable ResourceNonMigrable;
-// typedef hpx::components::component<cor::ResourceNonMigrable> ResourceNonMigrable_type;
-
-// HPX_REGISTER_COMPONENT(ResourceNonMigrable_type, ResourceNonMigrable);
-
 HPX_DEFINE_GET_COMPONENT_TYPE(ResourceNonMigrable);
 
 

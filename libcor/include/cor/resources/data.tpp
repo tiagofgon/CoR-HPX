@@ -20,11 +20,6 @@ Data<T>::Data(idp_t idp, Args&&... args) :
 template <typename T>
 Data<T>::~Data() = default;
 
-// template <typename T>
-// Data<T>::Data(Data<T>&&) noexcept = default;
-
-// template <typename T>
-// Data<T>& Data<T>::operator=(Data<T>&&) noexcept = default;
 
 template <typename T>
 T Data<T>::Fetch()

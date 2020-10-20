@@ -13,15 +13,13 @@ namespace cor {
 struct ResourceNonMigrable : hpx::components::abstract_component_base<ResourceNonMigrable>
 {
 
+protected:
+    explicit ResourceNonMigrable(idp_t idp);
+
 public:
+    ResourceNonMigrable(); // needed by hpx for serialization
     virtual ~ResourceNonMigrable();
-
-    // ResourceNonMigrable(const ResourceNonMigrable&) = delete;
-    // ResourceNonMigrable& operator=(const ResourceNonMigrable&) = delete;
-
-    // ResourceNonMigrable(ResourceNonMigrable&&) noexcept;
-    // ResourceNonMigrable& operator=(ResourceNonMigrable&&) noexcept;
-
+    
     virtual idp_t Idp() const;
     virtual hpx::id_type GetLocalityGID();
     virtual unsigned int GetLocalityID();
@@ -34,9 +32,7 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(ResourceNonMigrable, GetLocalityGID_nonvirt, GetLocalityGID_action_ResourceNonMigrable);
     HPX_DEFINE_COMPONENT_ACTION(ResourceNonMigrable, GetLocalityID_nonvirt, GetLocalityID_action_ResourceNonMigrable);
 
-protected:
-    ResourceNonMigrable(); // needed by hpx for serialization
-    explicit ResourceNonMigrable(idp_t idp);
+
 
 private:
     idp_t _idp;

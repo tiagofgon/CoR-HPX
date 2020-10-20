@@ -6,58 +6,52 @@ Group::Group() = default;
 
 Group::Group(idp_t idp, std::string const& module) :
     base_type(idp),
-    dynamic_organizer{idp, module}
+    _dynamic_organizer{idp, module}
 {
     std::cout << "Criado um componente \"Grupo\", com idp: " << idp << std::endl;
 }
 
 Group::~Group() = default;
 
-// Group::Group(Group&&) noexcept = default;
-
-// Group& Group::operator=(Group&&) noexcept = default;
-
-
-
 /* DynamicOrganizer interface */
 void Group::Join(idp_t idp, std::string const& name) {
-    return dynamic_organizer.Join(idp, name);
+    return _dynamic_organizer.Join(idp, name);
 }
 
 void Group::Leave(idp_t idp) {
-    return dynamic_organizer.Leave(idp);
+    return _dynamic_organizer.Leave(idp);
 }
 
 std::string Group::GetModuleName() {
-    return dynamic_organizer.GetModuleName();
+    return _dynamic_organizer.GetModuleName();
 }
 
 std::size_t Group::GetTotalMembers() {
-    return dynamic_organizer.GetTotalMembers();
+    return _dynamic_organizer.GetTotalMembers();
 }
 
 std::vector<idp_t> Group::GetMemberList() {
-    return dynamic_organizer.GetMemberList();
+    return _dynamic_organizer.GetMemberList();
 }
 
 idp_t Group::GetIdp1(idm_t idm) {
-    return dynamic_organizer.GetIdp(idm);
+    return _dynamic_organizer.GetIdp(idm);
 }
 
 idp_t Group::GetIdp2(std::string const& name) {
-    return dynamic_organizer.GetIdp(name);
+    return _dynamic_organizer.GetIdp(name);
 }
 
 idm_t Group::GetIdm1(idp_t idp) {
-    return dynamic_organizer.GetIdm(idp);
+    return _dynamic_organizer.GetIdm(idp);
 }
 
 idm_t Group::GetIdm2(std::string const& name) {
-    return dynamic_organizer.GetIdm(name);
+    return _dynamic_organizer.GetIdm(name);
 }
 
 idp_t Group::GetDynamicIdp() {
-    return dynamic_organizer.GetDynamicIdp();
+    return _dynamic_organizer.GetDynamicIdp();
 }
 
 

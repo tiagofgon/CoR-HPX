@@ -19,15 +19,15 @@ typedef typename hpx::components::component_base<Data<T>>::wrapping_type wrappin
 typedef Data type_holder;
 typedef Resource base_type_holder;
 
-friend class ResourceManager;
 friend class hpx::serialization::access;
+
+protected:
+    template <typename ... Args>
+    explicit Data(idp_t idp, Args&&... args);
 
 public:
     Data();
     ~Data();
-
-    template <typename ... Args>
-    explicit Data(idp_t idp, Args&&... args);
 
     // Components which should be migrated using hpx::migrate<> need to
     // be Serializable and CopyConstructable. Components can be
@@ -38,14 +38,6 @@ public:
         _value(std::move(rsc._value))
     {}
 
-    // Data& operator=(Data&& rsc)
-    // {
-    //     // value = std::move(rsc.value);
-    //     return *this;
-    // }
-
-
-
     Data& operator=(Data&& rsc)
     {
         this->Resource::operator=(std::move(static_cast<Resource&>(rsc)));
@@ -53,12 +45,6 @@ public:
         return *this;
     }
 
-
-    // Data(const Data&) = delete;
-    // Data& operator=(const Data&) = delete;
-
-    // Data(Data&&) noexcept;
-    // Data& operator=(Data&&) noexcept;
 
     T &operator*() 
     { 

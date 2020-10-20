@@ -19,13 +19,11 @@ typedef typename hpx::components::component_base<Barrier>::wrapping_type wrappin
 typedef Barrier type_holder;
 typedef Resource base_type_holder;
 
-friend class ResourceManager;
-
 protected:
-    Barrier();
     explicit Barrier(idp_t idp, idp_t clos);
     
 public:
+    Barrier();
     ~Barrier();
 
     // Components that should be migrated using hpx::migrate<> need to
@@ -34,22 +32,15 @@ public:
     // component's constructor.
     Barrier(Barrier&& rhs) :
         base_type(std::move(rhs)),
-        sbarrier(rhs.sbarrier)
+        _sbarrier(rhs._sbarrier)
     {}
 
     Barrier& operator=(Barrier&& rhs)
     {
         this->Resource::operator=(std::move(static_cast<Resource&>(rhs)));
-        sbarrier = rhs.sbarrier;
+        _sbarrier = rhs._sbarrier;
         return *this;
     }
-
-    // Barrier(const Barrier&) = delete;
-    // Barrier& operator=(const Barrier&) = delete;
-
-    // Barrier(Barrier&&) noexcept;
-    // Barrier& operator=(Barrier&&) noexcept;
-
 
     /* SBarrier interface */
     void Synchronize();
@@ -65,11 +56,11 @@ public:
     void serialize(Archive& ar, unsigned version)
     {
         ar & hpx::serialization::base_object<Resource>(*this);
-        ar & sbarrier;
+        ar & _sbarrier;
     }
 
 private:
-    SBarrier sbarrier;
+    SBarrier _sbarrier;
 
 };
 

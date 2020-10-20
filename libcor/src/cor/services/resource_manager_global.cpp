@@ -16,7 +16,7 @@ void ResourceManagerGlobal::InsertIdp(idp_t idp, hpx::id_type gid)
     idp_to_gids.emplace(idp, gid);
 }
 
-bool ResourceManagerGlobal::FindIdp(idp_t idp)
+bool ResourceManagerGlobal::FindIdpGlobal(idp_t idp)
 {
     auto it = idp_to_gids.find(idp);
     if ( it == idp_to_gids.end() ) {
@@ -121,12 +121,12 @@ HPX_REGISTER_COMPONENT(ResourceManagerGlobal_type, ResourceManagerGlobal);
 
 
 typedef cor::ResourceManagerGlobal::InsertIdp_action_ResourceManagerGlobal InsertIdp_action_ResourceManagerGlobal;
-typedef cor::ResourceManagerGlobal::FindIdp_action_ResourceManagerGlobal FindIdp_action_ResourceManagerGlobal;
+typedef cor::ResourceManagerGlobal::FindIdpGlobal_action_ResourceManagerGlobal FindIdpGlobal_action_ResourceManagerGlobal;
 typedef cor::ResourceManagerGlobal::GetGidFromIdp_action_ResourceManagerGlobal GetGidFromIdp_action_ResourceManagerGlobal;
 typedef cor::ResourceManagerGlobal::RemoveIdp_action_ResourceManagerGlobal RemoveIdp_action_ResourceManagerGlobal;
 
 HPX_REGISTER_ACTION(InsertIdp_action_ResourceManagerGlobal);
-HPX_REGISTER_ACTION(FindIdp_action_ResourceManagerGlobal);
+HPX_REGISTER_ACTION(FindIdpGlobal_action_ResourceManagerGlobal);
 HPX_REGISTER_ACTION(GetGidFromIdp_action_ResourceManagerGlobal);
 HPX_REGISTER_ACTION(RemoveIdp_action_ResourceManagerGlobal);
 

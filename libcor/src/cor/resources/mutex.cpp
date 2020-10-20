@@ -2,11 +2,9 @@
 
 namespace cor {
 
-// Mutex::Mutex() = default;
-
 Mutex::Mutex(idp_t idp) : 
     ResourceNonMigrable{idp}, 
-    smutex{idp}
+    _smutex{idp}
 {}
 
 Mutex::~Mutex() = default;
@@ -14,12 +12,12 @@ Mutex::~Mutex() = default;
 
 void Mutex::Acquire()
 {
-    return smutex.Acquire();
+    return _smutex.Acquire();
 }
 
 void Mutex::Release()
 {
-    return smutex.Release();
+    return _smutex.Release();
 }
 
 }

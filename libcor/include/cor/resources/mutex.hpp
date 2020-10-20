@@ -13,11 +13,11 @@ typedef hpx::components::component_base<Mutex>::wrapping_type wrapping_type;
 typedef Mutex type_holder;
 typedef ResourceNonMigrable base_type_holder;
 
-friend class ResourceManager;
+protected:
+explicit Mutex(idp_t idp);
 
 public:
     Mutex();
-    explicit Mutex(idp_t idp);
     ~Mutex();
 
     void Acquire();
@@ -27,7 +27,7 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(Mutex, Release, Release_action_Mutex);
 
 private:
-    SMutex smutex;
+    SMutex _smutex;
 
 };
 

@@ -6,72 +6,67 @@ Closure::Closure() = default;
 
 Closure::Closure(idp_t idp, unsigned int total_members, idp_t parent) :
     base_type(idp),
-    staticOrganizer{idp, total_members, parent}
+    _staticOrganizer{idp, total_members, parent}
 {
     std::cout << "Criado um componente \"Closure\", com idp: " << idp << std::endl;
 }
 
 Closure::~Closure() = default;
 
-// Closure::Closure(Closure&&) noexcept = default;
-
-// Closure& Closure::operator=(Closure&&) noexcept = default;
-
-
 /* StaticOrganizer interface */
 void Closure::Join(idp_t idp, std::string const& name)
 {
-    return staticOrganizer.Join(idp, name);
+    return _staticOrganizer.Join(idp, name);
 }
 
 void Closure::Leave(idp_t idp)
 {
-    return staticOrganizer.Leave(idp);
+    return _staticOrganizer.Leave(idp);
 }
 
 idp_t Closure::GetParent()
 {
-    return staticOrganizer.GetParent();
+    return _staticOrganizer.GetParent();
 }
 
 std::size_t Closure::GetTotalMembers()
 {
-    return staticOrganizer.GetTotalMembers();
+    return _staticOrganizer.GetTotalMembers();
 }
 
 std::size_t Closure::GetFixedTotalMembers()
 {
-    return staticOrganizer.GetFixedTotalMembers();
+    return _staticOrganizer.GetFixedTotalMembers();
 }
 
 std::vector<idp_t> Closure::GetMemberList()
 {
-    return staticOrganizer.GetMemberList();
+    return _staticOrganizer.GetMemberList();
 }
 
 idp_t Closure::GetIdp1(idm_t idm)
 {
-    return staticOrganizer.GetIdp(idm);
+    return _staticOrganizer.GetIdp(idm);
 }
 
 idp_t Closure::GetIdp2(std::string const& name)
 {
-    return staticOrganizer.GetIdp(name);
+    return _staticOrganizer.GetIdp(name);
 }
 
 idm_t Closure::GetIdm1(idp_t idp)
 {
-    return staticOrganizer.GetIdm(idp);
+    return _staticOrganizer.GetIdm(idp);
 }
 
 idm_t Closure::GetIdm2(std::string const& name)
 {
-    return staticOrganizer.GetIdm(name);
+    return _staticOrganizer.GetIdm(name);
 }
 
 idp_t Closure::GetStaticIdp()
 {
-    return staticOrganizer.GetStaticIdp();
+    return _staticOrganizer.GetStaticIdp();
 }
 
 }

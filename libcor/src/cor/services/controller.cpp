@@ -107,7 +107,7 @@ void Controller::InsertIdpGlobal(idp_t idp, hpx::id_type gid)
 
 bool Controller::FindIdpGlobal(idp_t idp)
 {
-    return resourceManagerGlobal_object->FindIdp(idp);
+    return resourceManagerGlobal_object->FindIdpGlobal(idp);
 }
 
 hpx::id_type Controller::GetGidFromIdpGlobal(idp_t idp)

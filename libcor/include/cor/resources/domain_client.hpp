@@ -31,7 +31,7 @@ public:
 	friend class Domain;
 
 	typedef DynamicOrganizer organizer;
-
+	friend class ResourceManager;
 	/// Default construct an empty client side representation (not
 	/// connected to any existing component). Also needed for serialization
 	Domain_Client()

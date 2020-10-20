@@ -11,10 +11,6 @@ Resource::Resource(idp_t idp) : _idp{idp}
 
 Resource::~Resource() = default;
 
-// Resource::Resource(Resource&&) noexcept = default;
-
-// Resource& Resource::operator=(Resource&&) noexcept = default;
-
 idp_t Resource::Idp() const
 {
     return _idp;
@@ -35,10 +31,6 @@ unsigned int Resource::GetLocalityID()
 
 
 typedef cor::Resource Resource;
-// typedef hpx::components::component<cor::Resource> Resource_type;
-
-// HPX_REGISTER_COMPONENT(Resource_type, Resource);
-
 HPX_DEFINE_GET_COMPONENT_TYPE(Resource);
 
 

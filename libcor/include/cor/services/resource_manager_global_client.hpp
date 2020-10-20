@@ -36,8 +36,8 @@ class ResourceManagerGlobal_Client: hpx::components::client_base<ResourceManager
             return hpx::async<action_type>(resource_manager_global_component, idp, gid).get();
         }
 
-        bool FindIdp(idp_t idp) {
-            typedef ResourceManagerGlobal::FindIdp_action_ResourceManagerGlobal action_type;
+        bool FindIdpGlobal(idp_t idp) {
+            typedef ResourceManagerGlobal::FindIdpGlobal_action_ResourceManagerGlobal action_type;
             return hpx::async<action_type>(resource_manager_global_component, idp).get();
         }
 

@@ -11,7 +11,6 @@
 
 namespace cor {
 
-// struct Domain: public Resource, hpx::components::component_base<Domain>
 struct Domain: public hpx::components::abstract_migration_support< hpx::components::component_base<Domain>, Resource >
 {
 
@@ -22,13 +21,11 @@ typedef hpx::components::component_base<Domain>::wrapping_type wrapping_type;
 typedef Domain type_holder;
 typedef Resource base_type_holder;
     
-typedef int data_type;
-
-friend class ResourceManager;
+protected:
+    explicit Domain(idp_t idp, std::string const& module);
 
 public:
     Domain();
-    explicit Domain(idp_t idp, std::string const& module);
     ~Domain();
 
     // Components that should be migrated using hpx::migrate<> need to
@@ -37,24 +34,17 @@ public:
     // component's constructor.
     Domain(Domain&& rhs) :
         base_type(std::move(rhs)),
-        dynamic_organizer(rhs.dynamic_organizer),
-        container(rhs.container)
+        _dynamic_organizer(rhs._dynamic_organizer),
+        _container(rhs._container)
     {}
 
     Domain& operator=(Domain&& rhs)
     {
         this->Resource::operator=(std::move(static_cast<Resource&>(rhs)));
-        dynamic_organizer = rhs.dynamic_organizer;
-        container = rhs.container;
+        _dynamic_organizer = rhs._dynamic_organizer;
+        _container = rhs._container;
         return *this;
     }
-
-    // Domain(const Domain&) = delete;
-    // Domain& operator=(const Domain&) = delete;
-
-    // Domain(Domain&&) noexcept;
-    // Domain& operator=(Domain&&) noexcept;
-
 
     /* DynamicOrganizer interface */
     void Join(idp_t idp, std::string const& name);
@@ -227,13 +217,13 @@ public:
     void serialize(Archive& ar, unsigned version)
     {
         ar & hpx::serialization::base_object<Resource>(*this);
-        ar & dynamic_organizer;
-        ar & container;
+        ar & _dynamic_organizer;
+        ar & _container;
     }
 
 private:
-    DynamicOrganizer dynamic_organizer;
-    Container container;
+    DynamicOrganizer _dynamic_organizer;
+    Container _container;
 
 };
 

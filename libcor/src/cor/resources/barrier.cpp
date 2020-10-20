@@ -6,31 +6,26 @@ Barrier::Barrier() = default;
 
 Barrier::Barrier(idp_t idp, idp_t clos) :
     base_type(idp),
-    sbarrier{idp, clos}
+    _sbarrier{idp, clos}
 {
     std::cout << "Criado um componente \"Barrier\", com idp: " << idp << std::endl;
 }
 
 Barrier::~Barrier() = default;
 
-// Barrier::Barrier(Barrier&&) noexcept = default;
-
-// Barrier& Barrier::operator=(Barrier&&) noexcept = default;
-
-
 void Barrier::Synchronize()
 {
-    return sbarrier.Synchronize();
+    return _sbarrier.Synchronize();
 }
 
 idp_t Barrier::GetIdpClos()
 {
-    return sbarrier.GetIdpClos();
+    return _sbarrier.GetIdpClos();
 }
 
 idp_t Barrier::GetSBarrierIdp()
 {
-    return sbarrier.GetSBarrierIdp();
+    return _sbarrier.GetSBarrierIdp();
 }
 
 }

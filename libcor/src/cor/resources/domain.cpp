@@ -3,65 +3,57 @@
 
 namespace cor {
 
-Domain::Domain() :
-    base_type()
-{}
+Domain::Domain() = default;
 
 Domain::Domain(idp_t idp, std::string const& module) :
     base_type(idp),
-    dynamic_organizer{idp, module},
-    container{idp}
+    _dynamic_organizer{idp, module},
+    _container{idp}
 {
     std::cout << "Criado um componente \"Domain\", com idp: " << idp << std::endl;
 }
 
 Domain::~Domain() = default;
 
-// Domain::Domain(Domain&&) noexcept = default;
-
-// Domain& Domain::operator=(Domain&&) noexcept = default;
-
-
-
 /* DynamicOrganizer interface */
 void Domain::Join(idp_t idp, std::string const& name) {
-    return dynamic_organizer.Join(idp, name);
+    return _dynamic_organizer.Join(idp, name);
 }
 
 void Domain::Leave(idp_t idp) {
-    return dynamic_organizer.Leave(idp);
+    return _dynamic_organizer.Leave(idp);
 }
 
 std::string Domain::GetModuleName() {
-    return dynamic_organizer.GetModuleName();
+    return _dynamic_organizer.GetModuleName();
 }
 
 std::size_t Domain::GetTotalMembers() {
-    return dynamic_organizer.GetTotalMembers();
+    return _dynamic_organizer.GetTotalMembers();
 }
 
 std::vector<idp_t> Domain::GetMemberList() {
-    return dynamic_organizer.GetMemberList();
+    return _dynamic_organizer.GetMemberList();
 }
 
 idp_t Domain::GetIdp1(idm_t idm) {
-    return dynamic_organizer.GetIdp(idm);
+    return _dynamic_organizer.GetIdp(idm);
 }
 
 idp_t Domain::GetIdp2(std::string const& name) {
-    return dynamic_organizer.GetIdp(name);
+    return _dynamic_organizer.GetIdp(name);
 }
 
 idm_t Domain::GetIdm1(idp_t idp) {
-    return dynamic_organizer.GetIdm(idp);
+    return _dynamic_organizer.GetIdm(idp);
 }
 
 idm_t Domain::GetIdm2(std::string const& name) {
-    return dynamic_organizer.GetIdm(name);
+    return _dynamic_organizer.GetIdm(name);
 }
 
 idp_t Domain::GetDynamicIdp() {
-    return dynamic_organizer.GetDynamicIdp();
+    return _dynamic_organizer.GetDynamicIdp();
 }
 
 
@@ -69,42 +61,42 @@ idp_t Domain::GetDynamicIdp() {
 /* Container interface */
 std::string Domain::GetGlobalContext()
 {
-    return container.GetGlobalContext();
+    return _container.GetGlobalContext();
 }
 
 std::string Domain::GetLocalContext()
 {
-    return container.GetLocalContext();
+    return _container.GetLocalContext();
 }
 
 unsigned int Domain::GetTotalPods()
 {
-    return container.GetTotalPods();
+    return _container.GetTotalPods();
 }
 
 unsigned int Domain::GetTotalDomains()
 {
-    return container.GetTotalDomains();
+    return _container.GetTotalDomains();
 }
 
 idp_t Domain::GetActiveResourceIdp(size_t id)
 {
-    return container.GetActiveResourceIdp(id);
+    return _container.GetActiveResourceIdp(id);
 }
 
 idp_t Domain::GetPredecessorIdp(idp_t idp)
 {
-    return container.GetPredecessorIdp(idp);
+    return _container.GetPredecessorIdp(idp);
 }
 
 idp_t Domain::Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 {
-    return container.Spawn(context, npods, module, args, hosts);  
+    return _container.Spawn(context, npods, module, args, hosts);  
 }
 
 idp_t Domain::GetContainerIdp()
 {
-    return container.GetContainerIdp();  
+    return _container.GetContainerIdp();  
 }
 
 

@@ -15,9 +15,11 @@ struct Resource : hpx::components::abstract_base_migration_support< hpx::compone
 
 friend class hpx::serialization::access;
 
+protected:
+    explicit Resource(idp_t idp);
+
 public:
     Resource(); // needed by hpx for serialization
-    explicit Resource(idp_t idp);
     virtual ~Resource();
 
     // Components which should be migrated using hpx::migrate<> need to
@@ -34,13 +36,6 @@ public:
         _idp = std::move(rhs._idp);
         return *this;
     }
-
-
-    // Resource(const Resource&) = delete;
-    // Resource& operator=(const Resource&) = delete;
-
-    // Resource(Resource&&) noexcept;
-    // Resource& operator=(Resource&&) noexcept;
 
     virtual idp_t Idp() const;
     virtual hpx::id_type GetLocalityGID();

@@ -19,12 +19,12 @@ public:
     ResourceManagerGlobal();
 
     void InsertIdp(idp_t idp, hpx::id_type gid);
-    bool FindIdp(idp_t idp);
+    bool FindIdpGlobal(idp_t idp);
     hpx::id_type GetGidFromIdp(idp_t idp);
     void RemoveIdp(idp_t idp);
 
     HPX_DEFINE_COMPONENT_ACTION(ResourceManagerGlobal, InsertIdp, InsertIdp_action_ResourceManagerGlobal);
-    HPX_DEFINE_COMPONENT_ACTION(ResourceManagerGlobal, FindIdp, FindIdp_action_ResourceManagerGlobal);
+    HPX_DEFINE_COMPONENT_ACTION(ResourceManagerGlobal, FindIdpGlobal, FindIdpGlobal_action_ResourceManagerGlobal);
     HPX_DEFINE_COMPONENT_ACTION(ResourceManagerGlobal, GetGidFromIdp, GetGidFromIdp_action_ResourceManagerGlobal);
     HPX_DEFINE_COMPONENT_ACTION(ResourceManagerGlobal, RemoveIdp, RemoveIdp_action_ResourceManagerGlobal);
 
@@ -62,12 +62,12 @@ private:
 }
 
 typedef cor::ResourceManagerGlobal::InsertIdp_action_ResourceManagerGlobal InsertIdp_action_ResourceManagerGlobal;
-typedef cor::ResourceManagerGlobal::FindIdp_action_ResourceManagerGlobal FindIdp_action_ResourceManagerGlobal;
+typedef cor::ResourceManagerGlobal::FindIdpGlobal_action_ResourceManagerGlobal FindIdpGlobal_action_ResourceManagerGlobal;
 typedef cor::ResourceManagerGlobal::GetGidFromIdp_action_ResourceManagerGlobal GetGidFromIdp_action_ResourceManagerGlobal;
 typedef cor::ResourceManagerGlobal::RemoveIdp_action_ResourceManagerGlobal RemoveIdp_action_ResourceManagerGlobal;
 
 HPX_REGISTER_ACTION_DECLARATION(InsertIdp_action_ResourceManagerGlobal);
-HPX_REGISTER_ACTION_DECLARATION(FindIdp_action_ResourceManagerGlobal);
+HPX_REGISTER_ACTION_DECLARATION(FindIdpGlobal_action_ResourceManagerGlobal);
 HPX_REGISTER_ACTION_DECLARATION(GetGidFromIdp_action_ResourceManagerGlobal);
 HPX_REGISTER_ACTION_DECLARATION(RemoveIdp_action_ResourceManagerGlobal);
 
