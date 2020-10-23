@@ -88,8 +88,22 @@ public:
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
+	idp_t IdpGlobal_here()
+	{
+		Migrate(hpx::find_here());
+		typedef Resource::Idp_action_Resource action_type;
+		return hpx::async<action_type>(base_type::get_id()).get();
+	}
+
 	hpx::id_type GetLocalityGID()
 	{
+		typedef Resource::GetLocalityGID_action_Resource action_type;
+		return hpx::async<action_type>(base_type::get_id()).get();
+	}
+	
+	hpx::id_type GetLocalityGID_here()
+	{
+		Migrate(hpx::find_here());
 		typedef Resource::GetLocalityGID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
@@ -100,19 +114,25 @@ public:
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
+	unsigned int GetLocalityID_here()
+	{
+		Migrate(hpx::find_here());
+		typedef Resource::GetLocalityID_action_Resource action_type;
+		return hpx::async<action_type>(base_type::get_id()).get();
+	}
 	
 	/** Executor interface **/
 	template <typename ... Args>
-	// void Run(Args&&... args)
 	void Run(Args&&... args)
 	{
-		// const int size = sizeof ...(args);
-		// std::cout << "size: " << size << std::endl;
-		// unsigned int res[size] = {args...};
-		// for(int i=0; i<size; i++){
-		// 	std::cout << res[i] << std::endl;
-		// }
+		typedef typename cor::ProtoAgent<R(P...)>::template Run_action_ProtoAgent<Args...> action_type;
+		return hpx::async<action_type>(this->get_id(), std::forward<Args>(args)... ).get();
+	}
 
+	template <typename ... Args>
+	void Run_here(Args&&... args)
+	{
+		Migrate(hpx::find_here());
 		typedef typename cor::ProtoAgent<R(P...)>::template Run_action_ProtoAgent<Args...> action_type;
 		return hpx::async<action_type>(this->get_id(), std::forward<Args>(args)... ).get();
 	}
@@ -123,8 +143,22 @@ public:
 		return hpx::async<action_type>(this->get_id()).get();
 	}
 
+	void Wait_here()
+	{
+		Migrate(hpx::find_here());
+		typedef typename cor::ProtoAgent<R(P...)>::Wait_action_ProtoAgent action_type;
+		return hpx::async<action_type>(this->get_id()).get();
+	}
+
 	R Get()
 	{
+		typedef typename cor::ProtoAgent<R(P...)>::Get_action_ProtoAgent action_type;
+		return hpx::async<action_type>(this->get_id()).get();
+	}
+
+	R Get_here()
+	{
+		Migrate(hpx::find_here());
 		typedef typename cor::ProtoAgent<R(P...)>::Get_action_ProtoAgent action_type;
 		return hpx::async<action_type>(this->get_id()).get();
 	}
@@ -135,8 +169,22 @@ public:
 		return hpx::async<action_type>(this->get_id(), idp).get();
 	}
 
+	void ChangeIdp_here(idp_t idp)
+	{
+		Migrate(hpx::find_here());
+		typedef typename cor::ProtoAgent<R(P...)>::ChangeIdp_action_ProtoAgent action_type;
+		return hpx::async<action_type>(this->get_id(), idp).get();
+	}
+
 	void ResumeIdp()
 	{
+		typedef typename cor::ProtoAgent<R(P...)>::ResumeIdp_action_ProtoAgent action_type;
+		return hpx::async<action_type>(this->get_id()).get();
+	}
+
+	void ResumeIdp_here()
+	{
+		Migrate(hpx::find_here());
 		typedef typename cor::ProtoAgent<R(P...)>::ResumeIdp_action_ProtoAgent action_type;
 		return hpx::async<action_type>(this->get_id()).get();
 	}
@@ -147,14 +195,35 @@ public:
 		return hpx::async<action_type>(this->get_id()).get();
 	}
 
+	idp_t CurrentIdp_here()
+	{
+		Migrate(hpx::find_here());
+		typedef typename cor::ProtoAgent<R(P...)>::CurrentIdp_action_ProtoAgent action_type;
+		return hpx::async<action_type>(this->get_id()).get();
+	}
+
 	idp_t OriginalIdp()
 	{
 		typedef typename cor::ProtoAgent<R(P...)>::OriginalIdp_action_ProtoAgent action_type;
 		return hpx::async<action_type>(this->get_id()).get();
 	}
 	
+	idp_t OriginalIdp_here()
+	{
+		Migrate(hpx::find_here());
+		typedef typename cor::ProtoAgent<R(P...)>::OriginalIdp_action_ProtoAgent action_type;
+		return hpx::async<action_type>(this->get_id()).get();
+	}
+	
 	idp_t GetExecutorIdp()
 	{
+		typedef typename cor::ProtoAgent<R(P...)>::GetExecutorIdp_action_ProtoAgent action_type;
+		return hpx::async<action_type>(this->get_id()).get();
+	}
+	
+	idp_t GetExecutorIdp_here()
+	{
+		Migrate(hpx::find_here());
 		typedef typename cor::ProtoAgent<R(P...)>::GetExecutorIdp_action_ProtoAgent action_type;
 		return hpx::async<action_type>(this->get_id()).get();
 	}
@@ -170,10 +239,19 @@ public:
 	  return this->get_id();
 	}
 
-	std::vector<std::string> GetComponentHierarchy()
+	int GetComponentType()
 	{
-		std::vector<std::string> str = {"ProtoAgent", "Resource", "Executor"};
-		return str;
+		/* Resource identification
+		1 - Domain
+		2 - Group
+		3 - Clousure
+		4 - ProtoAgent
+		5 - Agent
+		6 - Data
+		7 - Barrier
+		8 - Mutex
+		*/
+		return 4;
 	}
 
 	void Migrate(hpx::id_type dest)

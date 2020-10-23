@@ -81,20 +81,20 @@ target_link_libraries(
 )
 
 
-# # parallel2 - HPX
-# add_library(parallel_hpx2 SHARED parallel_hpx2.cpp)
-# target_compile_features(parallel_hpx2 PUBLIC cxx_std_17)
-# set_target_properties(parallel_hpx2 PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(parallel_hpx2 PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# set_target_properties(parallel_hpx2 PROPERTIES COMPILE_FLAGS -O2)
-# set_target_properties(parallel_hpx2 PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-#     parallel_hpx2
-#     PRIVATE
-#         libcor
-#     PUBLIC
-#         hpx
-# )
+# parallel2 - HPX
+add_library(parallel_hpx2 SHARED parallel_hpx2.cpp)
+target_compile_features(parallel_hpx2 PUBLIC cxx_std_17)
+set_target_properties(parallel_hpx2 PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(parallel_hpx2 PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(parallel_hpx2 PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(parallel_hpx2 PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    parallel_hpx2
+    PRIVATE
+        libcor
+    PUBLIC
+        hpx
+)
 
 
 # # spawn
@@ -205,7 +205,7 @@ install(
         basicOperations
         callableModule
         parallel
-        # parallel_hpx2
+        parallel_hpx2
         # spawn
         # spawn_hpx
         # client

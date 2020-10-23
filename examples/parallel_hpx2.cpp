@@ -167,7 +167,7 @@ void Main(int rsc_idp)
     if(rank==0) {
         auto remote_agent_idp = domain->GetIdp(1);
 
-        auto data = domain->CreateLocal<cor::Data_Client<idp_t>>(domain->Idp(), "data", 89);
+        auto data = domain->CreateLocal<cor::Data_Client<int>>(domain->Idp(), "data", 89);
 
         // std::cout << "Localidade ANTES de migrar: " << hpx::get_colocation_id(hpx::launch::sync, data->GetGid()) << std::endl;
         // std::cout << "Localidade DEPOIS de migrar: " << hpx::get_colocation_id(hpx::launch::sync, data->GetGid()) << std::endl;
@@ -180,7 +180,7 @@ void Main(int rsc_idp)
 
         auto remote_domain = domain->CreateReference<cor::Domain_Client>(remote_domain_idp, domain->Idp(), "");
         auto data_idp = remote_domain->GetIdp("data");
-        auto data = domain->CreateReference<cor::Data_Client<idp_t>>(data_idp, domain->Idp(), "data");
+        auto data = domain->CreateReference<cor::Data_Client<int>>(data_idp, domain->Idp(), "data");
 
         data->Acquire();
         auto final_value = **data;

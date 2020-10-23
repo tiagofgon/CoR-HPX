@@ -128,10 +128,19 @@ public:
 	// 	hpx::components::migrate<Mutex>(this->get_id(), dest).get();
 	// }
 
-	std::vector<std::string> GetComponentHierarchy()
+	int GetComponentType()
 	{
-		std::vector<std::string> str = {"Mutex", "Resource"};
-		return str;
+		/* Resource identification
+		1 - Domain
+		2 - Group
+		3 - Clousure
+		4 - ProtoAgent
+		5 - Agent
+		6 - Data
+		7 - Barrier
+		8 - Mutex
+		*/
+		return 8;
 	}
 
   private:

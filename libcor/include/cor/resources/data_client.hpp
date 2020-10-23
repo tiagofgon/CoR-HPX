@@ -118,8 +118,15 @@ public:
 	// método que retorna o idp global do recurso, que está presente na classe Resource
     idp_t IdpGlobal()
     {
-      typedef Resource::Idp_action_Resource action_type;
-      return hpx::async<action_type>(base_type::get_id()).get();
+		typedef Resource::Idp_action_Resource action_type;
+		return hpx::async<action_type>(base_type::get_id()).get();
+    }
+
+    idp_t IdpGlobal_here()
+    {
+		Migrate(hpx::find_here());
+		typedef Resource::Idp_action_Resource action_type;
+		return hpx::async<action_type>(base_type::get_id()).get();
     }
 
 	hpx::id_type GetLocalityGID()
@@ -127,9 +134,23 @@ public:
 		typedef Resource::GetLocalityGID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
+	
+	hpx::id_type GetLocalityGID_here()
+	{
+		Migrate(hpx::find_here());
+		typedef Resource::GetLocalityGID_action_Resource action_type;
+		return hpx::async<action_type>(base_type::get_id()).get();
+	}
 
 	unsigned int GetLocalityID()
 	{
+		typedef Resource::GetLocalityID_action_Resource action_type;
+		return hpx::async<action_type>(base_type::get_id()).get();
+	}
+
+	unsigned int GetLocalityID_here()
+	{
+		Migrate(hpx::find_here());
 		typedef Resource::GetLocalityID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
@@ -223,10 +244,19 @@ public:
       return this->get_id();
     }
 
-	std::vector<std::string> GetComponentHierarchy()
+	int GetComponentType()
 	{
-		std::vector<std::string> str = {"Data", "Resource", "Value"};
-		return str;
+		/* Resource identification
+		1 - Domain
+		2 - Group
+		3 - Clousure
+		4 - ProtoAgent
+		5 - Agent
+		6 - Data
+		7 - Barrier
+		8 - Mutex
+		*/
+		return 6;
 	}
 
 	void Migrate(hpx::id_type dest)

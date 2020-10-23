@@ -140,10 +140,19 @@ public:
 	  	return this->get_id();
 	}
 
-	std::vector<std::string> GetComponentHierarchy()
+	int GetComponentType()
 	{
-		std::vector<std::string> str = {"Barrier", "Resource"};
-		return str;
+		/* Resource identification
+		1 - Domain
+		2 - Group
+		3 - Clousure
+		4 - ProtoAgent
+		5 - Agent
+		6 - Data
+		7 - Barrier
+		8 - Mutex
+		*/
+		return 7;
 	}
 
 
