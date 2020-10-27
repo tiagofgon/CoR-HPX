@@ -40,7 +40,8 @@ template <typename T, typename ... Args>
 std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& name, unsigned int total_members, Args&& ... args)
 {
     std::unique_ptr<T> rsc_ptr;
-    std::string barrier_name = GetName() + "a";
+    std::string barrier_name = _context + "a";
+    std::cout << "\n_context: " << _context << ", barrier_name:" << barrier_name << ", with: " << total_members << " members\n" << std::endl;
     hpx::lcos::barrier barrier(barrier_name, total_members);
     auto first = hpx::get_locality_id();
     std::string basename = name + "a";
@@ -62,7 +63,7 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
         rsc_ptr = CreateReference<T>(idp, ctx, name);
     }
 
-    std::cout << "barrier1" << std::endl;
+    std::cout << "\nbarrier with name -" << barrier_name << "- for -" << total_members << "- members\n" << std::endl;
     // Esperar que todas as threads distribuidas cheguem aqui, ou seja, total_members
     barrier.wait();
     // std::cout << "barrier2" << std::endl;

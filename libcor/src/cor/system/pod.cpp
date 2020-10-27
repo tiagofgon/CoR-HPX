@@ -83,11 +83,11 @@ idp_t Pod::GetPredecessorIdp(idp_t idp)
     return _ctrl->GetPredecessorIdp(idp);
 }
 
-// idp_t Pod::Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
-// {
-//     auto parent = GetActiveResourceIdp();
-//     return _ctrl->Spawn(context, npods, parent, module, args, hosts);
-// }
+idp_t Pod::Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+{
+    // auto parent = GetActiveResourceIdp();
+    return _ctrl->Spawn(context, npods, 323, module, args, hosts);
+}
 
 void Pod::LoadModule(std::string const& module)
 {
@@ -160,6 +160,7 @@ typedef cor::Pod::InsertActiveResource_action_pod InsertActiveResource_action_po
 typedef cor::Pod::RemoveActiveResource_action_pod RemoveActiveResource_action_pod;
 typedef cor::Pod::ChangeActiveResource_action_pod ChangeActiveResource_action_pod;
 typedef cor::Pod::GetCurrentActiveResource_action_pod GetCurrentActiveResource_action_pod;
+typedef cor::Pod::Spawn_action_pod Spawn_action_pod;
 
 
 HPX_REGISTER_ACTION(Initialize_action_pod);
@@ -180,3 +181,4 @@ HPX_REGISTER_ACTION(InsertActiveResource_action_pod);
 HPX_REGISTER_ACTION(RemoveActiveResource_action_pod);
 HPX_REGISTER_ACTION(ChangeActiveResource_action_pod);
 HPX_REGISTER_ACTION(GetCurrentActiveResource_action_pod);
+HPX_REGISTER_ACTION(Spawn_action_pod);

@@ -97,6 +97,7 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetPredecessorIdp, GetPredecessorIdp_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetDomainIdp1, GetDomainIdp1_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetDomainIdp2, GetDomainIdp2_action_pod);
+    HPX_DEFINE_COMPONENT_ACTION(Pod, Spawn, Spawn_action_pod);
 
     template <typename T>
     struct GetLocalResource_action_pod 
@@ -228,6 +229,8 @@ typedef cor::Pod::InsertActiveResource_action_pod InsertActiveResource_action_po
 typedef cor::Pod::RemoveActiveResource_action_pod RemoveActiveResource_action_pod;
 typedef cor::Pod::ChangeActiveResource_action_pod ChangeActiveResource_action_pod;
 typedef cor::Pod::GetCurrentActiveResource_action_pod GetCurrentActiveResource_action_pod;
+typedef cor::Pod::Spawn_action_pod Spawn_action_pod;
+
 
 HPX_REGISTER_ACTION_DECLARATION(Initialize_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(Finalize_action_pod);
@@ -247,6 +250,7 @@ HPX_REGISTER_ACTION_DECLARATION(InsertActiveResource_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(RemoveActiveResource_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(ChangeActiveResource_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(GetCurrentActiveResource_action_pod);
+HPX_REGISTER_ACTION_DECLARATION(Spawn_action_pod);
 
 
 #endif

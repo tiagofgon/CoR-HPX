@@ -179,13 +179,12 @@ public:
         return hpx::async<action_type>(this->get_id(), rank, comm, ctx, name, std::forward<Args>(args)...).get();
     }
     
-    // COMPLETAR AQUI
-    idp_t Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
-    {
-        // typedef cor::Pod::Spawn_action_pod action_type;
-        // return hpx::async<action_type>(this->get_id()).get(); 
-        return 1;
-    }
+
+	idp_t Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+	{
+		typedef cor::Pod::Spawn_action_pod action_type;
+		return hpx::async<action_type>(this->get_id(), context, npods, module, args, hosts).get(); 
+	}
     
     std::string SearchResource(idp_t idp)
     {

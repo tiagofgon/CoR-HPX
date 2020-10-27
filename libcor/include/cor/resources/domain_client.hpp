@@ -505,6 +505,13 @@ public:
 		return hpx::async<action_type>(this->get_id()).get(); 
 	}
 
+	idp_t Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+	{
+		typedef cor::Domain::Spawn_action_Domain action_type;
+		return hpx::async<action_type>(this->get_id(), context, npods, module, args, hosts).get(); 
+	}
+
+
 
 	/** Local interface **/
 	// local idp of this resource

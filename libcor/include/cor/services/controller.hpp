@@ -85,8 +85,7 @@ public:
     template <typename T, typename ... Args>
     std::unique_ptr<T> CreateCollective(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, Args&& ... args);
 
-    // idp_t Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
-
+    idp_t Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
     // accessed by Container
     std::string SearchResource(idp_t idp);
     bool ContainsResource(idp_t idp);
@@ -136,6 +135,9 @@ private:
 
     std::condition_variable _cv;
     std::mutex _mtx;
+
+    std::string agas_port = "1337";
+    std::string hpx_port = "1338";
 
     // services
     PageManager *_pg_mgr;

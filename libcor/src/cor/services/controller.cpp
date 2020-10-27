@@ -9,6 +9,8 @@
 #include "cor/utils/utils.hpp"
 #include "cor/services/page_manager.hpp"
 #include "cor/services/session_manager.hpp"
+#include <unistd.h>
+#include <sys/wait.h>
 
 // #include <thread>
 // #include <sstream>
@@ -233,10 +235,104 @@ bool Controller::FindStaticOrganizer_idpsGlobal(idp_t idp)
 
 
 
-// idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
-// {
+idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+{
+    int pid = fork();
+if (pid == 0)
+{
+    printf("I'm the child\n");
+    // // assemble command
 
-// }
+
+    char binaryPath1[] = "/opt/placor-hpx/bin/corhpx";
+    char *binaryPath = binaryPath1;
+
+    char * arg1 = new char [_app_group.length()+1];
+    std::strcpy (arg1, _app_group.c_str());
+
+    char * arg2 = new char [context.length()+1];
+    std::strcpy (arg2, context.c_str());
+
+    char * arg3 = new char [std::to_string(npods).length()+1];
+    std::strcpy (arg3, std::to_string(npods).c_str());
+
+    char * arg4 = new char [std::to_string(parent).length()+1];
+    std::strcpy (arg4, std::to_string(parent).c_str());
+
+    char * arg5 = new char [module.length()+1];
+    std::strcpy (arg5, module.c_str());
+
+    std::vector<char*> exec_args = {binaryPath, arg1, arg2, arg3, arg4, arg5};
+    for (int i = 0; i < args.size(); ++i) {
+        char * arg = new char [args[i].length()+1];
+        std::strcpy (arg, args[i].c_str());
+        exec_args.push_back(arg);
+    }
+
+
+    // hpx command lines
+    std::string host_remote;
+    for (int i = 0; i < npods; ++i) {
+        auto pos = i % hosts.size();
+        host_remote = hosts.at(pos);
+    }
+    //auto agas_host = "192.168.85.245";
+    std::string agas_host = "localhost";
+
+    char * arg6 = new char [arg66.length()+1];
+    std::strcpy (arg6, arg66.c_str());
+    exec_args.push_back(arg6);
+
+    char * arg7 = new char [arg77.length()+1];
+    std::strcpy (arg7, arg77.c_str());
+    exec_args.push_back(arg7);
+
+    char * arg8 = new char [arg88.length()+1];
+    std::strcpy (arg8, arg88.c_str());
+    exec_args.push_back(arg8);
+
+    char * arg9 = new char [arg99.length()+1];
+    std::strcpy (arg9, arg99.c_str());
+    exec_args.push_back(arg9);
+
+    char * arg10 = new char [arg100.length()+1];
+    std::strcpy (arg10, arg100.c_str());
+    exec_args.push_back(arg10);
+
+
+    exec_args.push_back(NULL);
+    printf("AAQUII - 2\n");
+
+
+    //std::cout << cmd << std::endl;
+    std::cout << binaryPath << " " << arg1 << " " << arg2 << " " << arg3 << " " << arg4 << " " << arg5 << " " << arg6 << " " << arg7 << " " << arg8 << " " << arg9 << " " << arg10 << std::endl;
+    //auto res = system(cmd.c_str());
+    //execl(cmd.c_str(), cmd.c_str(), nullptr);
+    //execl(binaryPath, binaryPath, arg1, arg2, arg3, arg4, arg5, arg6, arg8, arg9, nullptr);
+    execl(binaryPath, binaryPath, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, nullptr);
+    //execv(binaryPath, exec_args.data());
+
+    // return 1;
+}
+else if (pid > 0)
+{
+    int status;
+    waitpid(pid, &status, 0);
+
+    printf("I'm the parent\n");
+    return 1;
+    // The parent process, do whatever is needed
+    // The parent process can even exit while the child process is running, since it's independent
+}
+else
+{
+    // Error forking, still in parent process (there are no child process at this point)
+    std::cout << "Fork error: " << errno << ", " << strerror(errno) << '\n';
+}
+
+
+
+}
 
 std::string Controller::GetName() const
 {
