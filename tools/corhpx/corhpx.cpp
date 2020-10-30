@@ -94,13 +94,16 @@ int hpx_main(int argc, char *argv[])
 
     std::cout << "************ Execução do modulo *******"  << std::endl;
 
+    std::cout << "BARREIRA"  << std::endl;
+    hpx::lcos::barrier barrier("barrier_name", 1);
+    barrier.wait();
 
     agent->Run(559);
     agent->Wait();
     agent->Get();
 
 
-    // std::cout << "fim" << std::endl;
+    std::cout << "fim" << std::endl;
 
     return hpx::finalize();
 }
