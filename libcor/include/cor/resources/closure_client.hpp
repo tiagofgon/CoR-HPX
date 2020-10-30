@@ -140,8 +140,8 @@ public:
 
 		// esta barreira teve de ser colocada aqui, e nao dentro do static organizer porque só funciona fora de components e a component só aceita uma action de cada vez
 		// sincronização entre os elementos do static_organizer, para garantir a inserção de todos os recursos e o mesmo nivel de paralelização
-		hpx::lcos::barrier barrier(std::to_string(IdpGlobal()), _total_members);
-		barrier.wait();
+		// hpx::lcos::barrier barrier(std::to_string(IdpGlobal()), _total_members);
+		// barrier.wait();
 		return;
 	}
 

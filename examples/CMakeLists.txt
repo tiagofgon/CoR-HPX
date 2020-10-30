@@ -97,22 +97,22 @@ target_link_libraries(
 )
 
 
-# # spawn
-# add_library(spawn SHARED spawn.cpp)
-# target_compile_features(spawn PUBLIC cxx_std_17)
-# set_target_properties(spawn PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(spawn PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# set_target_properties(spawn PROPERTIES COMPILE_FLAGS -O2)
-# set_target_properties(spawn PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-#     spawn
-#     PRIVATE
-#         libcor
-#         # Spread
-#         # SSRCSpread
-#         # Cereal
-# 	hpx
-# )
+# spawn
+add_library(spawn SHARED spawn.cpp)
+target_compile_features(spawn PUBLIC cxx_std_17)
+set_target_properties(spawn PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(spawn PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(spawn PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(spawn PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    spawn
+    PRIVATE
+        libcor
+        # Spread
+        # SSRCSpread
+        # Cereal
+	hpx
+)
 
 # # spawn - HPX
 # add_library(spawn_hpx SHARED spawn_hpx.cpp)
@@ -206,7 +206,7 @@ install(
         callableModule
         parallel
         parallel_hpx2
-        # spawn
+        spawn
         # spawn_hpx
         # client
         # server

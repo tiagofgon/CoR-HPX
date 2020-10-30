@@ -14,6 +14,7 @@
 
 #include "cor/services/idp_manager_client.hpp"
 #include "cor/services/resource_manager_global_client.hpp"
+#include "cor/services/access_manager_client.hpp"
 
 namespace cor {
 
@@ -149,6 +150,9 @@ private:
 
     // Objeto cliente do componente ResourceManagerGlobal, componente global que guarda informação sobre idps e gids dos recursos
     ResourceManagerGlobal_Client *resourceManagerGlobal_object;
+
+    // Componente para decidir quem é o primeiro processo. Útil para saber quem cria a clausura
+    AccessManager_Client *accessManager_object;
 
 };
 

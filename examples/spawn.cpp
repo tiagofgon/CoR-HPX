@@ -1,26 +1,50 @@
-// #include "cor/cor.hpp"
+#include "cor/cor.hpp"
 
 
-// extern "C"
-// {
-//     void Main(int argc, char *argv[]);
-// }
+extern "C"
+{
+    void Main(int input);
+}
 
 
 
-// void Main(int argc, char *argv[])
-// {
-//     auto domain = cor::GetDomain();
-//     auto agent_idp = domain->GetActiveResourceIdp();
-//     auto clos_idp = domain->GetPredecessorIdp(agent_idp);
-//     auto clos = domain->GetLocalResource<cor::Closure>(clos_idp);
-//     auto clos_size = clos->GetTotalMembers();
-//     auto rank = clos->GetIdm(agent_idp);
-//     auto parent_idp = clos->GetParent();
+void Main(int input)
+{
+    std::cout << "dentro do modulo1" << std::endl;
+    auto domain = cor::GetDomain();
+    auto agent_idp = domain->GetActiveResourceIdp();
+    auto clos_idp = domain->GetPredecessorIdp(agent_idp);
+    auto clos = domain->GetLocalResource<cor::Closure_Client>(clos_idp);
+    auto clos_size = clos->GetTotalMembers();
+    auto rank = clos->GetIdm(agent_idp);
+    auto parent_idp = clos->GetParent();
 
-//     if (parent_idp == 0)
-//         auto new_clos_idp = domain->Spawn("ctx2", 2, "/opt/placor-hpx/examples/libspawn.so", {}, { "localhost" });
+    std::cout << "dentro do modulo2" << std::endl;
 
-//     std::cout << agent_idp << "\t" << rank << "\t" << clos_idp << "\t" << clos_size << "\t" << parent_idp << "\n";
+    if (parent_idp == 0) {
+        auto new_clos_idp = domain->Spawn("ctx2", 1, "/opt/placor-hpx/examples/libspawn.so", {}, { "localhost" });
+    
 
-// }
+        std::cout << "PAI" << std::endl;
+        // char c;
+        // char str1[20];
+        // scanf("%s", str1);
+        // // scanf("%c", c);
+        // std::cout << "dentro do modulo4" << std::endl;
+
+        std::cout << "Antes da barreira: " << std::endl;
+        hpx::lcos::barrier barrier("barreira444", 2);
+        barrier.wait();
+    }
+
+    else {
+        std::cout << "FILHO" << std::endl;
+        std::cout << "Antes da barreira: " << std::endl;
+        hpx::lcos::barrier barrier("barreira444", 2);
+        barrier.wait();
+    }
+
+
+    std::cout << agent_idp << "\t" << rank << "\t" << clos_idp << "\t" << clos_size << "\t" << parent_idp << "\n";
+
+}

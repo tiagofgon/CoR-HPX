@@ -1,36 +1,36 @@
-#ifndef COR_SESSION_MANAGER_HPP
-#define COR_SESSION_MANAGER_HPP
+// #ifndef COR_SESSION_MANAGER_HPP
+// #define COR_SESSION_MANAGER_HPP
 
-#include <vector>
-#include <mutex>
+// #include <vector>
+// #include <mutex>
 
-namespace cor {
+// namespace cor {
 
-class RemoteSession;
+// class RemoteSession;
 
-class SessionManager
-{
+// class SessionManager
+// {
 
-public:
-    SessionManager();
-    ~SessionManager();
+// public:
+//     SessionManager();
+//     ~SessionManager();
 
-    SessionManager(SessionManager const&) = delete;
-    SessionManager& operator=(SessionManager const&) = delete;
+//     SessionManager(SessionManager const&) = delete;
+//     SessionManager& operator=(SessionManager const&) = delete;
 
-    SessionManager(SessionManager&&) noexcept = delete;
-    SessionManager& operator=(SessionManager&&) noexcept = delete;
+//     SessionManager(SessionManager&&) noexcept = delete;
+//     SessionManager& operator=(SessionManager&&) noexcept = delete;
 
-    void StopService();
+//     void StopService();
 
-    void CreateRemoteSession(std::string const& host, std::string const& port, std::string const& cmd);
+//     void CreateRemoteSession(std::string const& host, std::string const& port, std::string const& cmd);
 
-private:
-    std::vector<RemoteSession*> _sessions;
-    std::mutex _mtx;
+// private:
+//     std::vector<RemoteSession*> _sessions;
+//     std::mutex _mtx;
 
-};
+// };
 
-}
+// }
 
-#endif
+// #endif

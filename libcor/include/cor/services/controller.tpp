@@ -1,6 +1,7 @@
 #ifdef COR_CONTROLLER_HPP
 
 // #include "cor/system/pod_component_client.hpp"
+// #include "cor/services/access_manager_client.hpp"
 
 namespace cor {
 
@@ -40,19 +41,25 @@ template <typename T, typename ... Args>
 std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& name, unsigned int total_members, Args&& ... args)
 {
     std::unique_ptr<T> rsc_ptr;
-    std::string barrier_name = _context + "a";
+    std::string barrier_name = _context + "barrier";
     std::cout << "\n_context: " << _context << ", barrier_name:" << barrier_name << ", with: " << total_members << " members\n" << std::endl;
-    hpx::lcos::barrier barrier(barrier_name, total_members);
+    
+    std::cout << "aqui1" << std::endl;
     auto first = hpx::get_locality_id();
-    std::string basename = name + "a";
-
-    if(first==0) { // Primeira localidade, cria o recurso e regista-o no agas
+    std::string basename = name + "basename" + _context;
+    std::cout << "aqui2" << std::endl;
+    int pos = accessManager_object->GetPosition(_context);
+    
+    std::cout << "aqui3, na localidade: " << first << std::endl;
+    if(pos==0) { // Primeira localidade, cria o recurso e regista-o no agas
+        std::cout << "registou" << std::endl;
         rsc_ptr = CreateLocal<T>(ctx, name, std::forward<Args>(args)...);
         hpx::register_with_basename(basename, rsc_ptr->GetGid());
+        
     }
 
-    if (first!=0) { // O resto das localidades
-
+    if (pos!=0) { // O resto das localidades
+        std::cout << "find" << std::endl;
         // Procurar o GID do recurso com nome "name"
 		auto gid = hpx::find_from_basename(basename, 0).get();
         // std::cout << "aqui1" << std::endl;
@@ -61,11 +68,40 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
         // std::cout << "aqui2" << std::endl;
         // Cria uma referencia para o componente identificado por idp que pertence ao contexto ctx
         rsc_ptr = CreateReference<T>(idp, ctx, name);
+        
     }
 
+
+
+
+
+
+    // if(first==0) { // Primeira localidade, cria o recurso e regista-o no agas
+    //     rsc_ptr = CreateLocal<T>(ctx, name, std::forward<Args>(args)...);
+    //     hpx::register_with_basename(basename, rsc_ptr->GetGid());
+    // }
+
+    // if (first!=0) { // O resto das localidades
+
+    //     // Procurar o GID do recurso com nome "name"
+	// 	auto gid = hpx::find_from_basename(basename, 0).get();
+    //     // std::cout << "aqui1" << std::endl;
+    //     typedef Resource::Idp_action_Resource action_type;
+    //     auto idp = hpx::async<action_type>(gid).get();
+    //     // std::cout << "aqui2" << std::endl;
+    //     // Cria uma referencia para o componente identificado por idp que pertence ao contexto ctx
+    //     rsc_ptr = CreateReference<T>(idp, ctx, name);
+    // }
+
+    std::string nomebarr = "barreira" + std::to_string(hpx::get_locality_id());
+    std::string const& nomebar = nomebarr;
+    std::cout << nomebar << std::endl;
+    //hpx::lcos::local::barrier barrier(1);
+    //hpx::lcos::barrier barrier(nomebar, 1);
+    //hpx::lcos::barrier barrier(barrier_name, 1);
     std::cout << "\nbarrier with name -" << barrier_name << "- for -" << total_members << "- members\n" << std::endl;
     // Esperar que todas as threads distribuidas cheguem aqui, ou seja, total_members
-    barrier.wait();
+    //barrier.wait();
     // std::cout << "barrier2" << std::endl;
 
     return rsc_ptr;

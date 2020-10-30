@@ -3,10 +3,11 @@ target_sources(
     PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/controller.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/page_manager.cpp"
-        "${CMAKE_CURRENT_LIST_DIR}/remote_session.cpp"
+        # "${CMAKE_CURRENT_LIST_DIR}/remote_session.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/resource_manager.cpp"
-        "${CMAKE_CURRENT_LIST_DIR}/session_manager.cpp"
+        # "${CMAKE_CURRENT_LIST_DIR}/session_manager.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/idp_manager.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/resource_manager_global.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/mutex_service.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/access_manager.cpp"
 )

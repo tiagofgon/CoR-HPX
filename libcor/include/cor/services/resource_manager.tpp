@@ -22,10 +22,12 @@ std::unique_ptr<T> ResourceManager::CreateLocal(idp_t ctx, std::string const& na
     // (std::cout << ... << args); std::cout << std::endl;
     std::unique_ptr<T> rsc = std::make_unique<T>(idp, std::forward<Args>(args)...);
     // std::cout << "aqui5" << std::endl;
+
     rsc = AllocateResource(idp, ctx, name, std::move(rsc), ctrl);
     // std::cout << "aqui6" << std::endl;
     // insert association between gids and idps
     InsertIdp(idp, rsc->GetGid()); // Informar o componente global da associação idp-gid
+
     // std::cout << "aqui7" << std::endl;
     // _predecessors.emplace(idp, ctx);
     InsertPredecessorIdp(idp, ctx);
@@ -100,7 +102,7 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
         std::lock_guard<std::mutex> lk(_mtx);
 
         // Ir buscar o idp original do ctx, pode ser local ou nao
-        
+        // std::cout << "aquia" << std::endl;
         auto alias_it =_alias.find(ctx);
         if ( alias_it == _alias.end() ) { // Se o ctx nao pertencer ao _alias
             ori_ctx = ctx;
@@ -108,7 +110,7 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
             ori_ctx = alias_it->second;
         }
     }
-
+    // std::cout << "aquib" << std::endl;
     // std::cout << "aqui 12" << std::endl;
 
     // O ori_ctx tem de existir no componente global, para ir buscar o seu gid
@@ -121,7 +123,7 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
         // attach resource to the context
         AttachResource(ctx, gid, idp, name);
     }
-
+    // std::cout << "aquic" << std::endl;
 
 // std::cout << "aqui 15" << std::endl;
 
@@ -139,7 +141,7 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
                 InsertDynamicOrganizer_idps(idp);
                 std::cout << "adicionado ao dynamicOrganizer_idps " << idp << std::endl;
         }
-
+        // std::cout << "aquid" << std::endl;
         // lock to access resource manager variables
         
         // std::vector<std::string> res = rsc->GetComponentHierarchy();

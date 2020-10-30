@@ -1,40 +1,40 @@
-#include "cor/services/session_manager.hpp"
-#include "cor/services/remote_session.hpp"
+// #include "cor/services/session_manager.hpp"
+// #include "cor/services/remote_session.hpp"
 
-#include <thread>
-#include <algorithm>
+// #include <thread>
+// #include <algorithm>
 
-using namespace std::chrono_literals;
+// using namespace std::chrono_literals;
 
-namespace cor {
+// namespace cor {
 
-SessionManager::SessionManager() :
-    _sessions{},
-    _mtx{}
-{}
+// SessionManager::SessionManager() :
+//     _sessions{},
+//     _mtx{}
+// {}
 
-SessionManager::~SessionManager()
-{
-    std::for_each(_sessions.begin(), _sessions.end(), [](RemoteSession *rs) -> void { delete rs; });
-}
+// SessionManager::~SessionManager()
+// {
+//     std::for_each(_sessions.begin(), _sessions.end(), [](RemoteSession *rs) -> void { delete rs; });
+// }
 
-void SessionManager::StopService()
-{
-    std::unique_lock<std::mutex> lk(_mtx);
+// void SessionManager::StopService()
+// {
+//     std::unique_lock<std::mutex> lk(_mtx);
 
-    for (auto rs: _sessions)
-        rs->Wait();
-}
+//     for (auto rs: _sessions)
+//         rs->Wait();
+// }
 
-void SessionManager::CreateRemoteSession(std::string const& host, std::string const& port, std::string const& cmd)
-{
-    auto rs = new RemoteSession(host, port, cmd);
-    rs->Run();
+// void SessionManager::CreateRemoteSession(std::string const& host, std::string const& port, std::string const& cmd)
+// {
+//     auto rs = new RemoteSession(host, port, cmd);
+//     rs->Run();
 
-    {
-        std::unique_lock<std::mutex> lk(_mtx);
-        _sessions.push_back(rs);
-    }
-}
+//     {
+//         std::unique_lock<std::mutex> lk(_mtx);
+//         _sessions.push_back(rs);
+//     }
+// }
 
-}
+// }
