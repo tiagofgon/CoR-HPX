@@ -22,7 +22,7 @@ void Main(int input)
     std::cout << "dentro do modulo2" << std::endl;
 
     if (parent_idp == 0) {
-        auto new_clos_idp = domain->Spawn("ctx2", 1, "/opt/placor-hpx/examples/libspawn.so", {}, { "localhost" });
+        auto new_clos_idp = domain->Spawn("ctx2", 2, "/opt/placor-hpx/examples/libspawn.so", {}, { "localhost:1338", "localhost:1339" });
     
 
         std::cout << "PAI" << std::endl;
@@ -33,14 +33,14 @@ void Main(int input)
         // std::cout << "dentro do modulo4" << std::endl;
 
         std::cout << "Antes da barreira: " << std::endl;
-        hpx::lcos::barrier barrier("barreira444", 2);
+        hpx::lcos::barrier barrier("barreira444", 3);
         barrier.wait();
     }
 
     else {
         std::cout << "FILHO" << std::endl;
         std::cout << "Antes da barreira: " << std::endl;
-        hpx::lcos::barrier barrier("barreira444", 2);
+        hpx::lcos::barrier barrier("barreira444", 3);
         barrier.wait();
     }
 

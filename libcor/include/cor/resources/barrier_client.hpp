@@ -114,9 +114,12 @@ public:
 		auto sorg = global::pod->GetLocalResource<cor::Closure_Client>(_clos);
 		std::size_t total_members = sorg->GetTotalMembers();
 
+		auto active_rsc_idp = global::pod->GetActiveResourceIdp();
+		auto idm = sorg->GetIdm(active_rsc_idp);
+
 		// esta barreira teve de ser colocada aqui, e nao dentro do SBarrier porque só funciona fora de components
 		// Tem o nome do idp original de component barrier
-		hpx::lcos::barrier barrier(std::to_string(IdpGlobal()), total_members);
+		hpx::lcos::barrier barrier(std::to_string(IdpGlobal()), total_members, idm);
 		barrier.wait();
 		return;
 	}

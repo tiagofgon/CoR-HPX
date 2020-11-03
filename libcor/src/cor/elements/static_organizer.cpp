@@ -58,6 +58,11 @@ void StaticOrganizer::Join(idp_t idp, std::string const& name)
     else
         _members.emplace(idp, std::make_pair(idm, name));
 
+
+    // fazer aqui alguma coisa para sincronizar os joins
+
+
+    
     // Se este organizador for criado por uma clausura que nao a primeira, e for feito o primeiro join, envia a seguinte mensagem
     // Ver se isto é necessário
     // if (idm == 0 && _parent != 0) {

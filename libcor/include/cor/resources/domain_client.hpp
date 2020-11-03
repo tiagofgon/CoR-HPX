@@ -507,8 +507,9 @@ public:
 
 	idp_t Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 	{
+		auto parent = GetActiveResourceIdp();
 		typedef cor::Domain::Spawn_action_Domain action_type;
-		return hpx::async<action_type>(this->get_id(), context, npods, module, args, hosts).get(); 
+		return hpx::async<action_type>(this->get_id(), context, npods, parent, module, args, hosts).get(); 
 	}
 
 

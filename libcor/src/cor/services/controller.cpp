@@ -49,6 +49,9 @@ void Controller::StartService()
 
     // // create resource manager initial context
     _rsc_mgr->CreateInitialContext(GetName());
+
+    // adicionar esta localidade ao map de localidades deste contexto
+    accessManager_object->AddMyContextLocality(_context, hpx::get_locality_id());
 }
 
 
@@ -239,152 +242,104 @@ bool Controller::FindStaticOrganizer_idpsGlobal(idp_t idp)
 idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 {
 
-    // Para os processos filho saberem quem é o primeiro
+    // Para os processos filho saberem quem é o primeiro, é adicionado um novo context ao accessManager_object
     accessManager_object->AddContext(context);
-    int pid = fork();
-    if (pid == 0)
-    {
-        printf("I'm the child\n");
-        // // // assemble command
-
-        // char binaryPath1[] = "/opt/placor-hpx/bin/corhpx";
-        // char *binaryPath = binaryPath1;
-
-        // char * arg1 = new char [_app_group.length()+1];
-        // std::strcpy (arg1, _app_group.c_str());
-
-        // char * arg2 = new char [context.length()+1];
-        // std::strcpy (arg2, context.c_str());
-
-        // char * arg3 = new char [std::to_string(npods).length()+1];
-        // std::strcpy (arg3, std::to_string(npods).c_str());
-
-        // char * arg4 = new char [std::to_string(parent).length()+1];
-        // std::strcpy (arg4, std::to_string(parent).c_str());
-
-        // char * arg5 = new char [module.length()+1];
-        // std::strcpy (arg5, module.c_str());
-        // printf("AAQUII - 1\n");
-        // std::vector<char*> exec_args = {binaryPath, arg1, arg2, arg3, arg4, arg5};
-        // for (int i = 0; i < args.size(); ++i) {
-        //     char * arg = new char [args[i].length()+1];
-        //     std::strcpy (arg, args[i].c_str());
-        //     exec_args.push_back(arg);
-        // }
 
 
-        // // hpx command lines
-        // std::string host_remote;
-        // for (int i = 0; i < npods; ++i) {
-        //     auto pos = i % hosts.size();
-        //     host_remote = hosts.at(pos);
-        // }
-        // //auto agas_host = "192.168.85.245";
-        // std::string agas_host = "localhost";
-        // std::string arg66 = "--hpx:hpx=" + host_remote + ":" + hpx_port;
-        // std::string arg77 = "--hpx:agas=" + agas_host + ":" + agas_port;
-        // std::string arg88 = "--hpx:run-hpx-main";
-        // std::string arg99 = "--hpx:expect-connecting-localities";
-        // std::string arg100 = "--hpx:worker";
+    for(int i=0; i < npods; i++) {
+        auto pos = i % hosts.size();
+        int pid = fork();
+        if (pid == 0) {
+            std::cout << "I'm the child number " << i+1 << std::endl; 
+            // // // assemble command
+            std::vector<char*> exec_args;
 
-        // char * arg6 = new char [arg66.length()+1];
-        // std::strcpy (arg6, arg66.c_str());
-        // exec_args.push_back(arg6);
+            char binaryPath1[] = "/opt/placor-hpx/bin/corhpx";
+            char *binaryPath = binaryPath1;
+            exec_args.push_back(binaryPath);
+            
+            char * arg1 = new char [_app_group.length()+1];
+            std::strcpy (arg1, _app_group.c_str());
+            exec_args.push_back(arg1);
 
-        // char * arg7 = new char [arg77.length()+1];
-        // std::strcpy (arg7, arg77.c_str());
-        // exec_args.push_back(arg7);
+            char * arg2 = new char [context.length()+1];
+            std::strcpy (arg2, context.c_str());
+            exec_args.push_back(arg2);
 
-        // char * arg8 = new char [arg88.length()+1];
-        // std::strcpy (arg8, arg88.c_str());
-        // exec_args.push_back(arg8);
+            char * arg3 = new char [std::to_string(npods).length()+1];
+            std::strcpy (arg3, std::to_string(npods).c_str());
+            exec_args.push_back(arg3);
 
-        // char * arg9 = new char [arg99.length()+1];
-        // std::strcpy (arg9, arg99.c_str());
-        // exec_args.push_back(arg9);
+            char * arg4 = new char [std::to_string(parent).length()+1];
+            std::strcpy (arg4, std::to_string(parent).c_str());
+            exec_args.push_back(arg4);
 
-        // char * arg10 = new char [arg100.length()+1];
-        // std::strcpy (arg10, arg100.c_str());
-        // exec_args.push_back(arg10);
+            char * arg5 = new char [module.length()+1];
+            std::strcpy (arg5, module.c_str());
+            exec_args.push_back(arg5);
 
+            for (int i = 0; i < args.size(); ++i) {
+                char * arg = new char [args[i].length()+1];
+                std::strcpy (arg, args[i].c_str());
+                exec_args.push_back(arg);
+            }
 
+            // hpx command lines
+            std::string arg66 = "--hpx:hpx=" + hosts[pos];
+            std::string arg77 = "--hpx:agas=" + agas_host + ":" + std::to_string(agas_port);
+            std::string arg88 = "--hpx:run-hpx-main";
+            std::string arg99 = "--hpx:expect-connecting-localities";
+            std::string arg100 = "--hpx:worker";
+            std::string arg110 = "--hpx:threads=2";
 
-        // exec_args.push_back(NULL);
-        // printf("AAQUII - 2\n");
+            char * arg6 = new char [arg66.length()+1];
+            std::strcpy (arg6, arg66.c_str());
+            exec_args.push_back(arg6);
 
+            char * arg7 = new char [arg77.length()+1];
+            std::strcpy (arg7, arg77.c_str());
+            exec_args.push_back(arg7);
 
-        // //std::cout << cmd << std::endl;
-        // std::cout << binaryPath << " " << arg1 << " " << arg2 << " " << arg3 << " " << arg4 << " " << arg5 << " " << arg6 << " " << arg7 << " " << arg8 << " " << arg9 << " " << arg10 << std::endl;
-        // //auto res = system(cmd.c_str());
-        // //execl(cmd.c_str(), cmd.c_str(), nullptr);
-        // //execl(binaryPath, binaryPath, arg1, arg2, arg3, arg4, arg5, arg6, arg8, arg9, nullptr);
-        // execl(binaryPath, binaryPath, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, nullptr);
-        std::cout << "execl" << std::endl;
-        execl("/opt/placor-hpx/bin/corhpx", "/opt/placor-hpx/bin/corhpx", "app", "ctx2", "1", "4294967038", "/opt/placor-hpx/examples/libspawn.so", "--hpx:hpx=localhost:1339", "--hpx:agas=localhost:1337", "--hpx:run-hpx-main", "--hpx:expect-connecting-localities", "--hpx:worker", "--hpx:threads=2", "--hpx:ini=hpx.component_paths=/opt/placor-hpx/examples", nullptr);      
-        //execv(binaryPath, exec_args.data());
+            char * arg8 = new char [arg88.length()+1];
+            std::strcpy (arg8, arg88.c_str());
+            exec_args.push_back(arg8);
 
-}
-else if (pid > 0)
-{
-    int status;
-    //waitpid(pid, &status, 0);
+            char * arg9 = new char [arg99.length()+1];
+            std::strcpy (arg9, arg99.c_str());
+            exec_args.push_back(arg9);
 
-    printf("I'm the parent\n");
-    return 1;
-    // The parent process, do whatever is needed
-    // The parent process can even exit while the child process is running, since it's independent
-}
-else
-{
-    // Error forking, still in parent process (there are no child process at this point)
-    std::cout << "Fork error: " << errno << ", " << strerror(errno) << '\n';
-}
+            char * arg10 = new char [arg100.length()+1];
+            std::strcpy (arg10, arg100.c_str());
+            exec_args.push_back(arg10);
 
+            char * arg11 = new char [arg110.length()+1];
+            std::strcpy (arg11, arg110.c_str());
+            exec_args.push_back(arg11);
 
-    // std::string cmd;
-    // cmd.append("/opt/placor-hpx/bin/corhpx");
-    // cmd.append(" ");
-    // cmd.append(_app_group);
-    // cmd.append(" ");
-    // cmd.append(context);
-    // cmd.append(" ");
-    // cmd.append(std::to_string(npods));
-    // cmd.append(" ");
-    // cmd.append(std::to_string(parent));
-    // cmd.append(" ");
-    // cmd.append(module);
-    // for (int i = 0; i < args.size(); ++i) { 
-    //     cmd.append(" ");
-    //     cmd.append(args[i]);
-    // }
+            exec_args.push_back(NULL);
+            // printf("AAQUII - 2\n");
 
+            for(int j = 0; j < exec_args.size(); j++)
+            std::cout << exec_args[j] << std::endl;
+            // std::cout << binaryPath << " " << arg1 << " " << arg2 << " " << arg3 << " " << arg4 << " " << arg5 << " " << arg6 << " " << arg7 << " " << arg8 << " " << arg9 << " " << arg10 << std::endl;
+            // //auto res = system(cmd.c_str());
+            // //execl(cmd.c_str(), cmd.c_str(), nullptr);
+            // //execl(binaryPath, binaryPath, arg1, arg2, arg3, arg4, arg5, arg6, arg8, arg9, nullptr);
+            // execl(binaryPath, binaryPath, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, nullptr);
+            std::cout << "execl" << std::endl;
+            //execl("/opt/placor-hpx/bin/corhpx", "/opt/placor-hpx/bin/corhpx", "app", "ctx2", "2", "4294967038", "/opt/placor-hpx/examples/libspawn.so", "--hpx:hpx=localhost:1339", "--hpx:agas=localhost:1337", "--hpx:run-hpx-main", "--hpx:expect-connecting-localities", "--hpx:worker", "--hpx:threads=2", "--hpx:ini=hpx.component_paths=/opt/placor-hpx/examples", nullptr);      
+            execv(binaryPath, exec_args.data());
+            printf ("Erro no execl\n");
+            exit(-1);
+        }
+        else if (pid < 0)
+        {
+            // Error forking, still in parent process (there are no child process at this point)
+            std::cout << "Fork error: " << errno << ", " << strerror(errno) << '\n';
+        }
 
-    // // hpx command lines
-    // std::string host_remote;
-    // for (int i = 0; i < npods; ++i) {
-    //     auto pos = i % hosts.size();
-    //     host_remote = hosts.at(pos);
-    // }
-    // //auto agas_host = "192.168.85.245";
-    // std::string agas_host = "localhost";
+    } // end for
 
-    // cmd.append(" --hpx:hpx=");
-    // cmd.append(host_remote);
-    // cmd.append(":");
-    // cmd.append(hpx_port);
-    // cmd.append(" --hpx:agas=");
-    // cmd.append(agas_host);
-    // cmd.append(":");
-    // cmd.append(agas_port);
-    // cmd.append(" --hpx:run-hpx-main ");
-    // cmd.append("--hpx:expect-connecting-localities ");
-    // cmd.append("--hpx:worker");
-    // // cmd.append("--hpx:ini=hpx.component_paths=");
-    // // cmd.append("/opt/placor-hpx/examples");
-    // // cmd.append(" &");
-
-    // std::cout << cmd.c_str() << std::endl;
-    // auto res = system(cmd.c_str());
 
 
     return 1;

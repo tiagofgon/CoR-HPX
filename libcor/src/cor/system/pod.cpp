@@ -83,10 +83,9 @@ idp_t Pod::GetPredecessorIdp(idp_t idp)
     return _ctrl->GetPredecessorIdp(idp);
 }
 
-idp_t Pod::Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+idp_t Pod::Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 {
-    // auto parent = GetActiveResourceIdp();
-    return _ctrl->Spawn(context, npods, 323, module, args, hosts);
+    return _ctrl->Spawn(context, npods, parent, module, args, hosts);
 }
 
 void Pod::LoadModule(std::string const& module)

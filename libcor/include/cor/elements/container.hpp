@@ -64,7 +64,7 @@ public:
     template <typename T>
     auto Get(idp_t idp);
 
-    idp_t Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
+    idp_t Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
 
     idp_t GetContainerIdp() const;
 

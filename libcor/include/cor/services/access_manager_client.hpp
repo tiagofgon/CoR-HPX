@@ -50,6 +50,17 @@ public:
 		return hpx::async<action_type>(access_manager_component, ctx).get();
 	}
 
+	void AddMyContextLocality(std::string const& ctx, size_t loc)
+	{
+		typedef AccessManager::AddMyContextLocality_action_AccessManager action_type;
+		return hpx::async<action_type>(access_manager_component, ctx, loc).get();
+	}
+
+	std::vector<size_t> GetContextLocalities(std::string const& ctx)
+	{
+		typedef AccessManager::GetContextLocalities_action_AccessManager action_type;
+		return hpx::async<action_type>(access_manager_component, ctx).get();
+	}
 
 	// Returns component's GID
 	hpx::id_type GetGid() {

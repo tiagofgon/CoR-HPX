@@ -63,13 +63,15 @@ void Finalize_hpx()
     // global::pod->Finalize();
 }
 
-std::unique_ptr<Domain_Client> GetDomain()
+std::shared_ptr<Domain_Client> GetDomain()
 {
     // idp_t domain_idp = global::pod->GetDomainIdp();
     
     idp_t domain_idp = global::pod->GetDomainIdp();
     // std::cout << "domain_idp: " << domain_idp << std::endl;
-    return global::pod->GetLocalResource<Domain_Client>(domain_idp);
+    auto dom = global::pod->GetLocalResource<Domain_Client>(domain_idp);
+    std::shared_ptr<Domain_Client> dom_shared = std::move(dom);
+    return dom_shared;
 }
 
 }

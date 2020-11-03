@@ -43,19 +43,25 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
     std::unique_ptr<T> rsc_ptr;
     std::string barrier_name = _context + "barrier";
     std::cout << "\n_context: " << _context << ", barrier_name:" << barrier_name << ", with: " << total_members << " members\n" << std::endl;
-    
-    std::cout << "aqui1" << std::endl;
+
     auto first = hpx::get_locality_id();
     std::string basename = name + "basename" + _context;
-    std::cout << "aqui2" << std::endl;
     int pos = accessManager_object->GetPosition(_context);
     
     std::cout << "aqui3, na localidade: " << first << std::endl;
     if(pos==0) { // Primeira localidade, cria o recurso e regista-o no agas
         std::cout << "registou" << std::endl;
         rsc_ptr = CreateLocal<T>(ctx, name, std::forward<Args>(args)...);
-        hpx::register_with_basename(basename, rsc_ptr->GetGid());
-        
+        hpx::register_with_basename(basename, rsc_ptr->GetGid(), 0);
+
+        if(total_members > 1) 
+        {
+            std::cout << "dentro da barreira-0" << std::endl;
+            hpx::lcos::barrier barrier(barrier_name, total_members, pos); // rank == 0, a barreira tem de ter obrigatoriamente o rank 0
+            std::cout << "fora da barreira-0" << std::endl;
+            barrier.wait();
+        }
+
     }
 
     if (pos!=0) { // O resto das localidades
@@ -69,8 +75,15 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
         // Cria uma referencia para o componente identificado por idp que pertence ao contexto ctx
         rsc_ptr = CreateReference<T>(idp, ctx, name);
         
-    }
+        if(total_members > 1) 
+        {
+            std::cout << "dentro da barreira" << std::endl;
+            hpx::lcos::barrier barrier(barrier_name, total_members, pos);
+            std::cout << "fora da barreira" << std::endl;
+            barrier.wait();
+        }
 
+    }
 
 
 
@@ -93,16 +106,16 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
     //     rsc_ptr = CreateReference<T>(idp, ctx, name);
     // }
 
-    std::string nomebarr = "barreira" + std::to_string(hpx::get_locality_id());
-    std::string const& nomebar = nomebarr;
-    std::cout << nomebar << std::endl;
-    //hpx::lcos::local::barrier barrier(1);
-    //hpx::lcos::barrier barrier(nomebar, 1);
-    //hpx::lcos::barrier barrier(barrier_name, 1);
-    std::cout << "\nbarrier with name -" << barrier_name << "- for -" << total_members << "- members\n" << std::endl;
-    // Esperar que todas as threads distribuidas cheguem aqui, ou seja, total_members
-    //barrier.wait();
-    // std::cout << "barrier2" << std::endl;
+    // std::string nomebarr = "barreira" + std::to_string(hpx::get_locality_id());
+    // std::string const& nomebar = nomebarr;
+    // std::cout << nomebar << std::endl;
+    // //hpx::lcos::local::barrier barrier(1);
+    // //hpx::lcos::barrier barrier(nomebar, 1);
+    // //hpx::lcos::barrier barrier(barrier_name, 1);
+    // std::cout << "\nbarrier with name -" << barrier_name << "- for -" << total_members << "- members\n" << std::endl;
+    // // Esperar que todas as threads distribuidas cheguem aqui, ou seja, total_members
+    // //barrier.wait();
+    // // std::cout << "barrier2" << std::endl;
 
     return rsc_ptr;
 }

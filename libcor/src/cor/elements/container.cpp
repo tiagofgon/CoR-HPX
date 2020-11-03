@@ -46,9 +46,9 @@ idp_t Container::GetPredecessorIdp(idp_t idp)
     return global::pod->GetPredecessorIdp(idp);
 }
 
-idp_t Container::Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+idp_t Container::Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 {
-    return global::pod->Spawn(context, npods, module, args, hosts);   
+    return global::pod->Spawn(context, npods, parent, module, args, hosts);   
 }
 
 idp_t Container::GetContainerIdp() const

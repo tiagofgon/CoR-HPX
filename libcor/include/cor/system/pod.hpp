@@ -73,7 +73,7 @@ public:
     template <typename T, typename ... Args>
     std::unique_ptr<T> CreateCollective2(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, Args&& ... args);
 
-    idp_t Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
+    idp_t Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
 
     
     // to remove

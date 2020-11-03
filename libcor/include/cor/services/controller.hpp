@@ -137,8 +137,12 @@ private:
     std::condition_variable _cv;
     std::mutex _mtx;
 
-    std::string agas_port = "1337";
-    std::string hpx_port = "1338";
+    std::string hpx_host = "localhost";
+    int hpx_port = 1338;
+
+    std::string agas_host = "localhost"; //"192.168.85.245";
+    int agas_port = 1337;
+    
 
     // services
     PageManager *_pg_mgr;

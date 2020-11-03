@@ -25,7 +25,7 @@
 // #include "cor/resources/data_component_client.hpp"
 // #include "cor/resources/agent_component_client.hpp"
 // #include "cor/resources/domain_component.hpp"
-
+#include "cor/services/access_manager_client.hpp"
 
 
 typedef void (*vfc)(int str);
@@ -92,18 +92,14 @@ int hpx_main(int argc, char *argv[])
     std::cout << "************ Criação do agente principal no corhpx *******"  << std::endl;
     auto agent = domain->CreateLocal<cor::ProtoAgent_Client<void(int)>>(clos->Idp(),  "", domain->GetModuleName(), Main);
 
-    std::cout << "************ Execução do modulo *******"  << std::endl;
 
-    std::cout << "BARREIRA"  << std::endl;
-    hpx::lcos::barrier barrier("barrier_name", 1);
-    barrier.wait();
+    std::cout << "************ Execução do modulo *******"  << std::endl;
 
     agent->Run(559);
     agent->Wait();
     agent->Get();
 
 
-    std::cout << "fim" << std::endl;
 
     return hpx::finalize();
 }

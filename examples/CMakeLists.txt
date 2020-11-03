@@ -114,6 +114,22 @@ target_link_libraries(
 	hpx
 )
 
+# inter_closure
+add_library(inter_closure SHARED inter_closure.cpp)
+target_compile_features(inter_closure PUBLIC cxx_std_17)
+set_target_properties(inter_closure PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(inter_closure PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(inter_closure PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(inter_closure PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    inter_closure
+    PRIVATE
+        libcor
+        # Spread
+        # SSRCSpread
+        # Cereal
+	hpx
+)
 # # spawn - HPX
 # add_library(spawn_hpx SHARED spawn_hpx.cpp)
 # target_compile_features(spawn_hpx PUBLIC cxx_std_17)
@@ -165,22 +181,22 @@ target_link_libraries(
 # 	hpx
 # )
 
-# # server_rpc
-# add_library(server_rpc SHARED server_rpc.cpp)
-# target_compile_features(server_rpc PUBLIC cxx_std_17)
-# set_target_properties(server_rpc PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(server_rpc PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# set_target_properties(server_rpc PROPERTIES COMPILE_FLAGS -O2)
-# set_target_properties(server_rpc PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-#     server_rpc
-#     PRIVATE
-#         libcor
-#         # Spread
-#         # SSRCSpread
-#         # Cereal
-# 	hpx
-# )
+# server_rpc
+add_library(server_rpc SHARED server_rpc.cpp)
+target_compile_features(server_rpc PUBLIC cxx_std_17)
+set_target_properties(server_rpc PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(server_rpc PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(server_rpc PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(server_rpc PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    server_rpc
+    PRIVATE
+        libcor
+        # Spread
+        # SSRCSpread
+        # Cereal
+	hpx
+)
 
 # # client_rpc
 # add_library(client_rpc SHARED client_rpc.cpp)
@@ -207,10 +223,11 @@ install(
         parallel
         parallel_hpx2
         spawn
+        inter_closure
         # spawn_hpx
         # client
         # server
-        # server_rpc
+        server_rpc
         # client_rpc
     LIBRARY
         DESTINATION examples

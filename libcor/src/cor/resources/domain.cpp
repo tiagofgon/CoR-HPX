@@ -89,9 +89,9 @@ idp_t Domain::GetPredecessorIdp(idp_t idp)
     return _container.GetPredecessorIdp(idp);
 }
 
-idp_t Domain::Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+idp_t Domain::Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 {
-    return _container.Spawn(context, npods, module, args, hosts);  
+    return _container.Spawn(context, npods, parent, module, args, hosts);  
 }
 
 idp_t Domain::GetContainerIdp()
