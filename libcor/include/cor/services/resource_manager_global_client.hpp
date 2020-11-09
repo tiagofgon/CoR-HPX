@@ -95,6 +95,18 @@ class ResourceManagerGlobal_Client: hpx::components::client_base<ResourceManager
             return hpx::async<action_type>(resource_manager_global_component, idp).get();
         }
 
+        void InsertAgentMailbox(idp_t idp, hpx::id_type gid)
+        {
+            typedef ResourceManagerGlobal::InsertAgentMailbox_action_ResourceManagerGlobal action_type;
+            return hpx::async<action_type>(resource_manager_global_component, idp, gid).get();
+        }
+
+        hpx::id_type GetAgentMailbox(idp_t idp)
+        {
+            typedef ResourceManagerGlobal::GetAgentMailbox_action_ResourceManagerGlobal action_type;
+            return hpx::async<action_type>(resource_manager_global_component, idp).get();
+        }
+
 
 	private:
 		hpx::id_type resource_manager_global_component;

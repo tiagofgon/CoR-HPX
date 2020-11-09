@@ -14,13 +14,13 @@ Message::Message(Message&&) noexcept = default;
 
 Message& Message::operator=(Message&&) noexcept = default;
 
-std::size_t Message::Size() const
-{
-    std::ostringstream oss(std::stringstream::binary);
-    cereal::PortableBinaryOutputArchive oarchive(oss);
-    oarchive(*this);
-    return oss.str().size();
-}
+// std::size_t Message::Size() const
+// {
+//     std::ostringstream oss(std::stringstream::binary);
+//     cereal::PortableBinaryOutputArchive oarchive(oss);
+//     oarchive(*this);
+//     return oss.str().size();
+// }
 
 void Message::Clear()
 {

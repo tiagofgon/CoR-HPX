@@ -29,6 +29,7 @@
 
 #include "cor/system/macros.hpp"
 
+#include "cor/message.hpp"
 
 #include "cor/resources/domain_client.hpp"
 #include "cor/resources/closure_client.hpp"
@@ -39,6 +40,14 @@
 #include "cor/resources/mutex_client.hpp"
 #include "cor/resources/teste.hpp"
 #include "cor/resources/teste_empty.hpp"
+
+#include "cor/resources/agent_client.hpp"
+
+typedef std::vector<char> data_type;
+HPX_REGISTER_CHANNEL(data_type);
+
+REGISTER_AGENT(idp_t, idp_t);
+REGISTER_AGENT(void, int);
 
 REGISTER_PROTOAGENT(idp_t, idp_t);
 REGISTER_PROTOAGENT(void, int);

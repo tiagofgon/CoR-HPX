@@ -371,9 +371,23 @@ bool ResourceManager::FindStaticOrganizer_idps(idp_t idp)
     return _ctrl->FindStaticOrganizer_idpsGlobal(idp);
 }
 
+void ResourceManager::InsertAgentMailbox(idp_t idp, hpx::id_type gid)
+{
+    _agents_mailbox.emplace(idp, gid);
+    return _ctrl->InsertAgentMailboxGlobal(idp, gid);
+}
 
+hpx::id_type ResourceManager::GetAgentMailbox(idp_t idp)
+{
+    std::unique_lock<std::mutex> lk(_mtx); //shared_lock
 
-
+    auto it = _agents_mailbox.find(idp);
+    if (it != _agents_mailbox.end()) {
+        return it->second;
+    } else { // no caso do idp ser remoto
+        return _ctrl->GetAgentMailboxGlobal(idp);
+    }
+}
 
 
 

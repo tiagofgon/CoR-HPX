@@ -10,13 +10,15 @@
 
 #include "cor/system/macros.hpp"
 #include "cor/external/dll/dll.hpp"
-
+#include "cor/message.hpp"
 #include "cor/services/controller.hpp"
 
 #include <hpx/hpx.hpp>
 
 
 namespace cor {
+
+//class Mailer;
 
 class Pod : public hpx::components::component_base<Pod>
 // class Pod : public hpx::components::locking_hook<hpx::components::component_base<Pod>>
@@ -51,6 +53,8 @@ public:
 
     // not global function, only local resources predecessor
     idp_t GetPredecessorIdp(idp_t idp);
+
+    hpx::id_type GetGidFromIdp(idp_t idp);
 
     template <typename T>
     std::unique_ptr<T> GetLocalResource(idp_t idp);
@@ -95,6 +99,7 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetTotalDomains, GetTotalDomains_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetActiveResourceIdp, GetActiveResourceIdp_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetPredecessorIdp, GetPredecessorIdp_action_pod);
+    HPX_DEFINE_COMPONENT_ACTION(Pod, GetGidFromIdp, GetGidFromIdp_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetDomainIdp1, GetDomainIdp1_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetDomainIdp2, GetDomainIdp2_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, Spawn, Spawn_action_pod);
@@ -175,6 +180,12 @@ protected:
     idp_t GetCurrentActiveResource(size_t tid);
 
 
+    // accessed by Mailbox
+    void InsertAgentMailbox(idp_t idp, hpx::id_type gid);
+    hpx::id_type GetAgentMailbox(idp_t idp);
+
+
+
     public:
     HPX_DEFINE_COMPONENT_ACTION(Pod, SearchResource, SearchResource_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, ContainsResource, ContainsResource_action_pod);
@@ -184,6 +195,13 @@ protected:
     HPX_DEFINE_COMPONENT_ACTION(Pod, RemoveActiveResource, RemoveActiveResource_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, ChangeActiveResource, ChangeActiveResource_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetCurrentActiveResource, GetCurrentActiveResource_action_pod);
+    HPX_DEFINE_COMPONENT_ACTION(Pod, InsertAgentMailbox, InsertAgentMailbox_action_pod);
+    HPX_DEFINE_COMPONENT_ACTION(Pod, GetAgentMailbox, GetAgentMailbox_action_pod);
+
+    // HPX_DEFINE_COMPONENT_ACTION(Pod, SendMessage1, SendMessage1_action_pod);
+    // HPX_DEFINE_COMPONENT_ACTION(Pod, SendMessage2, SendMessage2_action_pod);
+    // HPX_DEFINE_COMPONENT_ACTION(Pod, ReceiveMessage1, ReceiveMessage1_action_pod);
+    // HPX_DEFINE_COMPONENT_ACTION(Pod, ReceiveMessage2, ReceiveMessage2_action_pod);
 
     template <typename T>
     struct LoadFunction_action_pod 
@@ -196,6 +214,7 @@ protected:
 
 private:
     // std::shared_ptr<Controller_new> _ctrl_new;
+    // Mailer *_mlr;
     Controller *_ctrl;
 
     std::map<std::string, dll::DynamicLibrary*> _modules;
@@ -219,6 +238,7 @@ typedef cor::Pod::GetTotalPods_action_pod GetTotalPods_action_pod;
 typedef cor::Pod::GetTotalDomains_action_pod GetTotalDomains_action_pod;
 typedef cor::Pod::GetActiveResourceIdp_action_pod GetActiveResourceIdp_action_pod;
 typedef cor::Pod::GetPredecessorIdp_action_pod GetPredecessorIdp_action_pod;
+typedef cor::Pod::GetGidFromIdp_action_pod GetGidFromIdp_action_pod;
 typedef cor::Pod::SearchResource_action_pod SearchResource_action_pod;
 typedef cor::Pod::ContainsResource_action_pod ContainsResource_action_pod;
 typedef cor::Pod::setDomainIdp_action_pod setDomainIdp_action_pod;
@@ -230,6 +250,12 @@ typedef cor::Pod::RemoveActiveResource_action_pod RemoveActiveResource_action_po
 typedef cor::Pod::ChangeActiveResource_action_pod ChangeActiveResource_action_pod;
 typedef cor::Pod::GetCurrentActiveResource_action_pod GetCurrentActiveResource_action_pod;
 typedef cor::Pod::Spawn_action_pod Spawn_action_pod;
+typedef cor::Pod::InsertAgentMailbox_action_pod InsertAgentMailbox_action_pod;
+typedef cor::Pod::GetAgentMailbox_action_pod GetAgentMailbox_action_pod;
+// typedef cor::Pod::SendMessage1_action_pod SendMessage1_action_pod;
+// typedef cor::Pod::SendMessage2_action_pod SendMessage2_action_pod;
+// typedef cor::Pod::ReceiveMessage1_action_pod ReceiveMessage1_action_pod;
+// typedef cor::Pod::ReceiveMessage2_action_pod ReceiveMessage2_action_pod;
 
 
 HPX_REGISTER_ACTION_DECLARATION(Initialize_action_pod);
@@ -240,6 +266,7 @@ HPX_REGISTER_ACTION_DECLARATION(GetTotalPods_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(GetTotalDomains_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(GetActiveResourceIdp_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(GetPredecessorIdp_action_pod);
+HPX_REGISTER_ACTION_DECLARATION(GetGidFromIdp_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(SearchResource_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(ContainsResource_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(setDomainIdp_action_pod);
@@ -251,6 +278,13 @@ HPX_REGISTER_ACTION_DECLARATION(RemoveActiveResource_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(ChangeActiveResource_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(GetCurrentActiveResource_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(Spawn_action_pod);
+HPX_REGISTER_ACTION_DECLARATION(InsertAgentMailbox_action_pod);
+HPX_REGISTER_ACTION_DECLARATION(GetAgentMailbox_action_pod);
+
+// HPX_REGISTER_ACTION_DECLARATION(SendMessage1_action_pod);
+// HPX_REGISTER_ACTION_DECLARATION(SendMessage2_action_pod);
+// HPX_REGISTER_ACTION_DECLARATION(ReceiveMessage1_action_pod);
+// HPX_REGISTER_ACTION_DECLARATION(ReceiveMessage2_action_pod);
 
 
 #endif

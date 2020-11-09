@@ -7,4 +7,5 @@ target_sources(
         "${CMAKE_CURRENT_LIST_DIR}/smutex.cpp"
         # "${CMAKE_CURRENT_LIST_DIR}/srwmutex.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/static_organizer.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/mailbox.cpp"
 )

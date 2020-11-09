@@ -51,12 +51,22 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(ResourceManagerGlobal, FindDynamicOrganizer_idps, FindDynamicOrganizer_idps_action_ResourceManagerGlobal);
     HPX_DEFINE_COMPONENT_ACTION(ResourceManagerGlobal, FindStaticOrganizer_idps, FindStaticOrganizer_idps_action_ResourceManagerGlobal);
 
+
+    void InsertAgentMailbox(idp_t idp, hpx::id_type gid);
+    hpx::id_type GetAgentMailbox(idp_t idp);
+
+    HPX_DEFINE_COMPONENT_ACTION(ResourceManagerGlobal, InsertAgentMailbox, InsertAgentMailbox_action_ResourceManagerGlobal);
+    HPX_DEFINE_COMPONENT_ACTION(ResourceManagerGlobal, GetAgentMailbox, GetAgentMailbox_action_ResourceManagerGlobal);
+
 private:
     std::map<idp_t, hpx::id_type> idp_to_gids; // Stores all idps and gids of the program
     std::map<idp_t, idp_t> _predecessors; // o segundo é o predecessor do primeiro
 
     std::set<idp_t> dynamicOrganizer_idps;
     std::set<idp_t> staticOrganizer_idps;
+
+    std::map<idp_t, hpx::id_type> _agents_mailbox;
+    
 };
 
 }
@@ -95,5 +105,12 @@ HPX_REGISTER_ACTION_DECLARATION(InsertDynamicOrganizer_idps_action_ResourceManag
 HPX_REGISTER_ACTION_DECLARATION(InsertStaticOrganizer_idps_action_ResourceManagerGlobal);
 HPX_REGISTER_ACTION_DECLARATION(FindDynamicOrganizer_idps_action_ResourceManagerGlobal);
 HPX_REGISTER_ACTION_DECLARATION(FindStaticOrganizer_idps_action_ResourceManagerGlobal);
+
+
+typedef cor::ResourceManagerGlobal::InsertAgentMailbox_action_ResourceManagerGlobal InsertAgentMailbox_action_ResourceManagerGlobal;
+typedef cor::ResourceManagerGlobal::GetAgentMailbox_action_ResourceManagerGlobal GetAgentMailbox_action_ResourceManagerGlobal;
+
+HPX_REGISTER_ACTION_DECLARATION(InsertAgentMailbox_action_ResourceManagerGlobal);
+HPX_REGISTER_ACTION_DECLARATION(GetAgentMailbox_action_ResourceManagerGlobal);
 
 #endif

@@ -64,6 +64,8 @@ public:
     bool FindDynamicOrganizer_idps(idp_t idp);
     bool FindStaticOrganizer_idps(idp_t idp);
 
+    void InsertAgentMailbox(idp_t idp, hpx::id_type gid);
+    hpx::id_type GetAgentMailbox(idp_t idp);
 
     template <typename T>
     std::unique_ptr<T> GetLocalResource(idp_t idp);
@@ -122,6 +124,10 @@ protected:
     void InsertStaticOrganizer_idpsGlobal(idp_t idp);
     bool FindDynamicOrganizer_idpsGlobal(idp_t idp);
     bool FindStaticOrganizer_idpsGlobal(idp_t idp);
+
+    void InsertAgentMailboxGlobal(idp_t idp, hpx::id_type gid);
+    hpx::id_type GetAgentMailboxGlobal(idp_t idp);
+
 private:
     std::string GetName() const;
 
@@ -137,12 +143,13 @@ private:
     std::condition_variable _cv;
     std::mutex _mtx;
 
-    std::string hpx_host = "localhost";
-    int hpx_port = 1338;
+    std::string hpx_address;
+    int hpx_port;
 
-    std::string agas_host = "localhost"; //"192.168.85.245";
-    int agas_port = 1337;
-    
+    // std::string agas_address = "localhost"; //"192.168.85.245";
+    // int agas_port = 1337;
+    std::string agas_address;
+    int agas_port;
 
     // services
     PageManager *_pg_mgr;

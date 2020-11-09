@@ -97,6 +97,22 @@ target_link_libraries(
 )
 
 
+# parallel3 - HPX
+add_library(parallel_hpx3 SHARED parallel_hpx3.cpp)
+target_compile_features(parallel_hpx3 PUBLIC cxx_std_17)
+set_target_properties(parallel_hpx3 PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(parallel_hpx3 PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(parallel_hpx3 PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(parallel_hpx3 PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    parallel_hpx3
+    PRIVATE
+        libcor
+    PUBLIC
+        hpx
+)
+
+
 # spawn
 add_library(spawn SHARED spawn.cpp)
 target_compile_features(spawn PUBLIC cxx_std_17)
@@ -222,6 +238,7 @@ install(
         callableModule
         parallel
         parallel_hpx2
+        parallel_hpx3
         spawn
         inter_closure
         # spawn_hpx

@@ -1,5 +1,5 @@
-// #include "cor/services/session_manager.hpp"
-// #include "cor/services/remote_session.hpp"
+#include "cor/services/session_manager.hpp"
+#include "cor/services/remote_session.hpp"
 
 // #include <thread>
 // #include <algorithm>

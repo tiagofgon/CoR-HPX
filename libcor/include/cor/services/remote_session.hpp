@@ -1,11 +1,11 @@
-// #ifndef COR_REMOTE_SESSION_HPP
-// #define COR_REMOTE_SESSION_HPP
+#ifndef COR_REMOTE_SESSION_HPP
+#define COR_REMOTE_SESSION_HPP
 
-// #include "cor/external/libssh/libssh.hpp"
+#include "cor/external/libssh/libssh.hpp"
 
-// #include <thread>
-// #include <mutex>
-// #include <condition_variable>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 // namespace cor {
 
@@ -53,4 +53,4 @@
 
 // }
 
-// #endif
+#endif

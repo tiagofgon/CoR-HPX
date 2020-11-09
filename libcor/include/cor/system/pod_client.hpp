@@ -126,6 +126,12 @@ public:
         return hpx::async<action_type>(this->get_id(), idp).get(); 
     }
 
+    hpx::id_type GetGidFromIdp(idp_t idp)
+    {
+        typedef cor::Pod::GetGidFromIdp_action_pod action_type;
+        return hpx::async<action_type>(this->get_id(), idp).get(); 
+    }
+
     template <typename T>
     std::unique_ptr<T> GetLocalResource(idp_t idp)
     {
@@ -234,6 +240,44 @@ public:
         typedef cor::Pod::GetCurrentActiveResource_action_pod action_type;
         return hpx::async<action_type>(this->get_id(), tid).get(); 
     }
+
+    void InsertAgentMailbox(idp_t idp, hpx::id_type gid)
+    {
+        typedef cor::Pod::InsertAgentMailbox_action_pod action_type;
+        return hpx::async<action_type>(this->get_id(), idp, gid).get(); 
+    }
+
+    hpx::id_type GetAgentMailbox(idp_t idp)
+    {
+        typedef cor::Pod::GetAgentMailbox_action_pod action_type;
+        return hpx::async<action_type>(this->get_id(), idp).get(); 
+    }
+
+
+    // void SendMessage(idp_t idp, idp_t dest, Message const& msg)
+    // {
+    //     typedef cor::Pod::SendMessage1_action_pod action_type;
+    //     return hpx::async<action_type>(this->get_id(), idp, dest, msg).get(); 
+    // }
+
+    // void SendMessage(idp_t idp, std::vector<idp_t> const& dests, Message const& msg)
+    // {
+    //     typedef cor::Pod::SendMessage2_action_pod action_type;
+    //     return hpx::async<action_type>(this->get_id(), idp, dests, msg).get(); 
+    // }
+
+    // Message ReceiveMessage(idp_t idp)
+    // {
+    //     typedef cor::Pod::ReceiveMessage1_action_pod action_type;
+    //     return hpx::async<action_type>(this->get_id(), idp).get(); 
+    // }
+
+    // Message ReceiveMessage(idp_t idp, idp_t source)
+    // {
+    //     typedef cor::Pod::ReceiveMessage2_action_pod action_type;
+    //     return hpx::async<action_type>(this->get_id(), idp, source).get(); 
+    // }
+
 
 
 };

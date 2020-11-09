@@ -4,9 +4,11 @@
 
 #include "cor/elements/dynamic_organizer.hpp"
 #include "cor/elements/static_organizer.hpp"
-
+// #include "cor/elements/mailbox.hpp"
 
 namespace cor {
+
+class Mailbox;
 
 // CreateLocal que retorna o cliente object do recurso criado
 template <typename T, typename ... Args>
@@ -130,17 +132,23 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
     {
         std::lock_guard<std::mutex> lk(_mtx);
 
-        typedef typename T::organizer organizer;
-        if(typeid(organizer) == typeid(StaticOrganizer)) // Se tiver o elemento organizador StaticOrganizer
+        typedef typename T::organizer element;
+        if(typeid(element) == typeid(StaticOrganizer)) // Se tiver o elemento organizador StaticOrganizer
         { 
                 InsertStaticOrganizer_idps(idp);
                 std::cout << "adicionado ao StaticOrganizer " << idp << std::endl;
         }
-        if(typeid(organizer) == typeid(DynamicOrganizer)) // Se tiver o elemento organizador DynamicOrganizer
+        else if(typeid(element) == typeid(DynamicOrganizer)) // Se tiver o elemento organizador DynamicOrganizer
         {
                 InsertDynamicOrganizer_idps(idp);
                 std::cout << "adicionado ao dynamicOrganizer_idps " << idp << std::endl;
         }
+        else if(typeid(element) == typeid(Mailbox)) // Se tiver o elemento organizador Mailbox
+        {
+                InsertAgentMailbox(idp, rsc->GetMailboxGid());
+                std::cout << "adicionado ao _agents_mailbox " << idp << std::endl;
+        }
+
         // std::cout << "aquid" << std::endl;
         // lock to access resource manager variables
         

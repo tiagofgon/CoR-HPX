@@ -90,7 +90,7 @@ int hpx_main(int argc, char *argv[])
     
 
     std::cout << "************ Criação do agente principal no corhpx *******"  << std::endl;
-    auto agent = domain->CreateLocal<cor::ProtoAgent_Client<void(int)>>(clos->Idp(),  "", domain->GetModuleName(), Main);
+    auto agent = domain->CreateLocal<cor::Agent_Client<void(int)>>(clos->Idp(),  "", domain->GetModuleName(), Main);
 
 
     std::cout << "************ Execução do modulo *******"  << std::endl;
@@ -99,7 +99,9 @@ int hpx_main(int argc, char *argv[])
     agent->Wait();
     agent->Get();
 
-
+    std::string address = hpx::get_config_entry("hpx.parcel.address", HPX_INITIAL_IP_ADDRESS);
+    int port = std::stoi(hpx::get_config_entry("hpx.parcel.port", std::to_string(HPX_INITIAL_IP_PORT)));
+    std::cout << address << ":" << port << std::endl;
 
     return hpx::finalize();
 }
@@ -107,5 +109,10 @@ int hpx_main(int argc, char *argv[])
 
 int main(int argc, char * argv[])
 {
-    return hpx::init(argc, argv);
+    std::vector<std::string> const cfg = {
+    // Make sure networking will not be disabled
+    "hpx.expect_connecting_localities!=1"
+    };
+
+    return hpx::init(argc, argv, cfg);
 }

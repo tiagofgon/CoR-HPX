@@ -107,6 +107,16 @@ bool ResourceManagerGlobal::FindStaticOrganizer_idps(idp_t idp)
 }
 
 
+void ResourceManagerGlobal::InsertAgentMailbox(idp_t idp, hpx::id_type gid)
+{
+    _agents_mailbox.emplace(idp, gid);
+}
+
+hpx::id_type ResourceManagerGlobal::GetAgentMailbox(idp_t idp)
+{
+    return _agents_mailbox[idp];
+}
+
 
 }
 
@@ -153,3 +163,10 @@ HPX_REGISTER_ACTION(InsertDynamicOrganizer_idps_action_ResourceManagerGlobal);
 HPX_REGISTER_ACTION(InsertStaticOrganizer_idps_action_ResourceManagerGlobal);
 HPX_REGISTER_ACTION(FindDynamicOrganizer_idps_action_ResourceManagerGlobal);
 HPX_REGISTER_ACTION(FindStaticOrganizer_idps_action_ResourceManagerGlobal);
+
+
+typedef cor::ResourceManagerGlobal::InsertAgentMailbox_action_ResourceManagerGlobal InsertAgentMailbox_action_ResourceManagerGlobal;
+typedef cor::ResourceManagerGlobal::GetAgentMailbox_action_ResourceManagerGlobal GetAgentMailbox_action_ResourceManagerGlobal;
+
+HPX_REGISTER_ACTION(InsertAgentMailbox_action_ResourceManagerGlobal);
+HPX_REGISTER_ACTION(GetAgentMailbox_action_ResourceManagerGlobal);

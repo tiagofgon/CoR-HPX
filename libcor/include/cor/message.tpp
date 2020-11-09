@@ -1,33 +1,32 @@
-// #ifdef COR_MESSAGE_HPP
+#ifdef COR_MESSAGE_HPP
 
-// #include <sstream>
+#include <sstream>
 
-// #include "cereal/archives/portable_binary.hpp"
 
-// namespace cor {
+namespace cor {
 
-// template <typename T>
-// T Message::Get(std::size_t index) const
-// {
-//     T obj;
+template <typename T>
+T Message::Get(std::size_t index) const
+{
+    T obj;
+    hpx::serialization::input_archive iarchive(_data.at(index));
 
-//     std::istringstream iss(_data.at(index), std::istringstream::binary);
-//     cereal::PortableBinaryInputArchive iarchive(iss);
-//     iarchive(obj);
+    iarchive >> obj;
 
-//     return obj;
-// }
+    return obj;
 
-// template <typename T>
-// void Message::Add(T const& obj)
-// {
-//     std::ostringstream oss(std::stringstream::binary);
-//     cereal::PortableBinaryOutputArchive oarchive(oss);
-//     oarchive(obj);
+}
 
-//     _data.push_back(oss.str());
-// }
+template <typename T>
+void Message::Add(T const& obj)
+{
+    std::vector<char> buffer;
+    hpx::serialization::output_archive oarchive(buffer);
+    oarchive << obj;
 
-// }
+    _data.push_back(buffer);
+}
 
-// #endif
+}
+
+#endif

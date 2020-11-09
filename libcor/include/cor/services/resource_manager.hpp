@@ -78,6 +78,8 @@ public:
     bool FindDynamicOrganizer_idps(idp_t idp);
     bool FindStaticOrganizer_idps(idp_t idp);
 
+    void InsertAgentMailbox(idp_t idp, hpx::id_type gid);
+    hpx::id_type GetAgentMailbox(idp_t idp);
 
     std::string SearchResource(idp_t idp);
     
@@ -116,7 +118,7 @@ private:
 
     std::map<idp_t, idp_t> _predecessors; // o segundo é o predecessor do primeiro
     std::map<idp_t, idp_t> _alias; // Associação entre
-
+    std::map<idp_t, hpx::id_type> _agents_mailbox;
 
     std::set<idp_t> dynamicOrganizer_idps;
     std::set<idp_t> staticOrganizer_idps;

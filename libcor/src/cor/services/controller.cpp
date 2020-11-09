@@ -8,7 +8,7 @@
 
 #include "cor/utils/utils.hpp"
 #include "cor/services/page_manager.hpp"
-// #include "cor/services/session_manager.hpp"
+#include "cor/services/session_manager.hpp"
 #include <unistd.h>
 #include <sys/wait.h>
 
@@ -37,6 +37,15 @@ Controller::Controller(std::string const& id, std::string const& app_group, std:
     idpManager_object = new IdpManager_Client();
     resourceManagerGlobal_object = new ResourceManagerGlobal_Client();
     accessManager_object = new AccessManager_Client(context);
+
+    // Atualizar o ip e a porta do servidor agas
+    agas_address = hpx::get_config_entry("hpx.agas.address", HPX_INITIAL_IP_ADDRESS);
+    agas_port = std::stoi(hpx::get_config_entry("hpx.agas.port", std::to_string(HPX_INITIAL_IP_PORT)));
+
+    // Atualizar o ip e a porta do hpx desta localidade
+    hpx_address = hpx::get_config_entry("hpx.parcel.address", HPX_INITIAL_IP_ADDRESS);
+    hpx_port = std::stoi(hpx::get_config_entry("hpx.parcel.port", std::to_string(HPX_INITIAL_IP_PORT)));
+    // std::cout << "AddConnection " << hpx_address << ":" << hpx_port << std::endl; 
 }
 
 void Controller::StartService()
@@ -52,6 +61,10 @@ void Controller::StartService()
 
     // adicionar esta localidade ao map de localidades deste contexto
     accessManager_object->AddMyContextLocality(_context, hpx::get_locality_id());
+
+    // Adicionar esta conecção
+    accessManager_object->AddConnection(hpx_address, hpx_port);
+    
 }
 
 
@@ -78,7 +91,7 @@ void Controller::Initialize()
 
 void Controller::Finalize()
 {
-
+    //accessManager_object->RemoveConnection(host, port);
 }
 
 idp_t Controller::GenerateIdp()
@@ -215,6 +228,16 @@ bool Controller::FindStaticOrganizer_idps(idp_t idp)
     return _rsc_mgr->FindStaticOrganizer_idps(idp);
 }
 
+void Controller::InsertAgentMailbox(idp_t idp, hpx::id_type gid)
+{
+    return _rsc_mgr->InsertAgentMailbox(idp, gid);
+}
+
+hpx::id_type Controller::GetAgentMailbox(idp_t idp)
+{
+    return _rsc_mgr->GetAgentMailbox(idp);
+}
+
 void Controller::InsertDynamicOrganizer_idpsGlobal(idp_t idp)
 {
     std::cout << "cacacac5" << std::endl;
@@ -236,6 +259,16 @@ bool Controller::FindStaticOrganizer_idpsGlobal(idp_t idp)
     return resourceManagerGlobal_object->FindStaticOrganizer_idps(idp);
 }
 
+void Controller::InsertAgentMailboxGlobal(idp_t idp, hpx::id_type gid)
+{
+    return resourceManagerGlobal_object->InsertAgentMailbox(idp, gid);
+}
+
+hpx::id_type Controller::GetAgentMailboxGlobal(idp_t idp)
+{
+    return resourceManagerGlobal_object->GetAgentMailbox(idp);
+}
+
 
 
 
@@ -245,9 +278,12 @@ idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t pa
     // Para os processos filho saberem quem é o primeiro, é adicionado um novo context ao accessManager_object
     accessManager_object->AddContext(context);
 
+  
 
     for(int i=0; i < npods; i++) {
         auto pos = i % hosts.size();
+        unsigned int port_int = accessManager_object->GetNextPort(hosts[pos]); // buscar nova porta para o filho
+
         int pid = fork();
         if (pid == 0) {
             std::cout << "I'm the child number " << i+1 << std::endl; 
@@ -283,15 +319,22 @@ idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t pa
                 std::strcpy (arg, args[i].c_str());
                 exec_args.push_back(arg);
             }
-
+ 
             // hpx command lines
-            std::string arg66 = "--hpx:hpx=" + hosts[pos];
-            std::string arg77 = "--hpx:agas=" + agas_host + ":" + std::to_string(agas_port);
+        
+            std::string host = hosts[pos];
+            
+            std::string port = std::to_string(port_int);
+             
+            std::string arg66 = "--hpx:hpx=" + host + ":" + port;
+            //std::string arg66 = "--hpx:hpx=" + hosts[pos];
+            std::string arg77 = "--hpx:agas=" + agas_address + ":" + std::to_string(agas_port);
             std::string arg88 = "--hpx:run-hpx-main";
             std::string arg99 = "--hpx:expect-connecting-localities";
             std::string arg100 = "--hpx:worker";
             std::string arg110 = "--hpx:threads=2";
-
+            // std::cout << "spawn_agas-> " << arg77 << std::endl;
+            // std::cout << "spawn_host-> " << arg66 << std::endl;
             char * arg6 = new char [arg66.length()+1];
             std::strcpy (arg6, arg66.c_str());
             exec_args.push_back(arg6);

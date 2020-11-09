@@ -10,9 +10,6 @@
 
 // #include "cor/utils/utils.hpp"
 
-// #include <ssrc/spread.h>
-// #include "cor/external/event/event.hpp"
-
 // #include "cor/system/macros.hpp"
 // #include "cor/message.hpp"
 
@@ -27,28 +24,16 @@
 //     explicit Mailer(std::string const& id, std::string const& app_group);
 //     ~Mailer();
 
-//     void StartService();
-//     void StopService();
-
-//     void operator()();
-
 //     void SendMessage(idp_t idp, idp_t dest, Message& msg);
 //     void SendMessage(idp_t idp, std::vector<idp_t> const& dests, Message& msg);
 
 //     Message ReceiveMessage(idp_t idp);
 //     Message ReceiveMessage(idp_t idp, idp_t source);
 
-//     // HPX
-//     void SendMessage_hpx(idp_t idp, idp_t dest, Message& msg);
-//     void SendMessage_hpx(idp_t idp, std::vector<idp_t> const& dests, Message& msg);
-
-//     Message ReceiveMessage_hpx(idp_t idp);
-//     Message ReceiveMessage_hpx(idp_t idp, idp_t source);
-
-//     Mailer(Mailer const&) = delete;
-//     Mailer& operator=(Mailer const&) = delete;
-//     Mailer(Mailer&&) = delete;
-//     Mailer& operator=(Mailer&&) = delete;
+//     // Mailer(Mailer const&) = delete;
+//     // Mailer& operator=(Mailer const&) = delete;
+//     // Mailer(Mailer&&) = delete;
+//     // Mailer& operator=(Mailer&&) = delete;
 
 // protected:
 //     // accessed by ResourceManager
@@ -56,9 +41,6 @@
 //     void DeleteMailbox(idp_t idp);
 
 // private:
-//     void Connect(std::string const& id);
-//     void Close();
-
 //     void HandleRead();
 //     void HandleWrite();
 
@@ -82,22 +64,6 @@
 //     }
 
 //     std::string _app_group;
-
-//     // service thread
-//     std::thread _th_svc;
-
-//     // communication system
-//     ssrc::spread::Mailbox *_mbox;
-//     ev::EventBase *_base;
-//     ev::Event *_evread;
-//     ev::Event *_evwrite;
-
-//     ssrc::spread::ScatterMessage _in_smsg;
-//     ssrc::spread::GroupList _in_groups;
-//     ssrc::spread::Message _in_msg;
-
-//     ssrc::spread::ScatterMessage _out_smsg;
-//     ssrc::spread::GroupList _out_groups;
 
 //     // resources mailboxes
 //     std::map<idp_t, std::deque<Message>> _mailboxes;

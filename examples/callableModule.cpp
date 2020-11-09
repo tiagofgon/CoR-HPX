@@ -24,7 +24,14 @@ idp_t Test(idp_t rsc_idp)
     data->Release();
 
     // obter uma referência para o agente que está a executar a função
-    auto agent = domain->GetLocalResource<cor::ProtoAgent_Client<idp_t(idp_t)>>(agent_idp);
+    auto agent = domain->GetLocalResource<cor::Agent_Client<idp_t(idp_t)>>(agent_idp);
+
+    // cria uma mensagem e adiciona o idp do agente em questão ao conteúdo da mesma
+    cor::Message msg;
+    msg.Add<idp_t>(agent_idp);
+
+    // envia a mensagem ao recurso com identificador rsc_idp
+    agent->Send(rsc_idp, msg);
 
     // retorna o idp do agente
     return agent_idp;

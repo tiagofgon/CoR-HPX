@@ -62,6 +62,26 @@ public:
 		return hpx::async<action_type>(access_manager_component, ctx).get();
 	}
 
+    void AddConnection(std::string address, unsigned int port)
+	{
+		typedef AccessManager::AddConnection_action_AccessManager action_type;
+		return hpx::async<action_type>(access_manager_component, address, port).get();
+	}
+
+    unsigned int GetNextPort(std::string address)
+	{
+		typedef AccessManager::GetNextPort_action_AccessManager action_type;
+		auto res = hpx::async<action_type>(access_manager_component, address).get();
+		return res;
+	}
+
+    void RemoveConnection(std::string address, unsigned int port)
+	{
+		typedef AccessManager::RemoveConnection_action_AccessManager action_type;
+		return hpx::async<action_type>(access_manager_component, address, port).get();
+	}
+
+
 	// Returns component's GID
 	hpx::id_type GetGid() {
 		return access_manager_component;

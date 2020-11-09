@@ -1,12 +1,12 @@
-// #ifndef COR_SESSION_MANAGER_HPP
-// #define COR_SESSION_MANAGER_HPP
+#ifndef COR_SESSION_MANAGER_HPP
+#define COR_SESSION_MANAGER_HPP
 
-// #include <vector>
-// #include <mutex>
+#include <vector>
+#include <mutex>
 
-// namespace cor {
+namespace cor {
 
-// class RemoteSession;
+class RemoteSession;
 
 // class SessionManager
 // {
@@ -31,6 +31,6 @@
 
 // };
 
-// }
+}
 
-// #endif
+#endif

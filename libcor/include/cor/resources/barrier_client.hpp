@@ -158,7 +158,11 @@ public:
 		return 7;
 	}
 
-
+	// Só para fins de compilação, não é usado aqui nunca!
+	hpx::id_type GetMailboxGid() {
+		return hpx::find_here();
+	}
+	
 private:
 	template <typename Archive>
 	void serialize(Archive& ar, unsigned) {   
