@@ -49,6 +49,7 @@ std::unique_ptr<T> Pod::CreateLocal(idp_t ctx, std::string const& name, Args&& .
 template <typename T, typename ... Args>
 idp_t Pod::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
 {
+    std::cout << "Pod::CreateRemote" << std::endl;
     // std::cout << "idp_t: " << ctx << std::endl;
     // std::cout << "CreateRemote no Pod para adicionar ao ascendente recurso "<< ctx << std::endl;
     return _ctrl->CreateRemote<T, Args...>(ctx, name, ctrl, std::forward<Args>(args)...);

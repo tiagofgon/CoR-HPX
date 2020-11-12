@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "cor/resources/resource.hpp"
+#include "cor/resources/resource_non_migrable.hpp"
 #include "cor/elements/dynamic_organizer.hpp"
 #include "cor/elements/container.hpp"
 
@@ -11,40 +11,21 @@
 
 namespace cor {
 
-struct Domain: public hpx::components::abstract_migration_support< hpx::components::component_base<Domain>, Resource >
+// struct Domain: public ResourceNonMigrable, public hpx::components::locking_hook< hpx::components::component_base<Domain> >
+struct Domain: public ResourceNonMigrable, public hpx::components::component_base<Domain>
 {
-
-using base_type = hpx::components::abstract_migration_support<
-    hpx::components::component_base<Domain>, Resource >;
 
 typedef hpx::components::component_base<Domain>::wrapping_type wrapping_type;
 typedef Domain type_holder;
 typedef Resource base_type_holder;
-    
+
+
 protected:
     explicit Domain(idp_t idp, std::string const& module);
 
 public:
     Domain();
     ~Domain();
-
-    // Components that should be migrated using hpx::migrate<> need to
-    // be Serializable and CopyConstructable. Components can be
-    // MoveConstructable in which case the serialized data is moved into the
-    // component's constructor.
-    Domain(Domain&& rhs) :
-        base_type(std::move(rhs)),
-        _dynamic_organizer(rhs._dynamic_organizer),
-        _container(rhs._container)
-    {}
-
-    Domain& operator=(Domain&& rhs)
-    {
-        this->Resource::operator=(std::move(static_cast<Resource&>(rhs)));
-        _dynamic_organizer = rhs._dynamic_organizer;
-        _container = rhs._container;
-        return *this;
-    }
 
     /* DynamicOrganizer interface */
     void Join(idp_t idp, std::string const& name);
@@ -212,14 +193,6 @@ public:
         &Domain::Get<T>
     >::type
     {};
-
-    template <typename Archive>
-    void serialize(Archive& ar, unsigned version)
-    {
-        ar & hpx::serialization::base_object<Resource>(*this);
-        ar & _dynamic_organizer;
-        ar & _container;
-    }
 
 private:
     DynamicOrganizer _dynamic_organizer;

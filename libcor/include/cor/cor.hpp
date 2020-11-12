@@ -45,9 +45,11 @@
 
 typedef std::vector<char> data_type;
 HPX_REGISTER_CHANNEL(data_type);
+HPX_REGISTER_CHANNEL(idp_t);
 
 REGISTER_AGENT(idp_t, idp_t);
 REGISTER_AGENT(void, int);
+REGISTER_AGENT(void, idp_t);
 
 REGISTER_PROTOAGENT(idp_t, idp_t);
 REGISTER_PROTOAGENT(void, int);

@@ -43,22 +43,32 @@ std::unique_ptr<T> ResourceManager::CreateLocal(idp_t ctx, std::string const& na
 template <typename T, typename ... Args>
 idp_t ResourceManager::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
 {
+    std::cout << "aqui1" << std::endl;
     auto idp = GenerateIdp();
-
+    std::cout << "aqui2" << std::endl;
     {
         // lock to access resource manager variables
-        std::lock_guard<std::mutex> lk(_mtx);
-
+        // std::lock_guard<std::mutex> lk(_mtx);
+        std::cout << "aqui3" << std::endl;
         // Se o ctx não estiver registado no componente global retorna erro
         if ( FindIdp(ctx) == false ) {
             throw std::runtime_error("Resource " + std::to_string(ctx) + " does not exist in global component!(CreateRemote)");
         } else {
+            std::cout << "aqui4" << std::endl;
             // Ir buscar o gid do ctx remoto
             auto ctx_gid = GetGidFromIdp(ctx);
+            std::cout << "aqui5" << std::endl;
+            // retornar a localidade do ctx remoto e adicionar ao seu elemento organizador o idp criado
             auto ctx_locality = AttachResourceRemote(ctx_gid, idp, name);
-
+            std::cout << "Localidade do dominio remoto: " << ctx_locality << std::endl;
             // Criar o recurso na localidade do remote Domain
             std::unique_ptr<T> rsc_remote = std::make_unique<T>(idp, ctx_locality, std::forward<Args>(args)...);
+
+            // insert association between gids and idps
+            InsertIdp(idp, rsc_remote->GetGid()); // Informar o componente global da associação idp-gid
+
+            // _predecessors.emplace(idp, ctx);
+            InsertPredecessorIdp(idp, ctx);
         }
 
     }

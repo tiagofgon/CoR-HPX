@@ -6,7 +6,7 @@ namespace cor {
 Domain::Domain() = default;
 
 Domain::Domain(idp_t idp, std::string const& module) :
-    base_type(idp),
+    ResourceNonMigrable{idp},
     _dynamic_organizer{idp, module},
     _container{idp}
 {
@@ -109,7 +109,7 @@ idp_t Domain::GetContainerIdp()
 typedef cor::Domain Domain;
 typedef hpx::components::component<Domain> Domain_type;
 
-HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Domain_type, Domain, "Resource");
+HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Domain_type, Domain, "ResourceNonMigrable");
 
 
 // DynamicOranizer actions

@@ -13,4 +13,5 @@ target_sources(
         "${CMAKE_CURRENT_LIST_DIR}/closure_client.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/data_client.cpp"
         # "${CMAKE_CURRENT_LIST_DIR}/rwmutex.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/domain_client.cpp"
 )

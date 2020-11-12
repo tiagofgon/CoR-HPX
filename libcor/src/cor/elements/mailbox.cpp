@@ -18,11 +18,17 @@ Mailbox::Mailbox() = default;
 
 Mailbox::Mailbox(idp_t idp) : 
     _idp{idp},
-    _channel{hpx::find_here()}
+    _channel{hpx::find_here()},
+    _channel_ctx{hpx::find_here()}
 {
     std::cout << "Criado um objeto da classe \"Mailbox\", com idp: " << _idp << std::endl;
     std::string channel_name = "Mailbox-" + std::to_string(_idp);
     _channel.register_as(channel_name);
+
+    std::string channel_ctx_name = "Mailbox_ctx-" + std::to_string(_idp);
+    _channel_ctx.register_as(channel_ctx_name);
+
+
 }
 
 Mailbox::~Mailbox() = default;
@@ -79,6 +85,7 @@ void Mailbox::Send2(std::vector<idp_t> const& dests, Message const& msg) const
     for (auto dest: dests)
         Send1(dest, msg);
 }
+
 
 // Message Mailbox::Receive1() const
 // {
@@ -270,6 +277,52 @@ Message Mailbox::Receive3(idm_t rank, idp_t clos)
     return Receive2(source);
 }
 
+
+void Mailbox::SendNewClos(Message const& msg)
+{
+    std::vector<char> buffer;
+    hpx::serialization::output_archive oarchive(buffer);
+    oarchive << msg;
+    std::cout << "SendNewClos" << std::endl;
+    _channel_ctx.set(buffer);
+    std::cout << "SendNewClos" << std::endl;
+}
+
+
+idp_t Mailbox::ReceiveNewClos(std::string const& ctx)
+{
+    // Se o contexto ctx ainda nao foi criado
+    if(_mailboxes_ctr.find(ctx) == _mailboxes_ctr.end()) {
+        data_type m = _channel_ctx.get(hpx::launch::sync);
+        Message msg;
+        hpx::serialization::input_archive iarchive(m);
+        iarchive >> msg;
+        auto clos_idp = msg.Sender();
+        std::string context = msg.Get<std::string>();
+        _mailboxes_ctr[context] = clos_idp;
+        while(context != ctx) {
+            data_type m = _channel_ctx.get(hpx::launch::sync);
+            Message msg;
+            hpx::serialization::input_archive iarchive(m);
+            iarchive >> msg;
+            auto clos_idp = msg.Sender();
+            std::string context = msg.Get<std::string>();
+            _mailboxes_ctr[context] = clos_idp;
+        }
+        std::cout << "aqui3: " << std::endl;
+        return _mailboxes_ctr[ctx];
+    }
+    else {
+        return _mailboxes_ctr[ctx];
+    }
+
+
+}
+
+
+
+
+
 }
 
 typedef cor::Mailbox Mailbox;
@@ -286,6 +339,8 @@ typedef cor::Mailbox::Receive_to_map_action_Mailbox Receive_to_map_action_Mailbo
 typedef cor::Mailbox::Broadcast_action_Mailbox Broadcast_action_Mailbox;
 typedef cor::Mailbox::Send3_action_Mailbox Send3_action_Mailbox;
 typedef cor::Mailbox::Receive3_action_Mailbox Receive3_action_Mailbox;
+typedef cor::Mailbox::SendNewClos_action_Mailbox SendNewClos_action_Mailbox;
+typedef cor::Mailbox::ReceiveNewClos_action_Mailbox ReceiveNewClos_action_Mailbox;
 
 HPX_REGISTER_ACTION(Send1_action_Mailbox);
 HPX_REGISTER_ACTION(Send2_action_Mailbox);
@@ -295,3 +350,5 @@ HPX_REGISTER_ACTION(Receive_to_map_action_Mailbox);
 HPX_REGISTER_ACTION(Broadcast_action_Mailbox);
 HPX_REGISTER_ACTION(Send3_action_Mailbox);
 HPX_REGISTER_ACTION(Receive3_action_Mailbox);
+HPX_REGISTER_ACTION(SendNewClos_action_Mailbox);
+HPX_REGISTER_ACTION(ReceiveNewClos_action_Mailbox);

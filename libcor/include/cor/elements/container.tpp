@@ -23,6 +23,7 @@ std::unique_ptr<T> Container::CreateLocal(idp_t ctx, std::string const& name, Ar
 template <typename T, typename ... Args>
 idp_t Container::CreateRemote(idp_t ctx, std::string const& name, Args&& ... args)
 {
+    std::cout << "Container::CreateRemote" << std::endl;
     auto ctrl = global::pod->SearchResource(ctx);
     ctrl[1] = 'R';
     // return global::rpc->Create<T>(ctx, name, ctrl, std::forward<Args>(args)...);
@@ -33,10 +34,14 @@ template <typename T, typename ... Args>
 idp_t Container::Create(idp_t ctx, std::string const& name, Args&& ... args)
 {   
     // Se o recurso ctx pertencer à lista _predecessors, o recurso é criado neste pod, se não cria remoto
-    if (global::pod->ContainsResource(ctx))
+    if (global::pod->ContainsResource(ctx)) {
+        std::cout << "Create - local" << std::endl;
         return global::pod->Create<T>(ctx, name, std::forward<Args>(args)...);
-    else
+    }
+    else {
+        std::cout << "Create - remoto" << std::endl;
         return CreateRemote<T>(ctx, name, std::forward<Args>(args)...);
+    }
 }
 
 template <typename T>
@@ -64,6 +69,8 @@ void Container::Run(idp_t idp, Args&&... args)
     // auto ctrl = global::pod->SearchResource(idp);
     // ctrl[1] = 'R';
     // return global::rpc->Run<T>(idp, ctrl, std::forward<Args>(args)...);
+    auto agent = GetLocalResource<T>(idp);
+    agent->Run(std::forward<Args>(args)...);
 }
 
 template <typename T>
@@ -72,6 +79,8 @@ void Container::Wait(idp_t idp)
     // auto ctrl = global::pod->SearchResource(idp);
     // ctrl[1] = 'R';
     // global::rpc->Wait<T>(idp, ctrl);
+    auto agent = GetLocalResource<T>(idp);
+    agent->Wait();
 }
 
 template <typename T>
@@ -80,6 +89,8 @@ auto Container::Get(idp_t idp)
     // auto ctrl = global::pod->SearchResource(idp);
     // ctrl[1] = 'R';
     // return global::rpc->Get<T>(idp, ctrl);
+    auto agent = GetLocalResource<T>(idp);
+    return agent->Get();
 }
 
 

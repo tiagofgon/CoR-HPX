@@ -90,7 +90,17 @@ public:
 		return hpx::async<action_type>(this->get_id(), rank, clos).get();
 	}
 
+    void SendNewClos(Message const& msg_original)
+	{
+		typedef Mailbox::SendNewClos_action_Mailbox action_type;
+		return hpx::async<action_type>(this->get_id(), msg_original).get();
+	}
 
+    idp_t ReceiveNewClos(std::string const& ctx)
+	{
+		typedef Mailbox::ReceiveNewClos_action_Mailbox action_type;
+		return hpx::async<action_type>(this->get_id(), ctx).get();
+	}
 
 	// /** Local interface **/
 	// // local idp of this resource

@@ -15,12 +15,15 @@
 #include "cor/services/idp_manager_client.hpp"
 #include "cor/services/resource_manager_global_client.hpp"
 #include "cor/services/access_manager_client.hpp"
+#include "cor/elements/mailbox_client.hpp"
 
 namespace cor {
 
 class ResourceManager;
+class SessionManager;
 class PageManager;
 class Pod;
+// class Mailbox_Client;
 
 class Controller : std::enable_shared_from_this<Controller>
 {
@@ -154,7 +157,7 @@ private:
     // services
     PageManager *_pg_mgr;
     ResourceManager *_rsc_mgr;
-    // SessionManager *_sess_mgr;
+    SessionManager *_sess_mgr;
 
     // Objeto cliente do componente IdpManager, forcencedor global de idps
     IdpManager_Client *idpManager_object;

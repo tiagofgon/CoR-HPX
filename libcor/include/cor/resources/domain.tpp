@@ -27,6 +27,7 @@ idp_t Domain::CreateRemote(idp_t ctx, std::string const& name, Args&& ... args)
 template <typename T, typename ... Args>
 idp_t Domain::Create(idp_t ctx, std::string const& name, Args&& ... args)
 {
+    std::cout << "Domain::Create" << std::endl;
     return _container.Create<T>(ctx, name, std::forward<Args>(args)...);
 }
 

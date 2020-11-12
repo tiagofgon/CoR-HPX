@@ -3,6 +3,7 @@
 // #include "cor/system/pod_component_client.hpp"
 // #include "cor/services/access_manager_client.hpp"
 
+
 namespace cor {
 
 template <typename T>
@@ -21,6 +22,7 @@ std::unique_ptr<T> Controller::CreateLocal(idp_t ctx, std::string const& name, A
 template <typename T, typename ... Args>
 idp_t Controller::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
 {
+    std::cout << "Controller::CreateRemote" << std::endl;
     // std::cout << "idp_t_createRemote_Controller: "<< ctx << std::endl;
     return _rsc_mgr->CreateRemote<T, Args...>(ctx, name, ctrl, std::forward<Args>(args)...);
 }
@@ -54,6 +56,25 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
         rsc_ptr = CreateLocal<T>(ctx, name, std::forward<Args>(args)...);
         hpx::register_with_basename(basename, rsc_ptr->GetGid(), 0);
 
+        auto parent = rsc_ptr->GetParent();
+        auto clos_idp = rsc_ptr->Idp();
+        // enviar ao agente que fez o spawn, o idp da clausura
+        if(parent != 0) {
+            cor::Message msg;
+            msg.Add<std::string>(_context);
+            msg.SetSender(clos_idp);
+            
+            std::vector<char> buffer;
+            hpx::serialization::output_archive oarchive(buffer);
+            oarchive << msg;
+
+            typedef std::vector<char> data_type;
+            std::string channel_name = "Mailbox_ctx-" + std::to_string(parent);
+            hpx::lcos::channel<data_type> send_channel;
+            send_channel.connect_to(channel_name);
+            send_channel.set(buffer);
+        }
+
         if(total_members > 1) 
         {
             std::cout << "dentro da barreira-0" << std::endl;
@@ -61,6 +82,9 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
             std::cout << "fora da barreira-0" << std::endl;
             barrier.wait();
         }
+
+        // Enviar uma mensagem ao spawn com o idp da clausura
+
 
     }
 

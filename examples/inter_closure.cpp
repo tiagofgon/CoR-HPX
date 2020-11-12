@@ -7,7 +7,7 @@ extern "C"
     void Main(int input);
 }
 
-int spawned_domains = 3;
+int spawned_domains = 2;
 
 void Main(int input)
 {

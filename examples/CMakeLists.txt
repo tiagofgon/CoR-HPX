@@ -214,22 +214,22 @@ target_link_libraries(
 	hpx
 )
 
-# # client_rpc
-# add_library(client_rpc SHARED client_rpc.cpp)
-# target_compile_features(client_rpc PUBLIC cxx_std_17)
-# set_target_properties(client_rpc PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(client_rpc PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# set_target_properties(client_rpc PROPERTIES COMPILE_FLAGS -O2)
-# set_target_properties(client_rpc PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-#     client_rpc
-#     PRIVATE
-#         libcor
-#         # Spread
-#         # SSRCSpread
-#         # Cereal
-# 	hpx
-# )
+# client_rpc
+add_library(client_rpc SHARED client_rpc.cpp)
+target_compile_features(client_rpc PUBLIC cxx_std_17)
+set_target_properties(client_rpc PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(client_rpc PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(client_rpc PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(client_rpc PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    client_rpc
+    PRIVATE
+        libcor
+        # Spread
+        # SSRCSpread
+        # Cereal
+	hpx
+)
 
 install(
     TARGETS
@@ -245,7 +245,7 @@ install(
         # client
         # server
         server_rpc
-        # client_rpc
+        client_rpc
     LIBRARY
         DESTINATION examples
 )

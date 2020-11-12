@@ -94,7 +94,13 @@ void ResourceManager::FindMetaDomain(std::string const& ctrl)
 bool ResourceManager::ContainsResource(idp_t idp)
 {
     std::unique_lock<std::mutex> lk(_mtx);
-    return FindPredecessorIdp(idp);
+    auto it = _predecessors.find(idp);
+    if ( it == _predecessors.end() ) {
+       return false;
+    } else { 
+        return true;
+    }
+
 }
 
 // Resource *ResourceManager::GetResource(idp_t idp)
