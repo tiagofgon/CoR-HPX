@@ -7,7 +7,7 @@ ProtoAgent<R(P...)>::ProtoAgent() = default;
 
 template <typename R, typename ... P>
 ProtoAgent<R(P...)>::ProtoAgent(idp_t idp, std::function<R(P...)> const& f) :
-    ResourceNonMigrable{idp},
+    base_type(idp),
     executor{idp, f}
 {
     std::cout << "Criado um componente \"ProtoAgent\", com idp: " << idp << std::endl;
@@ -15,7 +15,7 @@ ProtoAgent<R(P...)>::ProtoAgent(idp_t idp, std::function<R(P...)> const& f) :
 
 template <typename R, typename ... P>
 ProtoAgent<R(P...)>::ProtoAgent(idp_t idp, std::string const& module, std::string const& function) :
-    ResourceNonMigrable{idp},
+    base_type(idp),
     executor{idp, module, function}
 {
     std::cout << "Criado um componente \"ProtoAgent\", com idp: " << idp << std::endl;

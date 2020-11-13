@@ -1,38 +1,39 @@
 #include "cor/elements/srwmutex.hpp"
 
-#include "cor/system/system.hpp"
-#include "cor/system/pod.hpp"
-
 namespace cor {
 
 SRWMutex::SRWMutex() = default;
 
-SRWMutex::SRWMutex(idp_t idp) : _idp{idp} {}
+SRWMutex::SRWMutex(idp_t idp) : 
+    _idp{idp} 
+{
+
+}
 
 SRWMutex::~SRWMutex() = default;
 
-SRWMutex::SRWMutex(SRWMutex&&) noexcept = default;
+// SRWMutex::SRWMutex(SRWMutex&&) noexcept = default;
 
-SRWMutex& SRWMutex::operator=(SRWMutex&&) noexcept = default;
+// SRWMutex& SRWMutex::operator=(SRWMutex&&) noexcept = default;
 
 void SRWMutex::AcquireWrite()
 {
-    global::pod->GetConsistencyObject(_idp)->AcquireWrite();
+    _mtx.lock();
 }
 
 void SRWMutex::ReleaseWrite()
 {
-    global::pod->GetConsistencyObject(_idp)->ReleaseWrite();
+    _mtx.unlock();
 }
 
 void SRWMutex::AcquireRead()
 {
-    global::pod->GetConsistencyObject(_idp)->AcquireRead();
+    _mtx.lock_shared();
 }
 
 void SRWMutex::ReleaseRead()
 {
-    global::pod->GetConsistencyObject(_idp)->ReleaseRead();
+    _mtx.unlock_shared();
 }
 
 }

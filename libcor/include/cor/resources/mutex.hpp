@@ -14,7 +14,7 @@ typedef Mutex type_holder;
 typedef ResourceNonMigrable base_type_holder;
 
 protected:
-explicit Mutex(idp_t idp);
+    explicit Mutex(idp_t idp);
 
 public:
     Mutex();

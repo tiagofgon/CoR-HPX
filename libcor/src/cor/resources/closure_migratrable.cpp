@@ -5,7 +5,7 @@ namespace cor {
 Closure::Closure() = default;
 
 Closure::Closure(idp_t idp, unsigned int total_members, idp_t parent) :
-    ResourceNonMigrable{idp},
+    base_type(idp),
     _staticOrganizer{idp, total_members, parent}
 {
     std::cout << "Criado um componente \"Closure\", com idp: " << idp << std::endl;
@@ -64,9 +64,9 @@ idm_t Closure::GetIdm2(std::string const& name)
     return _staticOrganizer.GetIdm(name);
 }
 
-idp_t Closure::GetStaticOrganizerIdp()
+idp_t Closure::GetStaticIdp()
 {
-    return _staticOrganizer.GetStaticOrganizerIdp();
+    return _staticOrganizer.GetStaticIdp();
 }
 
 }
@@ -76,7 +76,7 @@ idp_t Closure::GetStaticOrganizerIdp()
 typedef cor::Closure Closure;
 typedef hpx::components::component<Closure> Closure_type;
 
-HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Closure_type, Closure, "ResourceNonMigrable");
+HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Closure_type, Closure, "Resource");
 
 
 
@@ -91,7 +91,7 @@ typedef cor::Closure::GetIdp1_action_Closure GetIdp1_action_Closure;
 typedef cor::Closure::GetIdp2_action_Closure GetIdp2_action_Closure;
 typedef cor::Closure::GetIdm1_action_Closure GetIdm1_action_Closure;
 typedef cor::Closure::GetIdm2_action_Closure GetIdm2_action_Closure;
-typedef cor::Closure::GetStaticOrganizerIdp_action_Closure GetStaticOrganizerIdp_action_Closure;
+typedef cor::Closure::GetStaticIdp_action_Closure GetStaticIdp_action_Closure;
 
 HPX_REGISTER_ACTION(Join_action_Closure);
 HPX_REGISTER_ACTION(Leave_action_Closure);
@@ -103,4 +103,4 @@ HPX_REGISTER_ACTION(GetIdp1_action_Closure);
 HPX_REGISTER_ACTION(GetIdp2_action_Closure);
 HPX_REGISTER_ACTION(GetIdm1_action_Closure);
 HPX_REGISTER_ACTION(GetIdm2_action_Closure);
-HPX_REGISTER_ACTION(GetStaticOrganizerIdp_action_Closure);
+HPX_REGISTER_ACTION(GetStaticIdp_action_Closure);

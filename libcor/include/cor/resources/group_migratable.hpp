@@ -3,16 +3,21 @@
 
 #include <string>
 
-#include "cor/resources/resource_non_migrable.hpp"
+#include "cor/resources/resource.hpp"
 #include "cor/elements/dynamic_organizer.hpp"
 
 namespace cor {
-struct Group: public ResourceNonMigrable, public hpx::components::component_base<Group>
+
+// struct Group: public Resource, public hpx::components::component_base<Group>
+struct Group: public hpx::components::abstract_migration_support< hpx::components::component_base<Group>, Resource >
 {
+
+using base_type = hpx::components::abstract_migration_support<
+    hpx::components::component_base<Group>, Resource >;
 
 typedef hpx::components::component_base<Group>::wrapping_type wrapping_type;
 typedef Group type_holder;
-typedef ResourceNonMigrable base_type_holder;
+typedef Resource base_type_holder;
 
 protected:
     explicit Group(idp_t idp, std::string const& module);
@@ -20,6 +25,22 @@ protected:
 public:
     ~Group();
     Group();
+
+    // Components that should be migrated using hpx::migrate<> need to
+    // be Serializable and CopyConstructable. Components can be
+    // MoveConstructable in which case the serialized data is moved into the
+    // component's constructor.
+    Group(Group&& rhs) :
+        base_type(std::move(rhs)),
+        _dynamic_organizer(rhs._dynamic_organizer)
+    {}
+
+    Group& operator=(Group&& rhs)
+    {
+        this->Resource::operator=(std::move(static_cast<Resource&>(rhs)));
+        _dynamic_organizer = rhs._dynamic_organizer;
+        return *this;
+    }
 
     /* DynamicOrganizer interface */
     void Join(idp_t idp, std::string const& name);
@@ -35,7 +56,7 @@ public:
     idm_t GetIdm1(idp_t idp);
     idm_t GetIdm2(std::string const& name);
 
-    idp_t GetDynamicOrganizerIdp();
+    idp_t GetDynamicIdp();
 
     HPX_DEFINE_COMPONENT_ACTION(Group, Join, Join_action_Group);
     HPX_DEFINE_COMPONENT_ACTION(Group, Leave, Leave_action_Group);
@@ -46,8 +67,14 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(Group, GetIdp2, GetIdp2_action_Group);
     HPX_DEFINE_COMPONENT_ACTION(Group, GetIdm1, GetIdm1_action_Group);
     HPX_DEFINE_COMPONENT_ACTION(Group, GetIdm2, GetIdm2_action_Group);
-    HPX_DEFINE_COMPONENT_ACTION(Group, GetDynamicOrganizerIdp, GetDynamicOrganizerIdp_action_Group);
+    HPX_DEFINE_COMPONENT_ACTION(Group, GetDynamicIdp, GetDynamicIdp_action_Group);
 
+    template <typename Archive>
+    void serialize(Archive& ar, unsigned version)
+    {
+        ar & hpx::serialization::base_object<Resource>(*this);
+        ar & _dynamic_organizer;
+    }
 
 private:
     DynamicOrganizer _dynamic_organizer;
@@ -67,7 +94,7 @@ typedef cor::Group::GetIdp1_action_Group GetIdp1_action_Group;
 typedef cor::Group::GetIdp2_action_Group GetIdp2_action_Group;
 typedef cor::Group::GetIdm1_action_Group GetIdm1_action_Group;
 typedef cor::Group::GetIdm2_action_Group GetIdm2_action_Group;
-typedef cor::Group::GetDynamicOrganizerIdp_action_Group GetDynamicOrganizerIdp_action_Group;
+typedef cor::Group::GetDynamicIdp_action_Group GetDynamicIdp_action_Group;
 
 HPX_REGISTER_ACTION_DECLARATION(Join_action_Group);
 HPX_REGISTER_ACTION_DECLARATION(Leave_action_Group);
@@ -78,7 +105,7 @@ HPX_REGISTER_ACTION_DECLARATION(GetIdp1_action_Group);
 HPX_REGISTER_ACTION_DECLARATION(GetIdp2_action_Group);
 HPX_REGISTER_ACTION_DECLARATION(GetIdm1_action_Group);
 HPX_REGISTER_ACTION_DECLARATION(GetIdm2_action_Group);
-HPX_REGISTER_ACTION_DECLARATION(GetDynamicOrganizerIdp_action_Group);
+HPX_REGISTER_ACTION_DECLARATION(GetDynamicIdp_action_Group);
 
 
 #endif

@@ -9,5 +9,6 @@ target_sources(
         "${CMAKE_CURRENT_LIST_DIR}/idp_manager.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/resource_manager_global.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/mutex_service.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/mutexRW_service.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/access_manager.cpp"
 )

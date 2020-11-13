@@ -29,22 +29,21 @@ public:
     void Leave(idp_t idp);
 
     idp_t GetParent() const;
-    std::size_t GetTotalMembers() const;
-    // novo metodo para retornar o atributo _total_members, que é o numero fixo de membros deste organizador estático
+    std::size_t GetTotalMembers();
     std::size_t GetFixedTotalMembers() const;
-    std::vector<idp_t> GetMemberList() const;
+    std::vector<idp_t> GetMemberList();
 
-    idp_t GetIdp(idm_t idm) const;
-    idp_t GetIdp(std::string const& name) const;
+    idp_t GetIdp(idm_t idm);
+    idp_t GetIdp(std::string const& name);
 
-    idm_t GetIdm(idp_t idp) const;
-    idm_t GetIdm(std::string const& name) const;
+    idm_t GetIdm(idp_t idp);
+    idm_t GetIdm(std::string const& name);
 
-    idp_t GetStaticIdp() const;
+    idp_t GetStaticOrganizerIdp() const;
 
 protected:
     StaticOrganizer();
-    explicit StaticOrganizer (idp_t idp, unsigned int total_members, idp_t parent);
+    explicit StaticOrganizer(idp_t idp, unsigned int total_members, idp_t parent);
 
 private:
 	template <typename Archive>
@@ -54,16 +53,15 @@ private:
         ar & _parent;
         ar & _members;
         ar & _next_idm;
-		// std::cout << "serialized\n";
 	}
 
     idp_t _idp;
     unsigned int _total_members;
     idp_t _parent;
-    std::map<idp_t, std::pair<idm_t, std::string>> _members;
+    std::map<idp_t, std::pair<idm_t, std::string>> _members; // (idp (idm, name))
     idm_t _next_idm;
 
-
+    hpx::lcos::local::shared_mutex _mtx;
 };
 
 }

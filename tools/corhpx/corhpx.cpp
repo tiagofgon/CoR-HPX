@@ -91,7 +91,7 @@ int hpx_main(int argc, char *argv[])
 
     std::cout << "************ Criação do agente principal no corhpx *******"  << std::endl;
     auto agent = domain->CreateLocal<cor::Agent_Client<void(int)>>(clos->Idp(),  "", domain->GetModuleName(), Main);
-
+    //auto agent = domain->CreateLocal<cor::Agent_Client<void(arg)>>(clos->Idp(),  "", domain->GetModuleName(), Main);
 
     std::cout << "************ Execução do modulo *******"  << std::endl;
 

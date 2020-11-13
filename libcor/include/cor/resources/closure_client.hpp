@@ -91,66 +91,34 @@ public:
 		_total_members(total_members)
 	{}
 
+
+
 	/** Resource interface **/
 	// método que retorna o idp global do recurso, que está presente na classe Resource
 	idp_t IdpGlobal()
 	{
-		typedef Resource::Idp_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
-	}
-
-	idp_t IdpGlobal_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Resource::Idp_action_Resource action_type;
+		typedef ResourceNonMigrable::Idp_action_ResourceNonMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
 	hpx::id_type GetLocalityGID()
 	{
-		typedef Resource::GetLocalityGID_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
-	}
-
-	hpx::id_type GetLocalityGID_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Resource::GetLocalityGID_action_Resource action_type;
+		typedef ResourceNonMigrable::GetLocalityGID_action_ResourceNonMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
 	unsigned int GetLocalityID()
 	{
-		typedef Resource::GetLocalityID_action_Resource action_type;
+		typedef ResourceNonMigrable::GetLocalityID_action_ResourceNonMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
-	unsigned int GetLocalityID_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Resource::GetLocalityID_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
-	}
+
+
 
 	/** Static organizer interface **/
 	void Join(idp_t idp, std::string const& name)
 	{
-		typedef Closure::Join_action_Closure action_type;
-		hpx::async<action_type>(this->get_id(), idp, name).get();
-
-		// esta barreira teve de ser colocada aqui, e nao dentro do static organizer porque só funciona fora de components e a component só aceita uma action de cada vez
-		// sincronização entre os elementos do static_organizer, para garantir a inserção de todos os recursos e o mesmo nivel de paralelização
-		if(_total_members > 1) 
-		{
-			hpx::lcos::barrier barrier(std::to_string(IdpGlobal()), _total_members, GetIdm(idp));
-			barrier.wait();
-		}
-		return;
-	}
-
-	void Join_here(idp_t idp, std::string const& name)
-	{
-		Migrate(hpx::find_here());
 		typedef Closure::Join_action_Closure action_type;
 		hpx::async<action_type>(this->get_id(), idp, name).get();
 
@@ -170,22 +138,8 @@ public:
 		return hpx::async<action_type>(this->get_id(), idp).get();
 	}
 
-	void Leave_here(idp_t idp)
-	{
-		Migrate(hpx::find_here());
-		typedef Closure::Leave_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id(), idp).get();
-	}
-
 	idp_t GetParent()
 	{
-		typedef Closure::GetParent_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id()).get();
-	}
-
-	idp_t GetParent_here()
-	{
-		Migrate(hpx::find_here());
 		typedef Closure::GetParent_action_Closure action_type;
 		return hpx::async<action_type>(this->get_id()).get();
 	}
@@ -196,22 +150,8 @@ public:
 		return hpx::async<action_type>(this->get_id()).get();
 	}
 
-	std::size_t GetTotalMembers_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Closure::GetTotalMembers_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id()).get();
-	}
-
 	std::size_t GetFixedTotalMembers()
 	{
-		typedef Closure::GetFixedTotalMembers_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id()).get();
-	}
-
-	std::size_t GetFixedTotalMembers_here()
-	{
-		Migrate(hpx::find_here());
 		typedef Closure::GetFixedTotalMembers_action_Closure action_type;
 		return hpx::async<action_type>(this->get_id()).get();
 	}
@@ -222,22 +162,8 @@ public:
 		return hpx::async<action_type>(this->get_id()).get();
 	}
 
-	std::vector<idp_t> GetMemberList_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Closure::GetMemberList_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id()).get();
-	}
-
     idp_t GetIdp(idm_t idm)
 	{
-		typedef Closure::GetIdp1_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id(), idm).get();
-	}
-
-    idp_t GetIdp_here(idm_t idm)
-	{
-		Migrate(hpx::find_here());
 		typedef Closure::GetIdp1_action_Closure action_type;
 		return hpx::async<action_type>(this->get_id(), idm).get();
 	}
@@ -248,38 +174,19 @@ public:
 		return hpx::async<action_type>(this->get_id(), idp).get();
 	}
 
-    idm_t GetIdm_here(idp_t idp)
-	{
-		Migrate(hpx::find_here());
-		typedef Closure::GetIdm1_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id(), idp).get();
-	}
-
     idm_t GetIdm(std::string const& name)
 	{
 		typedef Closure::GetIdm2_action_Closure action_type;
 		return hpx::async<action_type>(this->get_id(), name).get();
 	}
 
-    idm_t GetIdm_here(std::string const& name)
+	idp_t GetStaticOrganizerIdp()
 	{
-		Migrate(hpx::find_here());
-		typedef Closure::GetIdm2_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id(), name).get();
-	}
-
-	idp_t GetStaticIdp()
-	{
-		typedef Closure::GetStaticIdp_action_Closure action_type;
+		typedef Closure::GetStaticOrganizerIdp_action_Closure action_type;
 		return hpx::async<action_type>(this->get_id()).get();
 	}
 
-	idp_t GetStaticIdp_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Closure::GetStaticIdp_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id()).get();
-	}
+
 
 	/** Local interface **/
 	// local idp of this resource
@@ -305,11 +212,6 @@ public:
 		8 - Mutex
 		*/
 		return 3;
-	}
-
-	void Migrate(hpx::id_type dest)
-	{
-		hpx::components::migrate<Closure>(this->get_id(), dest).get();
 	}
 
 	// Só para fins de compilação, não é usado aqui nunca!

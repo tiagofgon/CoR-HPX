@@ -8,7 +8,7 @@
 #include <boost/preprocessor/variadic/to_seq.hpp>
 
 
-#include "cor/resources/resource_non_migrable.hpp"
+#include "cor/resources/resource.hpp"
 #include "cor/elements/executor_hpx.hpp"
 
 #include <hpx/hpx.hpp>
@@ -18,12 +18,16 @@ namespace cor {
 template <typename> struct ProtoAgent;
 
 template <typename R, typename ... P>
-struct ProtoAgent<R(P...)>: public ResourceNonMigrable, public hpx::components::component_base<ProtoAgent<R(P...)>>
+// struct ProtoAgent<R(P...)>: public Resource, public hpx::components::component_base<ProtoAgent<R(P...)>>
+struct ProtoAgent<R(P...)>: public hpx::components::abstract_migration_support< hpx::components::component_base<ProtoAgent<R(P...)>>, Resource >
 {
+
+using base_type = hpx::components::abstract_migration_support<
+    hpx::components::component_base<ProtoAgent<R(P...)>>, Resource >;
 
 typedef typename hpx::components::component_base<ProtoAgent<R(P...)>>::wrapping_type wrapping_type;
 typedef ProtoAgent type_holder;
-typedef ResourceNonMigrable base_type_holder;
+typedef Resource base_type_holder;
 
 friend class ResourceManager;
 
@@ -34,6 +38,22 @@ protected:
 
 public:
     ~ProtoAgent();
+
+    // Components that should be migrated using hpx::migrate<> need to
+    // be Serializable and CopyConstructable. Components can be
+    // MoveConstructable in which case the serialized data is moved into the
+    // component's constructor.
+    ProtoAgent(ProtoAgent&& rhs) :
+        base_type(std::move(rhs)),
+        executor(rhs.executor)
+    {}
+
+    ProtoAgent& operator=(ProtoAgent&& rhs)
+    {
+        this->Resource::operator=(std::move(static_cast<Resource&>(rhs)));
+        executor = rhs.executor;
+        return *this;
+    }
 
     // ProtoAgent(const ProtoAgent&) = delete;
     // ProtoAgent& operator=(const ProtoAgent&) = delete;
@@ -72,6 +92,13 @@ public:
         &ProtoAgent::Run<Args...>
     >::type
     {};
+
+    template <typename Archive>
+    void serialize(Archive& ar, unsigned version)
+    {
+        ar & hpx::serialization::base_object<Resource>(*this);
+        ar & executor;
+    }
 
 private:
     Executor<R(P...)> executor;

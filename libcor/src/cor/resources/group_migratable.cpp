@@ -5,7 +5,7 @@ namespace cor {
 Group::Group() = default;
 
 Group::Group(idp_t idp, std::string const& module) :
-    ResourceNonMigrable{idp},
+    base_type(idp),
     _dynamic_organizer{idp, module}
 {
     std::cout << "Criado um componente \"Grupo\", com idp: " << idp << std::endl;
@@ -50,8 +50,8 @@ idm_t Group::GetIdm2(std::string const& name) {
     return _dynamic_organizer.GetIdm(name);
 }
 
-idp_t Group::GetDynamicOrganizerIdp() {
-    return _dynamic_organizer.GetDynamicOrganizerIdp();
+idp_t Group::GetDynamicIdp() {
+    return _dynamic_organizer.GetDynamicIdp();
 }
 
 
@@ -62,7 +62,7 @@ idp_t Group::GetDynamicOrganizerIdp() {
 typedef cor::Group Group;
 typedef hpx::components::component<Group> Group_type;
 
-HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Group_type, Group, "ResourceNonMigrable");
+HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Group_type, Group, "Resource");
 
 
 // DynamicOranizer actions
@@ -75,7 +75,7 @@ typedef cor::Group::GetIdp1_action_Group GetIdp1_action_Group;
 typedef cor::Group::GetIdp2_action_Group GetIdp2_action_Group;
 typedef cor::Group::GetIdm1_action_Group GetIdm1_action_Group;
 typedef cor::Group::GetIdm2_action_Group GetIdm2_action_Group;
-typedef cor::Group::GetDynamicOrganizerIdp_action_Group GetDynamicOrganizerIdp_action_Group;
+typedef cor::Group::GetDynamicIdp_action_Group GetDynamicIdp_action_Group;
 
 HPX_REGISTER_ACTION(Join_action_Group);
 HPX_REGISTER_ACTION(Leave_action_Group);
@@ -86,4 +86,4 @@ HPX_REGISTER_ACTION(GetIdp1_action_Group);
 HPX_REGISTER_ACTION(GetIdp2_action_Group);
 HPX_REGISTER_ACTION(GetIdm1_action_Group);
 HPX_REGISTER_ACTION(GetIdm2_action_Group);
-HPX_REGISTER_ACTION(GetDynamicOrganizerIdp_action_Group);
+HPX_REGISTER_ACTION(GetDynamicIdp_action_Group);

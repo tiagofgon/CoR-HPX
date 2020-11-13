@@ -1,29 +1,6 @@
 #ifndef COR_HPX_HPP
 #define COR_HPX_HPP
 
-// #include <hpx/hpx.hpp>
-
-// #include <hpx/hpx.hpp>
-
-
-// #include <hpx/hpx.hpp>
-
-// #include "cor/resources/domain.hpp"
-// #include <string>
-
-
-
-// #include "cor/system/system.hpp"
-
-// #include "cor/system/macros.hpp"
-// // #include <hpx/hpx.hpp>
-
-
-
-
-
-// #include <string>
-
 #include "cor/system/system.hpp"
 #include <hpx/hpx.hpp>
 
@@ -38,11 +15,10 @@
 #include "cor/resources/data_client.hpp"
 #include "cor/resources/barrier_client.hpp"
 #include "cor/resources/mutex_client.hpp"
-#include "cor/resources/teste.hpp"
-#include "cor/resources/teste_empty.hpp"
-
+#include "cor/resources/rwmutex_client.hpp"
 #include "cor/resources/agent_client.hpp"
 
+typedef char *arg[];
 typedef std::vector<char> data_type;
 HPX_REGISTER_CHANNEL(data_type);
 HPX_REGISTER_CHANNEL(idp_t);
@@ -50,6 +26,8 @@ HPX_REGISTER_CHANNEL(idp_t);
 REGISTER_AGENT(idp_t, idp_t);
 REGISTER_AGENT(void, int);
 REGISTER_AGENT(void, idp_t);
+REGISTER_AGENT(void, arg);
+REGISTER_AGENT(void, int, arg);
 
 REGISTER_PROTOAGENT(idp_t, idp_t);
 REGISTER_PROTOAGENT(void, int);

@@ -32,6 +32,9 @@ DynamicOrganizer::~DynamicOrganizer() = default;
 
 void DynamicOrganizer::Join(idp_t idp, std::string const& name)
 {   
+    // acquire write
+    _mtx.lock();
+
     // std::cout << "Join DYNAMIC ORGANIZER ---------------------------------------------" << std::endl;
 
     // verify if the resource has already been attached
@@ -60,12 +63,21 @@ void DynamicOrganizer::Join(idp_t idp, std::string const& name)
         _members.emplace(idp, std::make_pair(idm, std::to_string(idp)));
     else
         _members.emplace(idp, std::make_pair(idm, name));
+
+    // release write
+    _mtx.unlock();
 }
 
 void DynamicOrganizer::Leave(idp_t idp)
 {
+    // acquire write
+    _mtx.lock();
+
     // erase resource idp
     _members.erase(idp);
+
+    // release write
+    _mtx.unlock();
 }
 
 std::string DynamicOrganizer::GetModuleName() const
@@ -73,23 +85,40 @@ std::string DynamicOrganizer::GetModuleName() const
     return _module;
 }
 
-std::size_t DynamicOrganizer::GetTotalMembers() const
+std::size_t DynamicOrganizer::GetTotalMembers()
 {
-    return _members.size();
+    // acquire read
+    _mtx.lock_shared();
+
+    auto res = _members.size();
+
+    // release read
+    _mtx.unlock_shared();
+
+    return res;
 }
 
-std::vector<idp_t> DynamicOrganizer::GetMemberList() const
+std::vector<idp_t> DynamicOrganizer::GetMemberList()
 {
     std::vector<idp_t> list;
+
+    // acquire read
+    _mtx.lock_shared();
 
     for (auto const& member: _members)
         list.push_back(member.first);
 
+    // release read
+    _mtx.unlock_shared();
+
     return list;
 }
 
-idp_t DynamicOrganizer::GetIdp(idm_t idm) const
+idp_t DynamicOrganizer::GetIdp(idm_t idm)
 {
+    // acquire read
+    _mtx.lock_shared();
+
     auto it = std::find_if(_members.begin(), _members.end(),
         [idm](auto&& member) -> bool {
             return member.second.first == idm;
@@ -97,14 +126,21 @@ idp_t DynamicOrganizer::GetIdp(idm_t idm) const
 
     if (it != _members.end()) {
         auto idp = it->first;
+
+        // release read
+        _mtx.unlock_shared();
+
         return idp;
     } else {
         throw std::runtime_error("Resource with idm <" + std::to_string(idm) + "> does not exist!");
     }
 }
 
-idp_t DynamicOrganizer::GetIdp(std::string const& name) const
+idp_t DynamicOrganizer::GetIdp(std::string const& name)
 {
+    // acquire read
+    _mtx.lock_shared();
+
     auto it = std::find_if(_members.begin(), _members.end(),
         [name](auto&& member) -> bool {
             return member.second.second == name;
@@ -112,20 +148,34 @@ idp_t DynamicOrganizer::GetIdp(std::string const& name) const
 
     if (it != _members.end()) {
         auto idp = it->first;
+
+        // release read
+        _mtx.unlock_shared();
+        
         return idp;
     } else {
         throw std::runtime_error("Resource with name <" + name + "> does not exist!");
     }
 }
 
-idm_t DynamicOrganizer::GetIdm(idp_t idp) const
+idm_t DynamicOrganizer::GetIdm(idp_t idp)
 {
+    // acquire read
+    _mtx.lock_shared();
+
     auto idm = _members.at(idp).first;
+
+    // release read
+    _mtx.unlock_shared();
+
     return idm;
 }
 
-idm_t DynamicOrganizer::GetIdm(std::string const& name) const
+idm_t DynamicOrganizer::GetIdm(std::string const& name)
 {
+    // acquire read
+    _mtx.lock_shared();
+
     auto it = std::find_if(_members.begin(), _members.end(),
         [name](auto&& member) -> bool {
             return member.second.second == name;
@@ -133,13 +183,17 @@ idm_t DynamicOrganizer::GetIdm(std::string const& name) const
 
     if (it != _members.end()) {
         auto idm = it->second.first;
+
+        // release read
+        _mtx.unlock_shared();
+
         return idm;
     } else {
         throw std::runtime_error("Resource with name <" + name + "> does not exist!");
     }
 }
 
-idp_t DynamicOrganizer::GetDynamicIdp() const 
+idp_t DynamicOrganizer::GetDynamicOrganizerIdp() const 
 {
     return _idp;
 }

@@ -157,9 +157,9 @@ public:
 	  return hpx::async<action_type>(this->get_id(), name).get();
 	}
 
-    idm_t GetDynamicIdp()
+    idm_t GetDynamicOrganizerIdp()
 	{
-	  typedef Domain::GetDynamicIdp_action_Domain action_type;
+	  typedef Domain::GetDynamicOrganizerIdp_action_Domain action_type;
 	  return hpx::async<action_type>(this->get_id()).get();
 	}
 

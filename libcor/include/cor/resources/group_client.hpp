@@ -82,43 +82,23 @@ public:
 	// método que retorna o idp global do recurso, que está presente na classe Resource
 	idp_t IdpGlobal()
 	{
-		typedef Resource::Idp_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
-	}
-
-	idp_t IdpGlobal_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Resource::Idp_action_Resource action_type;
+		typedef ResourceNonMigrable::Idp_action_ResourceNonMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
 	hpx::id_type GetLocalityGID()
 	{
-		typedef Resource::GetLocalityGID_action_Resource action_type;
+		typedef ResourceNonMigrable::GetLocalityGID_action_ResourceNonMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 	
-	hpx::id_type GetLocalityGID_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Resource::GetLocalityGID_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
-	}
-
 	unsigned int GetLocalityID()
 	{
-		typedef Resource::GetLocalityID_action_Resource action_type;
+		typedef ResourceNonMigrable::GetLocalityID_action_ResourceNonMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 	
-	unsigned int GetLocalityID_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Resource::GetLocalityID_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
-	}
-	
+
 
 	/** Dynamic organizer interface **/
 	void Join(idp_t idp, std::string const& name)
@@ -127,24 +107,10 @@ public:
 	  return hpx::async<action_type>(this->get_id(), idp, name).get();
 	}
 
-	void Join_here(idp_t idp, std::string const& name)
-	{
-		Migrate(hpx::find_here());
-		typedef Group::Join_action_Group action_type;
-		return hpx::async<action_type>(this->get_id(), idp, name).get();
-	}
-
 	void Leave(idp_t idp)
 	{
 	  typedef Group::Leave_action_Group action_type;
 	  return hpx::async<action_type>(this->get_id(), idp).get();
-	}
-
-	void Leave_here(idp_t idp)
-	{
-		Migrate(hpx::find_here());
-		typedef Group::Leave_action_Group action_type;
-		return hpx::async<action_type>(this->get_id(), idp).get();
 	}
 
 	std::string GetModuleName()
@@ -153,22 +119,8 @@ public:
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
-	std::string GetModuleName_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Group::GetModuleName_action_Group action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
-	}
-		
 	std::size_t GetTotalMembers()
 	{
-		typedef Group::GetTotalMembers_action_Group action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
-	}
-		
-	std::size_t GetTotalMembers_here()
-	{
-		Migrate(hpx::find_here());
 		typedef Group::GetTotalMembers_action_Group action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
@@ -179,22 +131,8 @@ public:
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
-	std::vector<idp_t> GetMemberList_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Group::GetMemberList_action_Group action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
-	}
-
     idp_t GetIdp(idm_t idm)
 	{
-		typedef Group::GetIdp1_action_Group action_type;
-		return hpx::async<action_type>(this->get_id(), idm).get();
-	}
-
-    idp_t GetIdp_here(idm_t idm)
-	{
-		Migrate(hpx::find_here());
 		typedef Group::GetIdp1_action_Group action_type;
 		return hpx::async<action_type>(this->get_id(), idm).get();
 	}
@@ -205,22 +143,8 @@ public:
 		return hpx::async<action_type>(this->get_id(), name).get();
 	}
 
-    idp_t GetIdp_here(std::string const& name)
-	{
-		Migrate(hpx::find_here());
-		typedef Group::GetIdp2_action_Group action_type;
-		return hpx::async<action_type>(this->get_id(), name).get();
-	}
-
     idm_t GetIdm(idp_t idp)
 	{
-		typedef Group::GetIdm1_action_Group action_type;
-		return hpx::async<action_type>(this->get_id(), idp).get();
-	}
-
-    idm_t GetIdm_here(idp_t idp)
-	{
-		Migrate(hpx::find_here());
 		typedef Group::GetIdm1_action_Group action_type;
 		return hpx::async<action_type>(this->get_id(), idp).get();
 	}
@@ -231,25 +155,12 @@ public:
 		return hpx::async<action_type>(this->get_id(), name).get();
 	}
 
-    idm_t GetIdm_here(std::string const& name)
+    idm_t GetDynamicOrganizerIdp()
 	{
-		Migrate(hpx::find_here());
-		typedef Group::GetIdm2_action_Group action_type;
-		return hpx::async<action_type>(this->get_id(), name).get();
-	}
-
-    idm_t GetDynamicIdp()
-	{
-		typedef Group::GetDynamicIdp_action_Group action_type;
+		typedef Group::GetDynamicOrganizerIdp_action_Group action_type;
 		return hpx::async<action_type>(this->get_id()).get();
 	}
 
-    idm_t GetDynamicIdp_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Group::GetDynamicIdp_action_Group action_type;
-		return hpx::async<action_type>(this->get_id()).get();
-	}
 
 
 	/** Local interface **/
@@ -261,11 +172,6 @@ public:
 	// Returns component's GID
 	hpx::id_type GetGid() {
 	  return this->get_id();
-	}
-
-	void Migrate(hpx::id_type dest)
-	{
-		hpx::components::migrate<Group>(this->get_id(), dest).get();
 	}
 
 	int GetComponentType()

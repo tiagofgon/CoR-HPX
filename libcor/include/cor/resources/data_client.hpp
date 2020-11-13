@@ -3,7 +3,7 @@
 #define COR_DATA_CLIENT_HPP
 
 #include "cor/resources/data.hpp"
-#include "cor/services/mutex_service_client.hpp"
+#include "cor/services/mutexRW_service_client.hpp"
 // #include "cor/services/mutex_service.hpp"
 // #include "cor/resources/teste.hpp"
 
@@ -68,7 +68,7 @@ public:
     {
 		std::string basename = std::to_string(IdpGlobal()) + "mutex";
 		hpx::id_type mutex_gid = hpx::find_from_basename(basename, 0).get();
-		mutex = new MutexService_Client(std::move(mutex_gid));
+		mutex = new MutexRWService_Client(std::move(mutex_gid));
 	}
 
     Data_Client(idp_t idp, hpx::shared_future<hpx::id_type> && id) :
@@ -77,7 +77,7 @@ public:
     {
 		std::string basename = std::to_string(IdpGlobal()) + "mutex";
 		hpx::id_type mutex_gid = hpx::find_from_basename(basename, 0).get();
-		mutex = new MutexService_Client(std::move(mutex_gid));
+		mutex = new MutexRWService_Client(std::move(mutex_gid));
 	}
 
     Data_Client(idp_t idp, hpx::id_type && id) :
@@ -86,7 +86,7 @@ public:
     {
 		std::string basename = std::to_string(IdpGlobal()) + "mutex";
 		hpx::id_type mutex_gid = hpx::find_from_basename(basename, 0).get();
-		mutex = new MutexService_Client(std::move(mutex_gid));
+		mutex = new MutexRWService_Client(std::move(mutex_gid));
 	}
 
 	/// Standard constructor with parameters
@@ -96,7 +96,7 @@ public:
 		_idp(idp)
     {
 		// Mutex necessário para garantir exclusão mutua no acesso ao dado
-		mutex = new MutexService_Client();
+		mutex = new MutexRWService_Client();
 		std::string basename = std::to_string(idp) + "mutex";
 		auto future = hpx::register_with_basename(basename, mutex->GetGid()).get();
 
@@ -108,7 +108,7 @@ public:
 		_idp(idp)
     {
 		// Mutex necessário para garantir exclusão mutua no acesso ao dado
-		mutex = new MutexService_Client();
+		mutex = new MutexRWService_Client();
 		std::string basename = std::to_string(idp) + "mutex";
 		auto future = hpx::register_with_basename(basename, mutex->GetGid()).get();
 	}
@@ -159,44 +159,48 @@ public:
 	/** Data interface **/
     T Fetch()
     {
-      typedef typename Data<T>::Fetch_action_Data action_type;
-      return hpx::async<action_type>(base_type::get_id()).get();
+		AcquireRead();
+		typedef typename Data<T>::Fetch_action_Data action_type;
+		auto dado = hpx::async<action_type>(base_type::get_id()).get();
+		ReleaseRead();
+		return dado;
     }
+
+	void AcquireRead()
+	{
+		std::cout << "AcquireRead()" << std::endl;
+
+		mutex->AcquireRead();
+
+		ensure_ptr();
+
+	}
+
+	void ReleaseRead()
+	{
+		std::cout << "ReleaseRead()" << std::endl;
+
+		mutex->ReleaseRead();
+
+	}
 
 	void Acquire()
 	{
-		std::cout << "Acquire()" << std::endl;
+		std::cout << "AcquireWrite()" << std::endl;
 
-		// // typedef typename Data<T>::Acquire_action_Data action_type;
-		// // int state = hpx::async<action_type>(base_type::get_id()).get();
-		mutex->Acquire();
+		mutex->AcquireWrite();
 
-		// // mutex_gid = hpx::local_new<MutexService>().get();
-		// // std::cout << "Acquire()11" << std::endl;
-		// // typedef MutexService::Acquire_action_MutexService action_type;
-		// // std::cout << "Acquire()22" << std::endl;
-		// // hpx::async<action_type>(mutex_gid).get();
-		// // std::cout << "Acquire()33" << std::endl;
 		ensure_ptr();
 
-
-		// // typedef MutexService::Release_action_MutexService action_type2;
-		// // std::cout << "Release()22" << std::endl;
-		// // hpx::async<action_type2>(mutex_gid).get();
-		// // std::cout << "Release()33" << std::endl;
 	}
 
 	void Release()
 	{
-		std::cout << "Release()" << std::endl;
-		// // typedef typename Data<T>::Release_action_Data action_type;
-		// // return hpx::async<action_type>(base_type::get_id()).get();
-		mutex->Release();
-		// // typedef MutexService::Release_action_MutexService action_type;
-		// // hpx::async<action_type>(mutex_gid).get();
+		std::cout << "ReleaseWrite()" << std::endl;
+
+		mutex->ReleaseWrite();
+
 	}
-
-
 
 	T const &operator*() const {
 		std::cout << "AQUI_11" << std::endl;
@@ -278,7 +282,7 @@ private:
 
 	idp_t _idp;
 
-	MutexService_Client *mutex;
+	MutexRWService_Client *mutex;
 	// hpx::id_type mutex_gid;
 
 	mutable std::shared_ptr<Data<T>> ptr;

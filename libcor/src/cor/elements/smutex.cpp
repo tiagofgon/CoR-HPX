@@ -6,7 +6,11 @@ namespace cor {
 
 SMutex::SMutex() = default;
 
-SMutex::SMutex(idp_t idp) : _idp{idp} {}
+SMutex::SMutex(idp_t idp) : 
+    _idp{idp} 
+{
+    
+}
 
 SMutex::~SMutex() = default;
 

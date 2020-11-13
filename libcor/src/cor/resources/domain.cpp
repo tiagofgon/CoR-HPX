@@ -52,8 +52,8 @@ idm_t Domain::GetIdm2(std::string const& name) {
     return _dynamic_organizer.GetIdm(name);
 }
 
-idp_t Domain::GetDynamicIdp() {
-    return _dynamic_organizer.GetDynamicIdp();
+idp_t Domain::GetDynamicOrganizerIdp() {
+    return _dynamic_organizer.GetDynamicOrganizerIdp();
 }
 
 
@@ -122,7 +122,7 @@ typedef cor::Domain::GetIdp1_action_Domain GetIdp1_action_Domain;
 typedef cor::Domain::GetIdp2_action_Domain GetIdp2_action_Domain;
 typedef cor::Domain::GetIdm1_action_Domain GetIdm1_action_Domain;
 typedef cor::Domain::GetIdm2_action_Domain GetIdm2_action_Domain;
-typedef cor::Domain::GetDynamicIdp_action_Domain GetDynamicIdp_action_Domain;
+typedef cor::Domain::GetDynamicOrganizerIdp_action_Domain GetDynamicOrganizerIdp_action_Domain;
 
 HPX_REGISTER_ACTION(Join_action_Domain);
 HPX_REGISTER_ACTION(Leave_action_Domain);
@@ -133,7 +133,7 @@ HPX_REGISTER_ACTION(GetIdp1_action_Domain);
 HPX_REGISTER_ACTION(GetIdp2_action_Domain);
 HPX_REGISTER_ACTION(GetIdm1_action_Domain);
 HPX_REGISTER_ACTION(GetIdm2_action_Domain);
-HPX_REGISTER_ACTION(GetDynamicIdp_action_Domain);
+HPX_REGISTER_ACTION(GetDynamicOrganizerIdp_action_Domain);
 
 
 

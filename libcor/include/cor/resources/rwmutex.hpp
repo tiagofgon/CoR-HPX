@@ -1,46 +1,52 @@
-// #ifndef COR_RWMUTEX_HPP
-// #define COR_RWMUTEX_HPP
+#ifndef COR_MAUTEXRW_HPP
+#define COR_MAUTEXRW_HPP
 
-// #include "cor/resources/resource.hpp"
-// #include "cor/elements/srwmutex.hpp"
+#include "cor/resources/resource_non_migrable.hpp"
+#include "cor/elements/srwmutex.hpp"
 
-// #include "cereal/types/polymorphic.hpp"
+namespace cor {
 
-// namespace cor {
+struct RWMutex: public ResourceNonMigrable, public hpx::components::component_base<RWMutex>
+{
 
-// class RWMutex: public Resource, public SRWMutex
-// {
+typedef hpx::components::component_base<RWMutex>::wrapping_type wrapping_type;
+typedef RWMutex type_holder;
+typedef ResourceNonMigrable base_type_holder;
 
-// friend class ResourceManager;
-// friend class cereal::access;
+protected:
+    explicit RWMutex(idp_t idp);
 
-// public:
-//     ~RWMutex();
+public:
+    RWMutex();
+    ~RWMutex();
 
-//     RWMutex(const RWMutex&) = delete;
-//     RWMutex& operator=(const RWMutex&) = delete;
+    void AcquireRead();
+    void ReleaseRead();
 
-//     RWMutex(RWMutex&&) noexcept;
-//     RWMutex& operator=(RWMutex&&) noexcept;
+    void AcquireWrite();
+    void ReleaseWrite();
+    
+    HPX_DEFINE_COMPONENT_ACTION(RWMutex, AcquireRead, AcquireRead_action_RWMutex);
+    HPX_DEFINE_COMPONENT_ACTION(RWMutex, ReleaseRead, ReleaseRead_action_RWMutex);
+    HPX_DEFINE_COMPONENT_ACTION(RWMutex, AcquireWrite, AcquireWrite_action_RWMutex);
+    HPX_DEFINE_COMPONENT_ACTION(RWMutex, ReleaseWrite, ReleaseWrite_action_RWMutex);
 
-// protected:
-//     RWMutex();
-//     explicit RWMutex(idp_t idp);
+private:
+    SRWMutex _srwmutex;
 
-// private:
-//     template <typename Archive>
-//     void serialize(Archive& ar)
-//     {
-//         ar(cereal::base_class<Resource>(this), cereal::base_class<SRWMutex>(this));
-//     }
+};
 
-// };
+}
 
-// }
 
-// #include <cereal/archives/binary.hpp>
-// #include <cereal/archives/portable_binary.hpp>
+typedef cor::RWMutex::AcquireRead_action_RWMutex AcquireRead_action_RWMutex;
+typedef cor::RWMutex::ReleaseRead_action_RWMutex ReleaseRead_action_RWMutex;
+typedef cor::RWMutex::AcquireWrite_action_RWMutex AcquireWrite_action_RWMutex;
+typedef cor::RWMutex::ReleaseWrite_action_RWMutex ReleaseWrite_action_RWMutex;
 
-// CEREAL_REGISTER_TYPE(cor::RWMutex);
+HPX_REGISTER_ACTION_DECLARATION(AcquireRead_action_RWMutex);
+HPX_REGISTER_ACTION_DECLARATION(ReleaseRead_action_RWMutex);
+HPX_REGISTER_ACTION_DECLARATION(AcquireWrite_action_RWMutex);
+HPX_REGISTER_ACTION_DECLARATION(ReleaseWrite_action_RWMutex);
 
-// #endif
+#endif

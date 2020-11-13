@@ -1,47 +1,38 @@
-// #ifndef COR_SRWMUTEX_HPP
-// #define COR_SRWMUTEX_HPP
+#ifndef COR_SRWMUTEX_HPP
+#define COR_SRWMUTEX_HPP
 
-// #include "cereal/access.hpp"
+#include <hpx/hpx.hpp>
+#include "cor/system/macros.hpp"
 
-// #include "cor/system/macros.hpp"
+namespace cor {
 
-// namespace cor {
+class SRWMutex
+{
 
-// class SRWMutex
-// {
+public:
+    SRWMutex();
+    explicit SRWMutex(idp_t idp);
 
-// friend class cereal::access;
+    ~SRWMutex();
 
-// public:
-//     ~SRWMutex();
+    // SRWMutex(const SRWMutex&) = delete;
+    // SRWMutex& operator=(const SRWMutex&) = delete;
 
-//     SRWMutex(const SRWMutex&) = delete;
-//     SRWMutex& operator=(const SRWMutex&) = delete;
+    // SRWMutex(SRWMutex&&) noexcept;
+    // SRWMutex& operator=(SRWMutex&&) noexcept;
 
-//     SRWMutex(SRWMutex&&) noexcept;
-//     SRWMutex& operator=(SRWMutex&&) noexcept;
+    void AcquireRead();
+    void ReleaseRead();
 
-//     void AcquireRead();
-//     void ReleaseRead();
+    void AcquireWrite();
+    void ReleaseWrite();
 
-//     void AcquireWrite();
-//     void ReleaseWrite();
+private:
+    idp_t _idp;
 
-// protected:
-//     SRWMutex();
-//     explicit SRWMutex(idp_t idp);
+    hpx::lcos::local::shared_mutex _mtx;
+};
 
-// private:
-//     template <typename Archive>
-//     void serialize(Archive& ar)
-//     {
-//         ar(_idp);
-//     }
+}
 
-//     idp_t _idp;
-
-// };
-
-// }
-
-// #endif
+#endif

@@ -22,7 +22,7 @@ void Main(int rsc_idp)
 
     // criar um dado no qual irá ser escrito o idp do agente que irá ser criado
     auto data = domain->CreateLocal<cor::Data_Client<idp_t>>(group->Idp(), "data");
-
+    
     // criar um agente que irá carregar dinamicamente e executar uma função presente no novo módulo do utilizador
     std::string const& func = "Test";
     auto new_agent = domain->CreateLocal<cor::Agent_Client<idp_t(idp_t)>>(group->Idp(), "agent", group->GetModuleName(), func);
@@ -39,9 +39,7 @@ void Main(int rsc_idp)
     // obtém o idp presente no conteúdo da mensagem
     auto res2 = msg.Get<idp_t>();
 
-    data->Acquire();
-    auto res3 = **data;
-    data->Release();
+    auto res3 = data->Fetch();
 
     std::cout << res1 << "\t" << res2 << "\t" << res3 << "\n";
 }
