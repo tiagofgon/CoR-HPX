@@ -60,7 +60,7 @@ private:
     std::map<idp_t, std::pair<idm_t, std::string>> _members; // (idp (idm, name))
     idm_t _next_idm;
     
-    hpx::lcos::local::shared_mutex _mtx;
+    // hpx::lcos::local::shared_mutex _mtx;
 };
 
 }

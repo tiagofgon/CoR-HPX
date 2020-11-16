@@ -2,7 +2,7 @@
 
 // #include "cor/system/pod_component_client.hpp"
 // #include "cor/services/access_manager_client.hpp"
-
+#include "cor/resources/resource_non_migrable.hpp"
 
 namespace cor {
 
@@ -89,16 +89,15 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
     }
 
     if (pos!=0) { // O resto das localidades
-        std::cout << "find" << std::endl;
+        std::cout << "find1" << std::endl;
         // Procurar o GID do recurso com nome "name"
 		auto gid = hpx::find_from_basename(basename, 0).get();
         // std::cout << "aqui1" << std::endl;
-        typedef Resource::Idp_action_Resource action_type;
+        typedef ResourceNonMigrable::Idp_action_ResourceNonMigrable action_type;
         auto idp = hpx::async<action_type>(gid).get();
         // std::cout << "aqui2" << std::endl;
         // Cria uma referencia para o componente identificado por idp que pertence ao contexto ctx
         rsc_ptr = CreateReference<T>(idp, ctx, name);
-        
         if(total_members > 1) 
         {
             std::cout << "dentro da barreira" << std::endl;

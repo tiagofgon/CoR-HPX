@@ -112,6 +112,7 @@ int main(int argc, char * argv[])
     std::vector<std::string> const cfg = {
     // Make sure networking will not be disabled
     "hpx.expect_connecting_localities!=1"
+    // "hpx.parcel.port=7910"
     };
 
     return hpx::init(argc, argv, cfg);

@@ -17,6 +17,7 @@
 #include "cor/services/access_manager_client.hpp"
 #include "cor/elements/mailbox_client.hpp"
 
+
 namespace cor {
 
 class ResourceManager;
