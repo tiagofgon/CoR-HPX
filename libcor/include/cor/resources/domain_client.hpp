@@ -2,11 +2,11 @@
 #ifndef COR_DOMAIN_CLIENT_HPP
 #define COR_DOMAIN_CLIENT_HPP
 
+#include "cor/resources/domain.hpp"
+#include "cor/system/system.hpp"
+
 #include <hpx/hpx.hpp>
 
-#include "cor/resources/domain.hpp"
-#include "cor/resources/teste.hpp"
-#include "cor/system/system.hpp"
 
 namespace cor {
 
@@ -17,18 +17,16 @@ public:
 	typedef hpx::components::client_base<Domain_Client, Domain> base_type;
 
 	friend class hpx::serialization::access;
-	friend class Domain;
 
 	typedef DynamicOrganizer organizer;
 
-	friend class ResourceManager;
-	/// Default construct an empty client side representation (not
-	/// connected to any existing component). Also needed for serialization
+	// Default construct an empty client side representation (not
+	// connected to any existing component). Also needed for serialization
 	Domain_Client()
 	{}
 
-	/// Create a client side representation for the existing
-	/// Closure instance with the given GID
+	// Create a client side representation for the existing
+	// Closure instance with the given GID
 	Domain_Client(hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
 		_idp(IdpGlobal())
@@ -44,7 +42,7 @@ public:
 		_idp(IdpGlobal())
 	{}
 
-	// Construtor para réplicas
+	// Constructor for replicas
 	Domain_Client(idp_t idp, hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
 		_idp(idp)
@@ -60,7 +58,7 @@ public:
 		_idp(idp)
 	{}
 
-	/// Standard constructor with parameters
+	// Standard constructor with parameters
 	Domain_Client(idp_t idp, std::string const& module) :
 		base_type(create_server(idp, module)),
 		_idp(idp)
@@ -68,7 +66,7 @@ public:
 		global::pod->setDomainIdp(idp); // Update domain idp variable's Pod
 	}
 
-	// Isto só é possivel fazer quando se implementar dominios remotos!
+	// This can only be done when remote domains will be implemented!
 	Domain_Client(idp_t idp, hpx::id_type locality, std::string const& module) :
 		base_type(create_server_remote(idp, locality, module)),
 		_idp(idp)
@@ -77,32 +75,30 @@ public:
 	}
 
 
-
-
-	/** Resource interface **/
-	// método que retorna o idp global do recurso, que está presente na classe Resource
+	/** Resource's interface **/
+	// method that returns the global idp of the resource, which is present in the class Resource
 	idp_t IdpGlobal()
 	{
-		typedef ResourceNonMigrable::Idp_action_ResourceNonMigrable action_type;
+		typedef Resource::Idp_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
+	// method that returns the GID(hpx::id_type) of this resource locality
 	hpx::id_type GetLocalityGID()
 	{
-		typedef ResourceNonMigrable::GetLocalityGID_action_ResourceNonMigrable action_type;
+		typedef Resource::GetLocalityGID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
+	// method that returns the number of this resource locality
 	unsigned int GetLocalityID()
 	{
-		typedef ResourceNonMigrable::GetLocalityID_action_ResourceNonMigrable action_type;
+		typedef Resource::GetLocalityID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
 
-
-
-	/** Dynamic organizer interface **/
+	/** Dynamic organizer's interface **/
 	void Join(idp_t idp, std::string const& name)
 	{
 		typedef Domain::Join_action_Domain action_type;
@@ -141,32 +137,30 @@ public:
 
     idp_t GetIdp(std::string const& name)
 	{
-	  typedef Domain::GetIdp2_action_Domain action_type;
-	  return hpx::async<action_type>(this->get_id(), name).get();
+		typedef Domain::GetIdp2_action_Domain action_type;
+		return hpx::async<action_type>(this->get_id(), name).get();
 	}
 
     idm_t GetIdm(idp_t idp)
 	{
-	  typedef Domain::GetIdm1_action_Domain action_type;
-	  return hpx::async<action_type>(this->get_id(), idp).get();
+	  	typedef Domain::GetIdm1_action_Domain action_type;
+	  	return hpx::async<action_type>(this->get_id(), idp).get();
 	}
 
     idm_t GetIdm(std::string const& name)
 	{
-	  typedef Domain::GetIdm2_action_Domain action_type;
-	  return hpx::async<action_type>(this->get_id(), name).get();
+		typedef Domain::GetIdm2_action_Domain action_type;
+		return hpx::async<action_type>(this->get_id(), name).get();
 	}
 
     idm_t GetDynamicOrganizerIdp()
 	{
-	  typedef Domain::GetDynamicOrganizerIdp_action_Domain action_type;
-	  return hpx::async<action_type>(this->get_id()).get();
+		typedef Domain::GetDynamicOrganizerIdp_action_Domain action_type;
+		return hpx::async<action_type>(this->get_id()).get();
 	}
 
 
-
-
-	/** Container interface **/
+	/** Container's interface **/
     std::string GetGlobalContext()
 	{
 		typedef Domain::GetGlobalContext_action_Domain action_type;
@@ -232,7 +226,7 @@ public:
     template <typename T, typename ... Args>
     idp_t Create(idp_t ctx, std::string const& name, Args&& ... args)
 	{
-		std::cout << "Domain_Client::Create" << std::endl;
+		// std::cout << "Domain_Client::Create" << std::endl;
 		typedef cor::Domain::Create_action_Domain<T, Args...> action_type;
 		return hpx::async<action_type>(this->get_id(), ctx, name, std::forward<Args>(args)...).get();
 	}
@@ -254,7 +248,7 @@ public:
     template <typename T, typename ... Args>
     std::unique_ptr<T> CreateCollective(idp_t clos, idp_t ctx, std::string const& name, Args&& ... args)
 	{
-		auto active_rsc_idp = GetActiveResourceIdp(); // vou buscar o idp do agente atual que vai ser necessario no Pod
+		auto active_rsc_idp = GetActiveResourceIdp(); // I'll get the idp of the current agent that will be needed in the Pod
 		typedef cor::Domain::CreateCollective2_action_Domain<T, Args...> action_type;
 		return hpx::async<action_type>(this->get_id(), active_rsc_idp, clos, ctx, name, std::forward<Args>(args)...).get();
 	}
@@ -288,9 +282,7 @@ public:
 	}
 
 
-
-
-	/** Local interface **/
+	/** Local Client's interface **/
 	// local idp of this resource
 	idp_t Idp() {
 		return _idp;
@@ -312,17 +304,16 @@ public:
 		6 - Data
 		7 - Barrier
 		8 - Mutex
+		9 - RWMutex
 		*/
 		return 1;
 	}
 
-	// Só para fins de compilação, não é usado aqui nunca!
+	// For compilation purposes only, it is never used here!
 	hpx::id_type GetMailboxGid() {
 		return hpx::find_here();
 	}
 	
-
-
 
 private:
 	hpx::future<hpx::id_type> create_server(idp_t idp, std::string const& module) {
@@ -344,5 +335,6 @@ private:
 
 
 }
+
 
 #endif

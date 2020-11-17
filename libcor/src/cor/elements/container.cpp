@@ -1,16 +1,16 @@
 #include "cor/elements/container.hpp"
 
+
 namespace cor {
 
 Container::Container() = default;
+Container::~Container() = default;
 
 Container::Container(idp_t idp) : 
     _idp{idp} 
 {
     std::cout << "Criado um objeto da classe \"Container\", com idp: " << _idp << std::endl;
 }
-
-Container::~Container() = default;
 
 // Container::Container(Container&&) noexcept = default;
 

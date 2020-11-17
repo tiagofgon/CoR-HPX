@@ -1,28 +1,31 @@
-#ifndef COR_MAUTEXRW_HPP
-#define COR_MAUTEXRW_HPP
+#ifndef COR_RWMUTEX_HPP
+#define COR_RWMUTEX_HPP
 
-#include "cor/resources/resource_non_migrable.hpp"
+#include "cor/resources/resource.hpp"
 #include "cor/elements/srwmutex.hpp"
+
+#include <hpx/hpx.hpp>
+
 
 namespace cor {
 
-struct RWMutex: public ResourceNonMigrable, public hpx::components::component_base<RWMutex>
+struct RWMutex: public Resource, public hpx::components::component_base<RWMutex>
 {
 
 typedef hpx::components::component_base<RWMutex>::wrapping_type wrapping_type;
 typedef RWMutex type_holder;
-typedef ResourceNonMigrable base_type_holder;
+typedef Resource base_type_holder;
 
 protected:
     explicit RWMutex(idp_t idp);
 
 public:
-    RWMutex();
+    RWMutex() = delete;
     ~RWMutex();
 
+    /* RWMutex's interface */
     void AcquireRead();
     void ReleaseRead();
-
     void AcquireWrite();
     void ReleaseWrite();
     
@@ -33,12 +36,12 @@ public:
 
 private:
     SRWMutex _srwmutex;
-
 };
 
 }
 
 
+/* Declaration of actions to interact with SRWMutex */
 typedef cor::RWMutex::AcquireRead_action_RWMutex AcquireRead_action_RWMutex;
 typedef cor::RWMutex::ReleaseRead_action_RWMutex ReleaseRead_action_RWMutex;
 typedef cor::RWMutex::AcquireWrite_action_RWMutex AcquireWrite_action_RWMutex;

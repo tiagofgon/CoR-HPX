@@ -1,34 +1,29 @@
-
 #ifndef COR_MAILBOX_CLIENT_HPP
 #define COR_MAILBOX_CLIENT_HPP
 
-#include <hpx/hpx.hpp>
-
 #include "cor/elements/mailbox.hpp"
 #include "cor/message.hpp"
+
+#include <hpx/hpx.hpp>
+
 
 namespace cor {
 
 struct Mailbox_Client: hpx::components::client_base<Mailbox_Client, Mailbox>
 {
 
-private:
-	static hpx::future<hpx::id_type> create_server(idp_t idp) {
-		return hpx::local_new<Mailbox>(idp);
-	}
-
 public:
 	typedef hpx::components::client_base<Mailbox_Client, Mailbox> base_type;
 
 	friend class hpx::serialization::access;
 
-	/// Default construct an empty client side representation (not
-	/// connected to any existing component). Also needed for serialization
+	// Default construct an empty client side representation (not
+	// connected to any existing component). Also needed for serialization
 	Mailbox_Client()
 	{}
 
-	/// Create a client side representation for the existing
-	/// Closure_Component instance with the given GID
+	// Create a client side representation for the existing
+	// Closure_Component instance with the given GID
 	Mailbox_Client(hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id))
 	{}
@@ -46,7 +41,6 @@ public:
 		base_type(create_server(idp)),
 		_idp(idp)
 	{}
-
 
     void Send(idp_t dest, Message const& msg)
 	{
@@ -90,6 +84,8 @@ public:
 		return hpx::async<action_type>(this->get_id(), rank, clos).get();
 	}
 
+
+	/** For spawn purposes **/
     void SendNewClos(Message const& msg_original)
 	{
 		typedef Mailbox::SendNewClos_action_Mailbox action_type;
@@ -102,31 +98,29 @@ public:
 		return hpx::async<action_type>(this->get_id(), ctx).get();
 	}
 
-	// /** Local interface **/
-	// // local idp of this resource
-	// idp_t Idp() {
-	// 	return _idp;
-	// }
 
+	/** Local Client's interface **/
 	// Returns component's GID
 	hpx::id_type GetGid() {
 	  return this->get_id();
 	}
 
 
-
 private:
+	hpx::future<hpx::id_type> create_server(idp_t idp) {
+		return hpx::local_new<Mailbox>(idp);
+	}
+
 	template <typename Archive>
 	void serialize(Archive& ar, unsigned) {   
 		ar & _idp;
-		// std::cout << "serialized\n";
 	}
 
-	idp_t _idp;
-
+	idp_t _idp; // Agent's idp
 };
 
 
 }
+
 
 #endif

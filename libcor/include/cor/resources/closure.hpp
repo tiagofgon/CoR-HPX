@@ -1,33 +1,30 @@
 #ifndef COR_CLOSURE_HPP
 #define COR_CLOSURE_HPP
 
-#include "cor/resources/resource_non_migrable.hpp"
+#include "cor/resources/resource.hpp"
 #include "cor/elements/static_organizer.hpp"
+
+#include <hpx/hpx.hpp>
+
 
 namespace cor {
 
-struct Closure: public ResourceNonMigrable, hpx::components::component_base<Closure>
+struct Closure: public Resource, hpx::components::component_base<Closure>
 {
 
 typedef hpx::components::component_base<Closure>::wrapping_type wrapping_type;
 typedef Closure type_holder;
-typedef ResourceNonMigrable base_type_holder;
+typedef Resource base_type_holder;
 
 protected:
     explicit Closure(idp_t idp, unsigned int total_members, idp_t parent);
 
 public:
-    Closure();
+    Closure() = delete;
     ~Closure();
 
-    // Closure(const Closure&) = delete;
-    // Closure& operator=(const Closure&) = delete;
 
-    // Closure(Closure&&) noexcept;
-    // Closure& operator=(Closure&&) noexcept;
-
-
-    /* StaticOrganizer interface */
+    /* StaticOrganizer's interface */
     void Join(idp_t idp, std::string const& name);
     void Leave(idp_t idp);
 
@@ -36,7 +33,6 @@ public:
     std::size_t GetFixedTotalMembers();
     std::vector<idp_t> GetMemberList();
 
-    // metodos com o mesmo nome é complicado para fazer as action, portanto usei 1 e 2, o que nao altera em anda a API final
     idp_t GetIdp1(idm_t idm);
     idp_t GetIdp2(std::string const& name);
 
@@ -64,7 +60,7 @@ private:
 }
 
 
-/* StaticOrganizer actions */
+/* Declaration of actions to interact with StaticOrganizer */
 typedef cor::Closure::Join_action_Closure Join_action_Closure;
 typedef cor::Closure::Leave_action_Closure Leave_action_Closure;
 typedef cor::Closure::GetParent_action_Closure GetParent_action_Closure;
@@ -88,5 +84,6 @@ HPX_REGISTER_ACTION_DECLARATION(GetIdp2_action_Closure);
 HPX_REGISTER_ACTION_DECLARATION(GetIdm1_action_Closure);
 HPX_REGISTER_ACTION_DECLARATION(GetIdm2_action_Closure);
 HPX_REGISTER_ACTION_DECLARATION(GetStaticOrganizerIdp_action_Closure);
+
 
 #endif

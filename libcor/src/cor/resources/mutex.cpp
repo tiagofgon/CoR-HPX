@@ -1,15 +1,19 @@
 #include "cor/resources/mutex.hpp"
 
-namespace cor {
 
-Mutex::Mutex(idp_t idp) : 
-    ResourceNonMigrable{idp}, 
-    _smutex{idp}
-{}
+namespace cor {
 
 Mutex::~Mutex() = default;
 
+Mutex::Mutex(idp_t idp) : 
+    Resource{idp}, 
+    _smutex{idp}
+{
+    std::cout << "Criado um componente \"Mutex\", com idp: " << idp << std::endl;
+}
 
+
+/* Mutex interface */
 void Mutex::Acquire()
 {
     return _smutex.Acquire();
@@ -20,16 +24,17 @@ void Mutex::Release()
     return _smutex.Release();
 }
 
+
 }
 
 
 typedef cor::Mutex Mutex;
 typedef hpx::components::component<Mutex> Mutex_type;
 
-HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Mutex_type, Mutex, "ResourceNonMigrable");
+HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Mutex_type, Mutex, "Resource");
 
 
-// DynamicOranizer actions
+/* Action registration to interact with SMutex */
 typedef cor::Mutex::Acquire_action_Mutex Acquire_action_Mutex;
 typedef cor::Mutex::Release_action_Mutex Release_action_Mutex;
 

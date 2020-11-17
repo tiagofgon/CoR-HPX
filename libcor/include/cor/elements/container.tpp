@@ -1,9 +1,11 @@
 #ifdef COR_CONTAINER_HPP
 
+
 #include "cor/system/system.hpp"
 #include "cor/utils/utils.hpp"
 
 #include "cor/system/pod_client.hpp"
+
 
 namespace cor {
 
@@ -26,14 +28,13 @@ idp_t Container::CreateRemote(idp_t ctx, std::string const& name, Args&& ... arg
     std::cout << "Container::CreateRemote" << std::endl;
     auto ctrl = global::pod->SearchResource(ctx);
     ctrl[1] = 'R';
-    // return global::rpc->Create<T>(ctx, name, ctrl, std::forward<Args>(args)...);
     return global::pod->CreateRemote<T>(ctx, name, ctrl, std::forward<Args>(args)...);
 }
 
 template <typename T, typename ... Args>
 idp_t Container::Create(idp_t ctx, std::string const& name, Args&& ... args)
 {   
-    // Se o recurso ctx pertencer à lista _predecessors, o recurso é criado neste pod, se não cria remoto
+    // If the ctx resource belongs to the _predecessors list, the resource is created in this pod, if it does not create remotely
     if (global::pod->ContainsResource(ctx)) {
         std::cout << "Create - local" << std::endl;
         return global::pod->Create<T>(ctx, name, std::forward<Args>(args)...);
@@ -95,10 +96,6 @@ auto Container::Get(idp_t idp)
 
 
 }
-
-
-
-
 
 
 #endif

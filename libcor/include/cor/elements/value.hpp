@@ -3,6 +3,7 @@
 
 #include "cor/system/macros.hpp"
 
+
 namespace cor {
 
 template <typename T>
@@ -47,29 +48,26 @@ public:
     }
 
     T Fetch() const;
-
-	int Acquire();
-	void Release();
+    T* Get();
 
     template <typename Archive>
     void serialize(Archive& ar, unsigned version)
     {
         ar & _idp;
         ar & _value;
-        // ar & atomvar;
     }
 
 private:
     idp_t _idp;
     T _value;
 
-    // std::atomic_int atomvar;
-    // hpx::lcos::local::mutex _mtx;
-
 };
+
 
 }
 
+
 #include "cor/elements/value.tpp"
+
 
 #endif

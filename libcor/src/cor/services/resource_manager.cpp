@@ -27,10 +27,7 @@ ResourceManager::ResourceManager(Controller *ctrl, bool first) :
     dynamicOrganizer_idps{},
     staticOrganizer_idps{}
 {
-    // std::cout << "cacacac1" << std::endl;
-    InsertDynamicOrganizer_idps(cor::MetaDomain); // inserir o idp do meta-domain no conjunto dos recursos com dynamicOrganizer
-    // std::cout << "cacacac2" << std::endl;
-    // std::cout << "ResourceManager contrutor2" << std::endl;
+    InsertDynamicOrganizer_idps(cor::MetaDomain); // insert the meta-domain idp into the dynamicOrganizer set 
 }
 
 ResourceManager::~ResourceManager() = default;
@@ -38,7 +35,6 @@ ResourceManager::~ResourceManager() = default;
 void ResourceManager::CreateInitialContext(std::string const& ctrl)
 {
     if (_is_main_mgr) {
-        // std::cout << "--------------AQUI------------" << std::endl;
         CreateMetaDomain(ctrl);
     }
     else {
@@ -57,33 +53,28 @@ void ResourceManager::CreateMetaDomain(std::string const& ctrl)
 {
     // create meta-domain resource
     std::unique_ptr<Domain_Client> rsc = std::make_unique<Domain_Client>(cor::MetaDomain, "");
-    // std::cout << "aqui11" << std::endl;
+
     // insert association between idp and gid on gids map
-    InsertIdp(cor::MetaDomain, rsc->GetGid()); // Informar o componente global da associação idp-gid, assim como na associação local
+    InsertIdp(cor::MetaDomain, rsc->GetGid()); // Inform the global component of the idp-gid association, as well as the local association
     
-    // std::cout << "aqui1" << std::endl;
     // insert relationship of ancestry
     InsertPredecessorIdp(cor::MetaDomain, cor::MetaDomain);
-    // std::cout << "aqui2" << std::endl;
+
     auto future = hpx::register_with_basename("MetaDomain", rsc->GetGid());
-    // std::cout << "aqui3" << std::endl;
+
     // self join of meta-domain resource
     rsc->Join(cor::MetaDomain, "MetaDomain");
-    // std::cout << "aqui4" << std::endl;
+
     // std::cout << "-- Criado o Meta-Dominio -- " << cor::MetaDomain << std::endl;
 }
 
 void ResourceManager::FindMetaDomain(std::string const& ctrl)
 {   
-    // std::this_thread::sleep_for (std::chrono::seconds(5));
-
     // find meta-domain resource
     auto meta_domain_gid = hpx::find_from_basename("MetaDomain", 0).get();
 
-
     // insert association between idp and gid on gids map
-    InsertIdp(cor::MetaDomain, meta_domain_gid); // Informar o componente global da associação idp-gid, assim como na associação local
-
+    InsertIdp(cor::MetaDomain, meta_domain_gid); // Inform the global component of the idp-gid association, as well as the local association
 
     // insert relationship of ancestry
     InsertPredecessorIdp(cor::MetaDomain, cor::MetaDomain);
@@ -102,30 +93,6 @@ bool ResourceManager::ContainsResource(idp_t idp)
     }
 
 }
-
-// Resource *ResourceManager::GetResource(idp_t idp)
-// {
-//     // auto cobj = GetConsistencyObject(idp);
-//     // return cobj->GetResource();
-//     return nullptr;
-// }
-
-// hpx::id_type ResourceManager::GetResource(idp_t idp)
-// {
-//     std::lock_guard<std::mutex> lk(_mtx);
-
-//     auto alias_it = _alias.find(idp);
-//     auto ori_idp = (alias_it == _alias.end()) ? idp : alias_it->second;
-
-//     if ( gids.find(ori_idp) == gids.end() ) {
-//         std::cout << "ERRO: Recurso com idp " << idp <<" não existe - CreateLocal3" << std::endl;
-//     } else { // Cria um objeto componente cliente que está associado ao gid que corresponde ao ori_idp
-//         auto gid = gids.find(ori_idp)->second;
-
-//     // return gid of resource idp
-//     return gid;
-
-// }
 
 std::string ResourceManager::SearchResource(idp_t idp)
 {
@@ -157,12 +124,11 @@ std::string ResourceManager::SearchResource(idp_t idp)
 // ACABAR ISTO
 unsigned int ResourceManager::GetTotalDomains()
 {
-    // auto rsc = GetResource(cor::MetaDomain);
-    // auto meta_domain = dynamic_cast<Domain*>(rsc);
-    // auto total_members = meta_domain->GetTotalMembers();
+    auto gid = GetGidFromIdp(cor::MetaDomain);
+    std::unique_ptr<Domain_Client> meta_domain = std::make_unique<Domain_Client>(std::move(gid));
+    auto total_members = meta_domain->GetTotalMembers();
 
-    auto total_members = 9;
-    return total_members - 1;
+    return total_members;
 }
 
 idp_t ResourceManager::GetDomainIdp(idp_t idp)
@@ -185,7 +151,7 @@ void ResourceManager::InsertPredecessorIdp(idp_t idp, idp_t idp_predecessor)
     std::unique_lock<std::mutex> lk(_mtx); // shared_lock
 
     _predecessors.emplace(idp, idp_predecessor);
-    return _ctrl->InsertPredecessorIdpGlobal(idp, idp_predecessor);
+    _ctrl->InsertPredecessorIdpGlobal(idp, idp_predecessor);
 }
 
 bool ResourceManager::FindPredecessorIdp(idp_t idp)
@@ -209,7 +175,7 @@ idp_t ResourceManager::GetPredecessorIdp(idp_t idp)
     auto it = _predecessors.find(idp);
     if (it != _predecessors.end()) {
         return it->second;
-    } else { // no caso do idp ser remoto
+    } else { // in case the idp is remote
         return _ctrl->GetPredecessorIdpGlobal(idp);
     }
 }
@@ -244,10 +210,6 @@ void ResourceManager::EraseResource(idp_t idp)
     // _sync_free[idp].notify_all();
 }
 
-
-
-
-
 void ResourceManager::DeallocateResource(idp_t idp)
 {
     std::unique_lock<std::mutex> lk(_mtx);
@@ -256,7 +218,6 @@ void ResourceManager::DeallocateResource(idp_t idp)
 
     if (idp == cor::MetaDomain)
         RemovePredecessorIdp(idp);
-
 
     // if (dynamic_cast<DynamicOrganizer*>(rsc) != nullptr /* || dynamic_cast<StaticOrganizer*>(rsc) != nullptr */) {
     if(FindDynamicOrganizer_idps(idp) == true) {
@@ -293,13 +254,6 @@ void ResourceManager::DeallocateResource(idp_t idp)
     std::cout << "END <" << _ctrl->GetName() << "> DEALLOCATE RESOURCE " << std::to_string(idp) << std::endl;
 }
 
-
-
-
-
-
-
-
 idp_t ResourceManager::GenerateIdp()
 {
     return _ctrl->GenerateIdp();
@@ -332,7 +286,7 @@ hpx::id_type ResourceManager::GetGidFromIdp(idp_t idp)
     auto it = gids.find(idp);
     if (it != gids.end()) {
         return it->second;
-    } else { // no caso do idp ser remoto
+    } else { // in case the idp is remote
         return _ctrl->GetGidFromIdpGlobal(idp);
     }
 }
@@ -345,13 +299,9 @@ void ResourceManager::RemoveIdp(idp_t idp)
     return _ctrl->RemoveIdpGlobal(idp);
 }
 
-
-
-
 void ResourceManager::InsertDynamicOrganizer_idps(idp_t idp)
 {
     dynamicOrganizer_idps.insert(idp);
-    // std::cout << "cacacac3" << std::endl;
     return _ctrl->InsertDynamicOrganizer_idpsGlobal(idp);
 }
 
@@ -395,41 +345,9 @@ hpx::id_type ResourceManager::GetAgentMailbox(idp_t idp)
     }
 }
 
-
-
-
-
-/*
-void ResourceManager::DummyInsertWorldContext(idp_t idp, std::string const& name, Resource *rsc, std::string const& ctrl)
-{
-    if (dynamic_cast<Domain*>(rsc) != nullptr) {
-        if (idp == cor::MasterDomain) {
-            std::cout << "ANTES" << std::endl;
-            Create<cor::Group>(cor::ResourceWorld, idp, "ResourceWorld", true, ctrl, "");
-            std::cout << "DEPOIS" << std::endl;
-        }
-        else
-            CreateReference<cor::Group>(cor::ResourceWorld, idp, "ResourceWorld", ctrl);
-    }
-
-    auto rsc_world = GetLocalResource<cor::Group>(cor::ResourceWorld);
-    rsc_world->Join(idp, name);
-}
-*/
-
-// std::vector<std::string> ResourceManager::GetComponentHierarchy(hpx::id_type gid) 
-// {
-//     typedef Resource::Idp_action_resource_ action_type;
-//     auto asd = hpx::async<action_type>(gid).get();
-//     std::cout << "#####-- idp: " << asd << std::endl;
-
-//     auto dcc = new Domain_Client(std::move(gid));
-//     return dcc->GetComponentHierarchy();
-// }
-
 void ResourceManager::AttachResource(idp_t ctx, hpx::id_type ctx_gid, idp_t idp, std::string const& name)
 {
-    // Adicionar ao elemento organizador do recurso ctx
+    // Add to ctx resource organizer element
     if(FindDynamicOrganizer_idps(ctx) == true) {
         std::unique_ptr<Domain_Client> rsc = std::make_unique<Domain_Client>(std::move(ctx_gid));
         rsc->Join(idp, name);

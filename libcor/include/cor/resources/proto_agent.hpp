@@ -7,39 +7,31 @@
 #include <boost/preprocessor/seq/cat.hpp>
 #include <boost/preprocessor/variadic/to_seq.hpp>
 
-
-#include "cor/resources/resource_non_migrable.hpp"
+#include "cor/resources/resource.hpp"
 #include "cor/elements/executor_hpx.hpp"
 
 #include <hpx/hpx.hpp>
+
 
 namespace cor {
 
 template <typename> struct ProtoAgent;
 
 template <typename R, typename ... P>
-struct ProtoAgent<R(P...)>: public ResourceNonMigrable, public hpx::components::component_base<ProtoAgent<R(P...)>>
+struct ProtoAgent<R(P...)>: public Resource, public hpx::components::component_base<ProtoAgent<R(P...)>>
 {
 
 typedef typename hpx::components::component_base<ProtoAgent<R(P...)>>::wrapping_type wrapping_type;
 typedef ProtoAgent type_holder;
-typedef ResourceNonMigrable base_type_holder;
-
-friend class ResourceManager;
+typedef Resource base_type_holder;
 
 protected:
-    ProtoAgent();
     ProtoAgent(idp_t idp, std::function<R(P...)> const& f);
     ProtoAgent(idp_t idp, std::string const& module, std::string const& function);
 
 public:
+    ProtoAgent() = delete;
     ~ProtoAgent();
-
-    // ProtoAgent(const ProtoAgent&) = delete;
-    // ProtoAgent& operator=(const ProtoAgent&) = delete;
-
-    // ProtoAgent(ProtoAgent&&) noexcept;
-    // ProtoAgent& operator=(ProtoAgent&&) noexcept;
 
 
     /* Executor interface */
@@ -73,9 +65,9 @@ public:
     >::type
     {};
 
-private:
-    Executor<R(P...)> executor;
 
+private:
+    Executor<R(P...)> _executor;
 };
 
 }
@@ -83,7 +75,7 @@ private:
 #include "cor/resources/proto_agent.tpp"
 
 
-// função auxiliar para juntar os parametros
+// auxiliary function to join the parameters
 #define CONCATENATE(...)                                        \
     BOOST_PP_SEQ_CAT(BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))     \
 
@@ -111,7 +103,6 @@ private:
         cor::ProtoAgent<res(__VA_ARGS__)>::GetExecutorIdp_action_ProtoAgent,                                        \
         HPX_PP_CAT(__ProtoAgent_GetExecutorIdp_action_ProtoAgent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));     \
 
-/**/
 
 #define REGISTER_PROTOAGENT(res, ...)                                                                               \
     HPX_REGISTER_ACTION(                                                                                            \

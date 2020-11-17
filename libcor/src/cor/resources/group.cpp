@@ -1,19 +1,19 @@
 #include "cor/resources/group.hpp"
 
+
 namespace cor {
 
-Group::Group() = default;
+Group::~Group() = default;
 
 Group::Group(idp_t idp, std::string const& module) :
-    ResourceNonMigrable{idp},
+    Resource{idp},
     _dynamic_organizer{idp, module}
 {
     std::cout << "Criado um componente \"Grupo\", com idp: " << idp << std::endl;
 }
 
-Group::~Group() = default;
 
-/* DynamicOrganizer interface */
+/* DynamicOrganizer's interface */
 void Group::Join(idp_t idp, std::string const& name) {
     return _dynamic_organizer.Join(idp, name);
 }
@@ -58,14 +58,13 @@ idp_t Group::GetDynamicOrganizerIdp() {
 }
 
 
-
 typedef cor::Group Group;
 typedef hpx::components::component<Group> Group_type;
 
-HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Group_type, Group, "ResourceNonMigrable");
+HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Group_type, Group, "Resource");
 
 
-// DynamicOranizer actions
+/* Action registration to interact with DynamicOranizer */
 typedef cor::Group::Join_action_Group Join_action_Group;
 typedef cor::Group::Leave_action_Group Leave_action_Group;
 typedef cor::Group::GetModuleName_action_Group GetModuleName_action_Group;

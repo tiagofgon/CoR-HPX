@@ -1,36 +1,19 @@
-
 #ifndef COR_DATA_CLIENT_HPP
 #define COR_DATA_CLIENT_HPP
 
 #include "cor/resources/data.hpp"
 #include "cor/services/mutexRW_service_client.hpp"
-// #include "cor/services/mutex_service.hpp"
-// #include "cor/resources/teste.hpp"
-
 
 #include <hpx/hpx.hpp>
 
 
 // The front end for the data itself. Essentially wraps actions for
-// the server, and stores information locally about the localities/servers
-// that it needs to know about
+// the server, and stores information locally
 namespace cor {
-
-// template <typename> class Data_Client;
 
 template <typename T>
 class Data_Client : hpx::components::client_base<Data_Client<T>, Data<T>> 
 {
-
-private:
-	template <typename ... Args>
-	static hpx::future<hpx::id_type> create_server(idp_t idp, Args&&... args) {
-		return hpx::local_new<Data<T>>(idp, std::forward<Args>(args)...);
-	}
-	template <typename ... Args>
-	static hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, Args&&... args) {
-		return hpx::new_<Data<T>>(locality, idp, std::forward<Args>(args)...);
-	}
 
 public:
 	typedef hpx::components::client_base<Data_Client<T>, Data<T>> base_type;
@@ -39,13 +22,13 @@ public:
 
 	typedef nullptr_t organizer;
 
-	/// Default construct an empty client side representation (not
-	/// connected to any existing component). Also needed for serialization
+	// Default construct an empty client side representation (not
+	// connected to any existing component). Also needed for serialization
     Data_Client()
     {}
 
-	/// Create a client side representation for the existing
-	/// Data instance with the given GID
+	// Create a client side representation for the existing
+	// Data instance with the given GID
     Data_Client(hpx::future<hpx::id_type> && id) :
         base_type(std::move(id)),
 		_idp(IdpGlobal())
@@ -61,12 +44,12 @@ public:
 		_idp(IdpGlobal())
     {}
 
-	// Construtor para réplicas
+	// Constructor for replicas
     Data_Client(idp_t idp, hpx::future<hpx::id_type> && id) :
         base_type(std::move(id)),
 		_idp(idp)
     {
-		std::string basename = std::to_string(IdpGlobal()) + "mutex";
+		std::string basename = std::to_string(IdpGlobal()) + "Datamutex";
 		hpx::id_type mutex_gid = hpx::find_from_basename(basename, 0).get();
 		mutex = new MutexRWService_Client(std::move(mutex_gid));
 	}
@@ -75,7 +58,7 @@ public:
         base_type(std::move(id)),
 		_idp(idp)
     {
-		std::string basename = std::to_string(IdpGlobal()) + "mutex";
+		std::string basename = std::to_string(IdpGlobal()) + "Datamutex";
 		hpx::id_type mutex_gid = hpx::find_from_basename(basename, 0).get();
 		mutex = new MutexRWService_Client(std::move(mutex_gid));
 	}
@@ -84,22 +67,21 @@ public:
         base_type(std::move(id)),
 		_idp(idp)
     {
-		std::string basename = std::to_string(IdpGlobal()) + "mutex";
+		std::string basename = std::to_string(IdpGlobal()) + "Datamutex";
 		hpx::id_type mutex_gid = hpx::find_from_basename(basename, 0).get();
 		mutex = new MutexRWService_Client(std::move(mutex_gid));
 	}
 
-	/// Standard constructor with parameters
+	// Standard constructor with parameters
 	template <typename ... Args>
     Data_Client(idp_t idp, Args&&... args) :
         base_type(create_server(idp, std::forward<Args>(args)...)),
 		_idp(idp)
     {
-		// Mutex necessário para garantir exclusão mutua no acesso ao dado
+		// mutex necessary to guarantee mutual exclusion in data access
 		mutex = new MutexRWService_Client();
-		std::string basename = std::to_string(idp) + "mutex";
+		std::string basename = std::to_string(idp) + "Datamutex";
 		auto future = hpx::register_with_basename(basename, mutex->GetGid()).get();
-
 	}
 
 	template <typename ... Args>
@@ -107,56 +89,85 @@ public:
         base_type(create_server_remote(idp, locality, std::forward<Args>(args)...)),
 		_idp(idp)
     {
-		// Mutex necessário para garantir exclusão mutua no acesso ao dado
+		// Mmutex necessary to guarantee mutual exclusion in data access
 		mutex = new MutexRWService_Client();
-		std::string basename = std::to_string(idp) + "mutex";
+		std::string basename = std::to_string(idp) + "Datamutex";
 		auto future = hpx::register_with_basename(basename, mutex->GetGid()).get();
 	}
 
 
-	/** Resource interface **/
-	// método que retorna o idp global do recurso, que está presente na classe Resource
+	/** Resource's interface **/
+	// method that returns the global idp of the resource, which is present in the class Resource
     idp_t IdpGlobal()
     {
-		typedef Resource::Idp_action_Resource action_type;
+		typedef ResourceMigrable::Idp_action_ResourceMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
     }
 
     idp_t IdpGlobal_here()
     {
 		Migrate(hpx::find_here());
-		typedef Resource::Idp_action_Resource action_type;
+		typedef ResourceMigrable::Idp_action_ResourceMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
     }
 
+	// method that returns the GID(hpx::id_type) of this resource locality
 	hpx::id_type GetLocalityGID()
 	{
-		typedef Resource::GetLocalityGID_action_Resource action_type;
+		typedef ResourceMigrable::GetLocalityGID_action_ResourceMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 	
 	hpx::id_type GetLocalityGID_here()
 	{
 		Migrate(hpx::find_here());
-		typedef Resource::GetLocalityGID_action_Resource action_type;
+		typedef ResourceMigrable::GetLocalityGID_action_ResourceMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
+	// method that returns the number of this resource locality
 	unsigned int GetLocalityID()
 	{
-		typedef Resource::GetLocalityID_action_Resource action_type;
+		typedef ResourceMigrable::GetLocalityID_action_ResourceMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
 	unsigned int GetLocalityID_here()
 	{
 		Migrate(hpx::find_here());
-		typedef Resource::GetLocalityID_action_Resource action_type;
+		typedef ResourceMigrable::GetLocalityID_action_ResourceMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
 
-	/** Data interface **/
+	/** Data's interface **/
+	void AcquireRead()
+	{
+		std::cout << "AcquireRead()" << std::endl;
+		mutex->AcquireRead();
+		ensure_ptr();
+
+	}
+
+	void ReleaseRead()
+	{
+		std::cout << "ReleaseRead()" << std::endl;
+		mutex->ReleaseRead();
+	}
+
+	void Acquire()
+	{
+		std::cout << "AcquireWrite()" << std::endl;
+		mutex->AcquireWrite();
+		ensure_ptr();
+	}
+
+	void Release()
+	{
+		std::cout << "ReleaseWrite()" << std::endl;
+		mutex->ReleaseWrite();
+	}
+
     T Fetch()
     {
 		AcquireRead();
@@ -166,46 +177,14 @@ public:
 		return dado;
     }
 
-	void AcquireRead()
+	T* Get()
 	{
-		std::cout << "AcquireRead()" << std::endl;
-
-		mutex->AcquireRead();
-
-		ensure_ptr();
-
-	}
-
-	void ReleaseRead()
-	{
-		std::cout << "ReleaseRead()" << std::endl;
-
-		mutex->ReleaseRead();
-
-	}
-
-	void Acquire()
-	{
-		std::cout << "AcquireWrite()" << std::endl;
-
-		mutex->AcquireWrite();
-
-		ensure_ptr();
-
-	}
-
-	void Release()
-	{
-		std::cout << "ReleaseWrite()" << std::endl;
-
-		mutex->ReleaseWrite();
-
+		return ptr->Get();
 	}
 
 	T const &operator*() const {
 		std::cout << "AQUI_11" << std::endl;
 		HPX_ASSERT(this->get_id());
-		// ensure_ptr();
 		
 		return **ptr;
 	}
@@ -213,7 +192,6 @@ public:
 	T &operator*() {
 		std::cout << "AQUI_22" << std::endl;
 		HPX_ASSERT(this->get_id());
-		// ensure_ptr();
 		
 		return **ptr;
 	}
@@ -222,7 +200,6 @@ public:
 	{
 		std::cout << "AQUI_33" << std::endl;
 		HPX_ASSERT(this->get_id());
-		// ensure_ptr();
 		
 		return &**ptr;
 	}
@@ -231,13 +208,12 @@ public:
 	{
 		std::cout << "AQUI_44" << std::endl;
 		HPX_ASSERT(this->get_id());
-		// ensure_ptr();
 		
 		return &**ptr;
 	}
 
 
-	/** Local interface **/
+	/** Local Client's interface **/
 	// local idp of this resource
 	idp_t Idp() {
 		return _idp;
@@ -259,6 +235,7 @@ public:
 		6 - Data
 		7 - Barrier
 		8 - Mutex
+		9 - RWMutex
 		*/
 		return 6;
 	}
@@ -268,34 +245,36 @@ public:
 		hpx::components::migrate<Data<T>>(this->get_id(), dest).get();
 	}
 
-	// Só para fins de compilação, não é usado aqui nunca!
+	// For compilation purposes only, it is never used here!
 	hpx::id_type GetMailboxGid() {
 		return hpx::find_here();
 	}
 	
 private:
+	template <typename ... Args>
+	hpx::future<hpx::id_type> create_server(idp_t idp, Args&&... args) {
+		return hpx::local_new<Data<T>>(idp, std::forward<Args>(args)...);
+	}
+
+	template <typename ... Args>
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, Args&&... args) {
+		return hpx::new_<Data<T>>(locality, idp, std::forward<Args>(args)...);
+	}
+
 	template <typename Archive>
 	void serialize(Archive& ar, unsigned) {   
 		ar & _idp;
-		// std::cout << "serialized\n";
 	}
 
 	idp_t _idp;
-
 	MutexRWService_Client *mutex;
-	// hpx::id_type mutex_gid;
-
 	mutable std::shared_ptr<Data<T>> ptr;
+
 	void ensure_ptr() {
-
-		// std::cout << "GID1: " << this->get_id() << std::endl;
-		// std::cout << "locality1: " << hpx::get_locality_id() << std::endl;
-
-		// Se o componente Data não estiver na localidade atual, faz o migrate
+		// if the Data component is not in the current locality, migrate
 		if(hpx::find_here() != hpx::get_colocation_id(hpx::launch::sync, this->get_id())) {
 
 			std::cout << "É preciso migrar" << std::endl;
-			// auto equal_gid = hpx::components::migrate<Data<T>>(this->get_id(), hpx::find_here()).get();
 			Migrate(hpx::find_here());
 			std::cout << "Componente migrado" << std::endl;
 			ptr = hpx::get_ptr<Data<T>>(hpx::launch::sync, this->get_id());
@@ -303,19 +282,13 @@ private:
 		else {
 			ptr = hpx::get_ptr<Data<T>>(hpx::launch::sync, this->get_id());
 		}
-		// std::cout << "locality2: " << hpx::get_locality_id() << std::endl;
-		// std::cout << "GID2: " << equal_gid << std::endl;
-		// std::cout << "GID3: " << this->get_id() << std::endl;
-
-		// std::cout << "AQUI_ensure_ptr" << std::endl;
-		// if (!ptr) {
-		// 	ptr = hpx::get_ptr<Data<T>>(hpx::launch::sync, this->get_id());
-		// }
 	}
+
 
 };
 
 	
 }
+
 
 #endif

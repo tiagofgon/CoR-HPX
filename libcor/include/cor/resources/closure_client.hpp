@@ -1,13 +1,9 @@
-
 #ifndef COR_CLOSURE_CLIENT_HPP
 #define COR_CLOSURE_CLIENT_HPP
 
+#include "cor/resources/closure.hpp"
 
 #include <hpx/hpx.hpp>
-#include "cor/resources/closure.hpp"
-// #include "cor/system/system.hpp"
-// #include "cor/system/pod_client.hpp"
-// #include "cor/resources/domain_client.hpp"
 
 
 namespace cor {
@@ -18,29 +14,20 @@ class Pod_Client;
 class Closure_Client : hpx::components::client_base<Closure_Client, Closure>
 {
 
-private:
-	static hpx::future<hpx::id_type> create_server(idp_t idp, unsigned int total_members, idp_t parent) {
-		return hpx::local_new<Closure>(idp, total_members, parent);
-	}
-	static hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, unsigned int total_members, idp_t parent) {
-		return hpx::new_<Closure>(locality, idp, total_members, parent);
-	}
-
 public:
 	typedef hpx::components::client_base<Closure_Client, Closure> base_type;
 
 	friend class hpx::serialization::access;
-	friend class Closure;
 
 	typedef StaticOrganizer organizer;
 
-	/// Default construct an empty client side representation (not
-	/// connected to any existing component). Also needed for serialization
+	// Default construct an empty client side representation (not
+	// connected to any existing component). Also needed for serialization
 	Closure_Client()
 	{}
 
-	/// Create a client side representation for the existing
-	/// Closure instance with the given GID
+	// Create a client side representation for the existing
+	// Closure instance with the given GID
 	Closure_Client(hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
 		_idp(IdpGlobal()),
@@ -59,7 +46,7 @@ public:
 		_total_members(GetFixedTotalMembers())
 	{}
 
-	// Construtor para réplicas
+	// Constructor for replicas
 	Closure_Client(idp_t idp, hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
 		_idp(idp),
@@ -92,38 +79,37 @@ public:
 	{}
 
 
-
-	/** Resource interface **/
-	// método que retorna o idp global do recurso, que está presente na classe Resource
+	/** Resource's interface **/
+	// method that returns the global idp of the resource, which is present in the class Resource
 	idp_t IdpGlobal()
 	{
-		typedef ResourceNonMigrable::Idp_action_ResourceNonMigrable action_type;
+		typedef Resource::Idp_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
+	// method that returns the GID(hpx::id_type) of this resource locality
 	hpx::id_type GetLocalityGID()
 	{
-		typedef ResourceNonMigrable::GetLocalityGID_action_ResourceNonMigrable action_type;
+		typedef Resource::GetLocalityGID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
+	// method that returns the number of this resource locality
 	unsigned int GetLocalityID()
 	{
-		typedef ResourceNonMigrable::GetLocalityID_action_ResourceNonMigrable action_type;
+		typedef Resource::GetLocalityID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
 
-
-
-	/** Static organizer interface **/
+	/** Static organizer's interface **/
 	void Join(idp_t idp, std::string const& name)
 	{
 		typedef Closure::Join_action_Closure action_type;
 		hpx::async<action_type>(this->get_id(), idp, name).get();
 
-		// esta barreira teve de ser colocada aqui, e nao dentro do static organizer porque só funciona fora de components e a component só aceita uma action de cada vez
-		// sincronização entre os elementos do static_organizer, para garantir a inserção de todos os recursos e o mesmo nivel de paralelização
+		// this barrier had to be placed here, and not inside the static organizer because it only works outside of components and the component only accepts one action at a time
+		// synchronization between the elements of the static_organizer, to ensure the insertion of all resources and the same level of synchronization
 		if(_total_members > 1) 
 		{
 			hpx::lcos::barrier barrier(std::to_string(IdpGlobal()), _total_members, GetIdm(idp));
@@ -187,8 +173,7 @@ public:
 	}
 
 
-
-	/** Local interface **/
+	/** Local Client's interface **/
 	// local idp of this resource
 	idp_t Idp() {
 		return _idp;
@@ -210,21 +195,30 @@ public:
 		6 - Data
 		7 - Barrier
 		8 - Mutex
+		9 - RWMutex
 		*/
 		return 3;
 	}
 
-	// Só para fins de compilação, não é usado aqui nunca!
+	// For compilation purposes only, it is never used here!
 	hpx::id_type GetMailboxGid() {
 		return hpx::find_here();
 	}
 
+
 private:
+	hpx::future<hpx::id_type> create_server(idp_t idp, unsigned int total_members, idp_t parent) {
+		return hpx::local_new<Closure>(idp, total_members, parent);
+	}
+
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, unsigned int total_members, idp_t parent) {
+		return hpx::new_<Closure>(locality, idp, total_members, parent);
+	}
+
 	template <typename Archive>
 	void serialize(Archive& ar, unsigned) {   
 		ar & _idp;
 		ar & _total_members;
-		// std::cout << "serialized\n";
 	}
 
 	idp_t _idp; // local idp

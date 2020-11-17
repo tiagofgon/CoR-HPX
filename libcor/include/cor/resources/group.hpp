@@ -1,27 +1,29 @@
 #ifndef COR_GROUP_HPP
 #define COR_GROUP_HPP
 
-#include <string>
-
-#include "cor/resources/resource_non_migrable.hpp"
+#include "cor/resources/resource.hpp"
 #include "cor/elements/dynamic_organizer.hpp"
 
+#include <hpx/hpx.hpp>
+
+
 namespace cor {
-struct Group: public ResourceNonMigrable, public hpx::components::component_base<Group>
+struct Group: public Resource, public hpx::components::component_base<Group>
 {
 
 typedef hpx::components::component_base<Group>::wrapping_type wrapping_type;
 typedef Group type_holder;
-typedef ResourceNonMigrable base_type_holder;
+typedef Resource base_type_holder;
 
 protected:
     explicit Group(idp_t idp, std::string const& module);
 
 public:
+    Group() = delete;
     ~Group();
-    Group();
 
-    /* DynamicOrganizer interface */
+
+    /* DynamicOrganizer's interface */
     void Join(idp_t idp, std::string const& name);
     void Leave(idp_t idp);
 
@@ -51,13 +53,12 @@ public:
 
 private:
     DynamicOrganizer _dynamic_organizer;
-
 };
 
 }
 
 
-// DynamicOranizer actions
+/* Declaration of actions to interact with DynamicOranizer */
 typedef cor::Group::Join_action_Group Join_action_Group;
 typedef cor::Group::Leave_action_Group Leave_action_Group;
 typedef cor::Group::GetModuleName_action_Group GetModuleName_action_Group;

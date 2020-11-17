@@ -1,71 +1,126 @@
+#ifndef COR_RWMUTEX_CLIENT_HPP
+#define COR_RWMUTEX_CLIENT_HPP
 
-#ifndef COR_MUTEXRW_SERVICE_CLIENT_HPP
-#define COR_MUTEXRW_SERVICE_CLIENT_HPP
+#include "cor/resources/rwmutex.hpp"
 
 #include <hpx/hpx.hpp>
-
-#include "cor/services/mutexRW_service.hpp"
 
 
 namespace cor {
 
-struct MutexRWService_Client: hpx::components::client_base<MutexRWService_Client, MutexRWService>
+struct RWMutex_Client: hpx::components::client_base<RWMutex_Client, RWMutex>
 {
 
-private:
-	static hpx::future<hpx::id_type> create_server() {
-		return hpx::local_new<MutexRWService>();
-	}
-
 public:
-	typedef hpx::components::client_base<MutexRWService_Client, MutexRWService> base_type;
+	typedef hpx::components::client_base<RWMutex_Client, RWMutex> base_type;
 
 	friend class hpx::serialization::access;
 
-	/// Default construct an empty client side representation (not
-	/// connected to any existing component). Also needed for serialization
-	MutexRWService_Client() :
-		base_type(create_server())
+	typedef nullptr_t organizer;
+
+	// Default construct an empty client side representation (not
+	// connected to any existing component. Also needed for serialization
+	RWMutex_Client()
 	{}
 
-	/// Create a client side representation for the existing
-	/// Closure_Component instance with the given GID
-	MutexRWService_Client(hpx::future<hpx::id_type> && id) :
-		base_type(std::move(id))
+	// Create a client side representation for the existing
+	// Closure_Component instance with the given GID
+	RWMutex_Client(hpx::future<hpx::id_type> && id) :
+		base_type(std::move(id)),
+		_idp(IdpGlobal())
 	{}
 
-	MutexRWService_Client(hpx::shared_future<hpx::id_type> && id) :
-		base_type(std::move(id))
+	RWMutex_Client(hpx::shared_future<hpx::id_type> && id) :
+		base_type(std::move(id)),
+		_idp(IdpGlobal())
 	{}
 
-	MutexRWService_Client(hpx::id_type && id) :
-		base_type(std::move(id))
+	RWMutex_Client(hpx::id_type && id) :
+		base_type(std::move(id)),
+		_idp(IdpGlobal())
+	{}
+
+	// Constructor for replicas
+	RWMutex_Client(idp_t idp, hpx::future<hpx::id_type> && id) :
+		base_type(std::move(id)),
+		_idp(idp)
+	{}
+
+	RWMutex_Client(idp_t idp, hpx::shared_future<hpx::id_type> && id) :
+		base_type(std::move(id)),
+		_idp(idp)
+	{}
+
+	RWMutex_Client(idp_t idp, hpx::id_type && id) :
+		base_type(std::move(id)),
+		_idp(idp)
+	{}
+
+	/// Standard constructor with parameters
+	RWMutex_Client(idp_t idp) :
+		base_type(create_server(idp)),
+		_idp(idp)
+	{}
+
+	RWMutex_Client(idp_t idp, hpx::id_type locality) :
+		base_type(create_server_remote(idp, locality)),
+		_idp(idp)
 	{}
 
 
-	/** MutexRWService interface **/
+	/** Resource's interface **/
+	// method that returns the global idp of the resource, which is present in the class Resource
+	idp_t IdpGlobal()
+	{
+	  typedef Resource::Idp_action_Resource action_type;
+	  return hpx::async<action_type>(base_type::get_id()).get();
+	}
+
+	// method that returns the GID(hpx::id_type) of this resource locality
+	hpx::id_type GetLocalityGID()
+	{
+		typedef Resource::GetLocalityGID_action_Resource action_type;
+		return hpx::async<action_type>(base_type::get_id()).get();
+	}
+
+	// method that returns the number of this resource locality
+	unsigned int GetLocalityID()
+	{
+		typedef Resource::GetLocalityID_action_Resource action_type;
+		return hpx::async<action_type>(base_type::get_id()).get();
+	}
+
+
+	/** RWMutex's interface **/
     void AcquireRead()
 	{
-	  typedef MutexRWService::AcquireRead_action_MutexRWService action_type;
+	  typedef RWMutex::AcquireRead_action_RWMutex action_type;
 	  return hpx::async<action_type>(this->get_id()).get();
 	}
 
     void ReleaseRead()
 	{
-	  typedef MutexRWService::ReleaseRead_action_MutexRWService action_type;
+	  typedef RWMutex::ReleaseRead_action_RWMutex action_type;
 	  return hpx::async<action_type>(this->get_id()).get();
 	}
 
     void AcquireWrite()
 	{
-	  typedef MutexRWService::AcquireWrite_action_MutexRWService action_type;
+	  typedef RWMutex::AcquireWrite_action_RWMutex action_type;
 	  return hpx::async<action_type>(this->get_id()).get();
 	}
 
     void ReleaseWrite()
 	{
-	  typedef MutexRWService::ReleaseWrite_action_MutexRWService action_type;
+	  typedef RWMutex::ReleaseWrite_action_RWMutex action_type;
 	  return hpx::async<action_type>(this->get_id()).get();
+	}
+
+
+	/** Local Client's interface **/
+	// local idp of this resource
+	idp_t Idp() {
+		return _idp;
 	}
 
 	// Returns component's GID
@@ -73,11 +128,43 @@ public:
 	  return this->get_id();
 	}
 
-  private:
+	int GetComponentType()
+	{
+		/* Resource identification
+		1 - Domain
+		2 - Group
+		3 - Clousure
+		4 - ProtoAgent
+		5 - Agent
+		6 - Data
+		7 - Barrier
+		8 - Mutex
+		9 - RWMutex
+		*/
+		return 9;
+	}
+
+	// For compilation purposes only, it is never used here!
+	hpx::id_type GetMailboxGid() {
+		return hpx::find_here();
+	}
+
+
+  	private:
+	hpx::future<hpx::id_type> create_server(idp_t idp) {
+		return hpx::local_new<RWMutex>(idp);
+	}
+
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality) {
+		return hpx::new_<RWMutex>(locality, idp);
+	}
+
 	template <typename Archive>
 	void serialize(Archive& ar, unsigned) {   
-		// std::cout << "serialized\n";
+		ar & _idp;
 	}
+
+	idp_t _idp; // local idp
 
 };
 

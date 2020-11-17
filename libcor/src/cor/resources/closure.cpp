@@ -1,19 +1,19 @@
 #include "cor/resources/closure.hpp"
 
+
 namespace cor {
 
-Closure::Closure() = default;
+Closure::~Closure() = default;
 
 Closure::Closure(idp_t idp, unsigned int total_members, idp_t parent) :
-    ResourceNonMigrable{idp},
+    Resource{idp},
     _staticOrganizer{idp, total_members, parent}
 {
     std::cout << "Criado um componente \"Closure\", com idp: " << idp << std::endl;
 }
 
-Closure::~Closure() = default;
 
-/* StaticOrganizer interface */
+/* StaticOrganizer's interface */
 void Closure::Join(idp_t idp, std::string const& name)
 {
     return _staticOrganizer.Join(idp, name);
@@ -69,18 +69,17 @@ idp_t Closure::GetStaticOrganizerIdp()
     return _staticOrganizer.GetStaticOrganizerIdp();
 }
 
-}
 
+}
 
 
 typedef cor::Closure Closure;
 typedef hpx::components::component<Closure> Closure_type;
 
-HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Closure_type, Closure, "ResourceNonMigrable");
+HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Closure_type, Closure, "Resource");
 
 
-
-/* StaticOrganizer actions */
+/* Action registration to interact with StaticOrganizer */
 typedef cor::Closure::Join_action_Closure Join_action_Closure;
 typedef cor::Closure::Leave_action_Closure Leave_action_Closure;
 typedef cor::Closure::GetParent_action_Closure GetParent_action_Closure;

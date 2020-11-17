@@ -19,7 +19,8 @@ idp_t Test(idp_t rsc_idp)
     auto data = domain->GetLocalResource<cor::Data_Client<idp_t>>(data_idp);
 
     data->Acquire();
-    auto value = *data;
+    // auto value = *data;
+    auto value = data->Get();
     *value = agent_idp;
     data->Release();
 

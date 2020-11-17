@@ -1,12 +1,10 @@
 #ifndef COR_STATIC_ORGANIZER_HPP
 #define COR_STATIC_ORGANIZER_HPP
 
-#include <string>
-#include <map>
-#include <vector>
+#include "cor/system/macros.hpp"
+
 #include <hpx/hpx.hpp>
 
-#include "cor/system/macros.hpp"
 
 namespace cor {
 
@@ -15,6 +13,10 @@ struct StaticOrganizer
 
 friend class hpx::serialization::access;
 friend class Closure;
+
+protected:
+    StaticOrganizer();
+    explicit StaticOrganizer(idp_t idp, unsigned int total_members, idp_t parent);
 
 public:
     ~StaticOrganizer ();
@@ -41,9 +43,6 @@ public:
 
     idp_t GetStaticOrganizerIdp() const;
 
-protected:
-    StaticOrganizer();
-    explicit StaticOrganizer(idp_t idp, unsigned int total_members, idp_t parent);
 
 private:
 	template <typename Archive>

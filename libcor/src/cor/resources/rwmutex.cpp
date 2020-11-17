@@ -1,38 +1,39 @@
-#include "cor/services/rwmutex.hpp"
+#include "cor/resources/rwmutex.hpp"
 
-#include <hpx/hpx.hpp>
 
 namespace cor {
 
-RWMutex::RWMutex(idp_t idp) : 
-    ResourceNonMigrable{idp}, 
-    _smutex{idp}
-{
-
-}
-
 RWMutex::~RWMutex() = default;
 
+RWMutex::RWMutex(idp_t idp) : 
+    Resource{idp}, 
+    _srwmutex{idp}
+{
+    std::cout << "Criado um componente \"RWMutex\", com idp: " << idp << std::endl;
+}
 
+
+/* RWMutex interface */
 void RWMutex::AcquireRead()
 {
-    _srwmutex.AcquireRead();
+    return _srwmutex.AcquireRead();
 }
 
 void RWMutex::ReleaseRead()
 {
-    _srwmutex.ReleaseRead();
+    return _srwmutex.ReleaseRead();
 }
 
 void RWMutex::AcquireWrite()
 {
-    _srwmutex.AcquireWrite();
+    return _srwmutex.AcquireWrite();
 }
 
 void RWMutex::ReleaseWrite()
 {
-    _srwmutex.ReleaseWrite();
+    return _srwmutex.ReleaseWrite();
 }
+
 
 }
 
@@ -40,9 +41,10 @@ void RWMutex::ReleaseWrite()
 typedef cor::RWMutex RWMutex;
 typedef hpx::components::component<RWMutex> RWMutex_type;
 
-HPX_REGISTER_DERIVED_COMPONENT_FACTORY(RWMutex_type, RWMutex, "ResourceNonMigrable");
+HPX_REGISTER_DERIVED_COMPONENT_FACTORY(RWMutex_type, RWMutex, "Resource");
 
 
+/* Action registration to interact with SRWMutex */
 typedef cor::RWMutex::AcquireRead_action_RWMutex AcquireRead_action_RWMutex;
 typedef cor::RWMutex::ReleaseRead_action_RWMutex ReleaseRead_action_RWMutex;
 typedef cor::RWMutex::AcquireWrite_action_RWMutex AcquireWrite_action_RWMutex;

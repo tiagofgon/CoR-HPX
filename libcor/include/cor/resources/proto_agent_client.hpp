@@ -1,4 +1,3 @@
-
 #ifndef COR_PROTOAGENT_CLIENT_HPP
 #define COR_PROTOAGENT_CLIENT_HPP
 
@@ -15,14 +14,6 @@ template <typename R, typename ... P>
 class ProtoAgent_Client<R(P...)> : hpx::components::client_base<ProtoAgent_Client<R(P...)>, ProtoAgent<R(P...)>>
 {
 
-private:
-	static hpx::future<hpx::id_type> create_server(idp_t idp, std::string const& module, std::string const& function) {
-		return hpx::local_new<ProtoAgent<R(P...)>>(idp, module, function);
-	}
-	static hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, std::string const& module, std::string const& function) {
-		return hpx::new_<ProtoAgent<R(P...)>>(locality, idp, module, function);
-	}
-
 public:
 	typedef hpx::components::client_base<ProtoAgent_Client<R(P...)>, ProtoAgent<R(P...)>> base_type;
 
@@ -30,13 +21,13 @@ public:
 
 	typedef nullptr_t organizer;
 	
-	/// Default construct an empty client side representation (not
-	/// connected to any existing component). Also needed for serialization
+	// Default construct an empty client side representation (not
+	// connected to any existing component). Also needed for serialization
 	ProtoAgent_Client()
 	{}
 
-	/// Create a client side representation for the existing
-	/// ProtoAgent instance with the given GID
+	// Create a client side representation for the existing
+	// ProtoAgent instance with the given GID
 	ProtoAgent_Client(hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
 		_idp(IdpGlobal())
@@ -52,7 +43,7 @@ public:
 		_idp(IdpGlobal())
 	{}
 
-	// Construtor para réplicas
+	// Constructor for replicas
 	ProtoAgent_Client(idp_t idp, hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
 		_idp(idp)
@@ -68,7 +59,7 @@ public:
 		_idp(idp)
 	{}
 
-	/// Standard constructor with parameters
+	// Standard constructor with parameters
 	ProtoAgent_Client(idp_t idp, std::string const& module, std::string const& function) :
 		base_type(create_server(idp, module, function)),
 		_idp(idp)
@@ -80,59 +71,33 @@ public:
 	{}
 
 
-	/** Resource interface **/
-	// método que retorna o idp global do recurso, que está presente na classe Resource
+	/** Resource's interface **/
+	// method that returns the global idp of the resource, which is present in the class Resource
 	idp_t IdpGlobal()
 	{
 		typedef Resource::Idp_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
-	idp_t IdpGlobal_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Resource::Idp_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
-	}
-
+	// method that returns the GID(hpx::id_type) of this resource locality
 	hpx::id_type GetLocalityGID()
 	{
 		typedef Resource::GetLocalityGID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
-	
-	hpx::id_type GetLocalityGID_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Resource::GetLocalityGID_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
-	}
 
+	// method that returns the number of this resource locality
 	unsigned int GetLocalityID()
 	{
 		typedef Resource::GetLocalityID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
-	unsigned int GetLocalityID_here()
-	{
-		Migrate(hpx::find_here());
-		typedef Resource::GetLocalityID_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
-	}
-	
-	/** Executor interface **/
+
+	/** Executor's interface **/
 	template <typename ... Args>
 	void Run(Args&&... args)
 	{
-		typedef typename cor::ProtoAgent<R(P...)>::template Run_action_ProtoAgent<Args...> action_type;
-		return hpx::async<action_type>(this->get_id(), std::forward<Args>(args)... ).get();
-	}
-
-	template <typename ... Args>
-	void Run_here(Args&&... args)
-	{
-		Migrate(hpx::find_here());
 		typedef typename cor::ProtoAgent<R(P...)>::template Run_action_ProtoAgent<Args...> action_type;
 		return hpx::async<action_type>(this->get_id(), std::forward<Args>(args)... ).get();
 	}
@@ -143,22 +108,8 @@ public:
 		return hpx::async<action_type>(this->get_id()).get();
 	}
 
-	void Wait_here()
-	{
-		Migrate(hpx::find_here());
-		typedef typename cor::ProtoAgent<R(P...)>::Wait_action_ProtoAgent action_type;
-		return hpx::async<action_type>(this->get_id()).get();
-	}
-
 	R Get()
 	{
-		typedef typename cor::ProtoAgent<R(P...)>::Get_action_ProtoAgent action_type;
-		return hpx::async<action_type>(this->get_id()).get();
-	}
-
-	R Get_here()
-	{
-		Migrate(hpx::find_here());
 		typedef typename cor::ProtoAgent<R(P...)>::Get_action_ProtoAgent action_type;
 		return hpx::async<action_type>(this->get_id()).get();
 	}
@@ -169,22 +120,8 @@ public:
 		return hpx::async<action_type>(this->get_id(), idp).get();
 	}
 
-	void ChangeIdp_here(idp_t idp)
-	{
-		Migrate(hpx::find_here());
-		typedef typename cor::ProtoAgent<R(P...)>::ChangeIdp_action_ProtoAgent action_type;
-		return hpx::async<action_type>(this->get_id(), idp).get();
-	}
-
 	void ResumeIdp()
 	{
-		typedef typename cor::ProtoAgent<R(P...)>::ResumeIdp_action_ProtoAgent action_type;
-		return hpx::async<action_type>(this->get_id()).get();
-	}
-
-	void ResumeIdp_here()
-	{
-		Migrate(hpx::find_here());
 		typedef typename cor::ProtoAgent<R(P...)>::ResumeIdp_action_ProtoAgent action_type;
 		return hpx::async<action_type>(this->get_id()).get();
 	}
@@ -195,40 +132,20 @@ public:
 		return hpx::async<action_type>(this->get_id()).get();
 	}
 
-	idp_t CurrentIdp_here()
-	{
-		Migrate(hpx::find_here());
-		typedef typename cor::ProtoAgent<R(P...)>::CurrentIdp_action_ProtoAgent action_type;
-		return hpx::async<action_type>(this->get_id()).get();
-	}
-
 	idp_t OriginalIdp()
 	{
 		typedef typename cor::ProtoAgent<R(P...)>::OriginalIdp_action_ProtoAgent action_type;
 		return hpx::async<action_type>(this->get_id()).get();
 	}
-	
-	idp_t OriginalIdp_here()
-	{
-		Migrate(hpx::find_here());
-		typedef typename cor::ProtoAgent<R(P...)>::OriginalIdp_action_ProtoAgent action_type;
-		return hpx::async<action_type>(this->get_id()).get();
-	}
-	
+
 	idp_t GetExecutorIdp()
 	{
 		typedef typename cor::ProtoAgent<R(P...)>::GetExecutorIdp_action_ProtoAgent action_type;
 		return hpx::async<action_type>(this->get_id()).get();
 	}
-	
-	idp_t GetExecutorIdp_here()
-	{
-		Migrate(hpx::find_here());
-		typedef typename cor::ProtoAgent<R(P...)>::GetExecutorIdp_action_ProtoAgent action_type;
-		return hpx::async<action_type>(this->get_id()).get();
-	}
 
-	/** Local interface **/
+
+	/** Local Client's interface **/
 	// local idp of this resource
 	idp_t Idp() {
 		return _idp;
@@ -250,25 +167,28 @@ public:
 		6 - Data
 		7 - Barrier
 		8 - Mutex
+		9 - RWMutex
 		*/
 		return 4;
 	}
 
-	void Migrate(hpx::id_type dest)
-	{
-		hpx::components::migrate<ProtoAgent_Client<R(P...)>>(this->get_id(), dest).get();
-	}
-
-	// Só para fins de compilação, não é usado aqui nunca!
+	// For compilation purposes only, it is never used here!
 	hpx::id_type GetMailboxGid() {
 		return hpx::find_here();
 	}
 	
 private:
+	hpx::future<hpx::id_type> create_server(idp_t idp, std::string const& module, std::string const& function) {
+		return hpx::local_new<ProtoAgent<R(P...)>>(idp, module, function);
+	}
+
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, std::string const& module, std::string const& function) {
+		return hpx::new_<ProtoAgent<R(P...)>>(locality, idp, module, function);
+	}
+
 	template <typename Archive>
 	void serialize(Archive& ar, unsigned) {   
 		ar & _idp;
-		// std::cout << "serialized\n";
 	}
 
 	idp_t _idp; // local idp
@@ -277,5 +197,6 @@ private:
 
 
 }
+
 
 #endif

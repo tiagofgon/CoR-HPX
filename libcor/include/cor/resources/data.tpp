@@ -9,6 +9,9 @@ template <typename T>
 Data<T>::Data() = default;
 
 template <typename T>
+Data<T>::~Data() = default;
+
+template <typename T>
 template <typename ... Args>
 Data<T>::Data(idp_t idp, Args&&... args) : 
     base_type(idp),
@@ -18,28 +21,19 @@ Data<T>::Data(idp_t idp, Args&&... args) :
 }
 
 template <typename T>
-Data<T>::~Data() = default;
-
-
-template <typename T>
 T Data<T>::Fetch()
 {
     return _value.Fetch();
 }
 
 template <typename T>
-int Data<T>::Acquire()
+T* Data<T>::Get()
 {
-    return _value.Acquire();
-}
-
-template <typename T>
-void Data<T>::Release()
-{
-    return _value.Release();
+    return _value.Get();
 }
 
 
 }
+
 
 #endif

@@ -1,33 +1,31 @@
 #ifndef COR_DOMAIN_HPP
 #define COR_DOMAIN_HPP
 
-#include <string>
-
-#include "cor/resources/resource_non_migrable.hpp"
+#include "cor/resources/resource.hpp"
 #include "cor/elements/dynamic_organizer.hpp"
 #include "cor/elements/container.hpp"
 
 #include <hpx/hpx.hpp>
 
+
 namespace cor {
 
-// struct Domain: public ResourceNonMigrable, public hpx::components::locking_hook< hpx::components::component_base<Domain> >
-struct Domain: public ResourceNonMigrable, public hpx::components::component_base<Domain>
+struct Domain: public Resource, public hpx::components::component_base<Domain>
 {
 
 typedef hpx::components::component_base<Domain>::wrapping_type wrapping_type;
 typedef Domain type_holder;
 typedef Resource base_type_holder;
 
-
 protected:
     explicit Domain(idp_t idp, std::string const& module);
 
 public:
-    Domain();
+    Domain() = delete;
     ~Domain();
 
-    /* DynamicOrganizer interface */
+
+    /* DynamicOrganizer's interface */
     void Join(idp_t idp, std::string const& name);
     void Leave(idp_t idp);
 
@@ -36,7 +34,6 @@ public:
     std::size_t GetTotalMembers();
     std::vector<idp_t> GetMemberList();
 
-    // metodos com o mesmo nome é complicado para fazer as action, portanto usei 1 e 2, o que nao altera em anda a API final
     idp_t GetIdp1(idm_t idm);
     idp_t GetIdp2(std::string const& name);
 
@@ -57,7 +54,7 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(Domain, GetDynamicOrganizerIdp, GetDynamicOrganizerIdp_action_Domain);
 
 
-    /* Container interface */
+    /* Container's interface */
     std::string GetGlobalContext();
     std::string GetLocalContext();
 
@@ -100,7 +97,6 @@ public:
     idp_t Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
 
     idp_t GetContainerIdp();
-
 
     HPX_DEFINE_COMPONENT_ACTION(Domain, GetGlobalContext, GetGlobalContext_action_Domain);
     HPX_DEFINE_COMPONENT_ACTION(Domain, GetLocalContext, GetLocalContext_action_Domain);
@@ -194,10 +190,10 @@ public:
     >::type
     {};
 
+
 private:
     DynamicOrganizer _dynamic_organizer;
     Container _container;
-
 };
 
 }
@@ -205,7 +201,8 @@ private:
 
 #include "cor/resources/domain.tpp"
 
-// DynamicOranizer actions
+
+/* Declaration of actions to interact with DynamicOranizer */
 typedef cor::Domain::Join_action_Domain Join_action_Domain;
 typedef cor::Domain::Leave_action_Domain Leave_action_Domain;
 typedef cor::Domain::GetModuleName_action_Domain GetModuleName_action_Domain;
@@ -229,8 +226,7 @@ HPX_REGISTER_ACTION_DECLARATION(GetIdm2_action_Domain);
 HPX_REGISTER_ACTION_DECLARATION(GetDynamicOrganizerIdp_action_Domain);
 
 
-
-// Container actions
+/* Declaration of actions to interact with Container */
 typedef cor::Domain::GetGlobalContext_action_Domain GetGlobalContext_action_Domain;
 typedef cor::Domain::GetLocalContext_action_Domain GetLocalContext_action_Domain;
 typedef cor::Domain::GetTotalPods_action_Domain GetTotalPods_action_Domain;

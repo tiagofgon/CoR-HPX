@@ -1,21 +1,21 @@
 
 #include "cor/resources/domain.hpp"
 
+
 namespace cor {
 
-Domain::Domain() = default;
+Domain::~Domain() = default;
 
 Domain::Domain(idp_t idp, std::string const& module) :
-    ResourceNonMigrable{idp},
+    Resource{idp},
     _dynamic_organizer{idp, module},
     _container{idp}
 {
     std::cout << "Criado um componente \"Domain\", com idp: " << idp << std::endl;
 }
 
-Domain::~Domain() = default;
 
-/* DynamicOrganizer interface */
+/* DynamicOrganizer's interface */
 void Domain::Join(idp_t idp, std::string const& name) {
     return _dynamic_organizer.Join(idp, name);
 }
@@ -57,8 +57,7 @@ idp_t Domain::GetDynamicOrganizerIdp() {
 }
 
 
-
-/* Container interface */
+/* Container's interface */
 std::string Domain::GetGlobalContext()
 {
     return _container.GetGlobalContext();
@@ -103,16 +102,13 @@ idp_t Domain::GetContainerIdp()
 }
 
 
-
-
-
 typedef cor::Domain Domain;
 typedef hpx::components::component<Domain> Domain_type;
 
-HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Domain_type, Domain, "ResourceNonMigrable");
+HPX_REGISTER_DERIVED_COMPONENT_FACTORY(Domain_type, Domain, "Resource");
 
 
-// DynamicOranizer actions
+/* Action registration to interact with DynamicOranizer */
 typedef cor::Domain::Join_action_Domain Join_action_Domain;
 typedef cor::Domain::Leave_action_Domain Leave_action_Domain;
 typedef cor::Domain::GetModuleName_action_Domain GetModuleName_action_Domain;
@@ -136,8 +132,7 @@ HPX_REGISTER_ACTION(GetIdm2_action_Domain);
 HPX_REGISTER_ACTION(GetDynamicOrganizerIdp_action_Domain);
 
 
-
-// Container actions
+/* Action registration to interact with Container */
 typedef cor::Domain::GetGlobalContext_action_Domain GetGlobalContext_action_Domain;
 typedef cor::Domain::GetLocalContext_action_Domain GetLocalContext_action_Domain;
 typedef cor::Domain::GetTotalPods_action_Domain GetTotalPods_action_Domain;

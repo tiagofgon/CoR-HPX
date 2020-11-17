@@ -4,12 +4,11 @@
 #include "cor/system/pod_client.hpp"
 #include "cor/utils/utils.hpp"
 
-#include <algorithm>
-
 
 namespace cor {
 
 DynamicOrganizer::DynamicOrganizer() = default;
+DynamicOrganizer::~DynamicOrganizer() = default;
 
 DynamicOrganizer::DynamicOrganizer(idp_t idp, std::string const& module) :
     _idp{idp},
@@ -22,19 +21,15 @@ DynamicOrganizer::DynamicOrganizer(idp_t idp, std::string const& module) :
         global::pod->LoadModule(module);
 }
 
-DynamicOrganizer::~DynamicOrganizer() = default;
-
 // DynamicOrganizer::DynamicOrganizer(DynamicOrganizer&&) noexcept = default;
 
 // DynamicOrganizer& DynamicOrganizer::operator=(DynamicOrganizer&&) noexcept = default;
-
-
 
 void DynamicOrganizer::Join(idp_t idp, std::string const& name)
 {   
     std::cout << "Join DYNAMIC ORGANIZER ---------------------out----------------" << std::endl;
     // acquire write
-    // _mtx.lock();
+    _mtx.lock();
 
     std::cout << "Join DYNAMIC ORGANIZER ---------------------------------------------" << std::endl;
 
@@ -66,19 +61,19 @@ void DynamicOrganizer::Join(idp_t idp, std::string const& name)
         _members.emplace(idp, std::make_pair(idm, name));
 
     // release write
-    // _mtx.unlock();
+    _mtx.unlock();
 }
 
 void DynamicOrganizer::Leave(idp_t idp)
 {
     // acquire write
-    // _mtx.lock();
+    _mtx.lock();
 
     // erase resource idp
     _members.erase(idp);
 
     // release write
-    // _mtx.unlock();
+    _mtx.unlock();
 }
 
 std::string DynamicOrganizer::GetModuleName() const
@@ -89,12 +84,12 @@ std::string DynamicOrganizer::GetModuleName() const
 std::size_t DynamicOrganizer::GetTotalMembers()
 {
     // acquire read
-    // _mtx.lock_shared();
+    _mtx.lock_shared();
 
     auto res = _members.size();
 
     // release read
-    // _mtx.unlock_shared();
+    _mtx.unlock_shared();
 
     return res;
 }
@@ -104,13 +99,13 @@ std::vector<idp_t> DynamicOrganizer::GetMemberList()
     std::vector<idp_t> list;
 
     // acquire read
-    // _mtx.lock_shared();
+    _mtx.lock_shared();
 
     for (auto const& member: _members)
         list.push_back(member.first);
 
     // release read
-    // _mtx.unlock_shared();
+    _mtx.unlock_shared();
 
     return list;
 }
@@ -118,7 +113,7 @@ std::vector<idp_t> DynamicOrganizer::GetMemberList()
 idp_t DynamicOrganizer::GetIdp(idm_t idm)
 {
     // acquire read
-    // _mtx.lock_shared();
+    _mtx.lock_shared();
 
     auto it = std::find_if(_members.begin(), _members.end(),
         [idm](auto&& member) -> bool {
@@ -129,7 +124,7 @@ idp_t DynamicOrganizer::GetIdp(idm_t idm)
         auto idp = it->first;
 
         // release read
-        // _mtx.unlock_shared();
+        _mtx.unlock_shared();
 
         return idp;
     } else {
@@ -140,7 +135,7 @@ idp_t DynamicOrganizer::GetIdp(idm_t idm)
 idp_t DynamicOrganizer::GetIdp(std::string const& name)
 {
     // acquire read
-    // _mtx.lock_shared();
+    _mtx.lock_shared();
 
     auto it = std::find_if(_members.begin(), _members.end(),
         [name](auto&& member) -> bool {
@@ -151,7 +146,7 @@ idp_t DynamicOrganizer::GetIdp(std::string const& name)
         auto idp = it->first;
 
         // release read
-        // _mtx.unlock_shared();
+        _mtx.unlock_shared();
         
         return idp;
     } else {
@@ -162,12 +157,12 @@ idp_t DynamicOrganizer::GetIdp(std::string const& name)
 idm_t DynamicOrganizer::GetIdm(idp_t idp)
 {
     // acquire read
-    // _mtx.lock_shared();
+    _mtx.lock_shared();
 
     auto idm = _members.at(idp).first;
 
     // release read
-    // _mtx.unlock_shared();
+    _mtx.unlock_shared();
 
     return idm;
 }
@@ -175,7 +170,7 @@ idm_t DynamicOrganizer::GetIdm(idp_t idp)
 idm_t DynamicOrganizer::GetIdm(std::string const& name)
 {
     // acquire read
-    // _mtx.lock_shared();
+    _mtx.lock_shared();
 
     auto it = std::find_if(_members.begin(), _members.end(),
         [name](auto&& member) -> bool {
@@ -186,7 +181,7 @@ idm_t DynamicOrganizer::GetIdm(std::string const& name)
         auto idm = it->second.first;
 
         // release read
-        // _mtx.unlock_shared();
+        _mtx.unlock_shared();
 
         return idm;
     } else {
@@ -198,9 +193,6 @@ idp_t DynamicOrganizer::GetDynamicOrganizerIdp() const
 {
     return _idp;
 }
-
-
-
 
 
 }

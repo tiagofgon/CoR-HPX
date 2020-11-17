@@ -1,15 +1,12 @@
 #include "cor/elements/static_organizer.hpp"
 
-#include "cor/system/system.hpp"
-// #include "cor/system/pod.hpp"
-// #include "cor/message.hpp"
-
-#include <algorithm>
 #include <hpx/hpx.hpp>
+
 
 namespace cor {
 
 StaticOrganizer::StaticOrganizer() = default;
+StaticOrganizer::~StaticOrganizer() = default;
 
 StaticOrganizer::StaticOrganizer(idp_t idp, unsigned int total_members, idp_t parent) :
     _idp{idp},
@@ -21,7 +18,6 @@ StaticOrganizer::StaticOrganizer(idp_t idp, unsigned int total_members, idp_t pa
     std::cout << "Criado um objeto da classe \"StaticOrganizer\", com idp: " << _idp << std::endl;
 }
 
-StaticOrganizer::~StaticOrganizer() = default;
 
 // StaticOrganizer::StaticOrganizer(StaticOrganizer&&) noexcept = default;
 
@@ -60,18 +56,6 @@ void StaticOrganizer::Join(idp_t idp, std::string const& name)
         _members.emplace(idp, std::make_pair(idm, std::to_string(idp)));
     else
         _members.emplace(idp, std::make_pair(idm, name));
-
-
-    // fazer aqui alguma coisa para sincronizar os joins
-
-
-    
-    // Se este organizador for criado por uma clausura que nao a primeira, e for feito o primeiro join, envia a seguinte mensagem
-    // Ver se isto é necessário
-    // if (idm == 0 && _parent != 0) {
-    //     Message msg;
-    //     global::pod->SendMessage(_idp, _parent, msg);
-    // }
 
     // release write
     _mtx.unlock();
@@ -215,5 +199,6 @@ idm_t StaticOrganizer::GetIdm(std::string const& name)
 idp_t StaticOrganizer::GetStaticOrganizerIdp() const {
     return _idp;
 }
+
 
 }

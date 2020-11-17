@@ -1,10 +1,7 @@
 #ifdef COR_DOMAIN_HPP
 
-#include "cor/system/system.hpp"
-#include "cor/system/pod_client.hpp"
 
 namespace cor {
-
 
 template <typename T>
 std::unique_ptr<T> Domain::GetLocalResource(idp_t idp)
@@ -27,7 +24,7 @@ idp_t Domain::CreateRemote(idp_t ctx, std::string const& name, Args&& ... args)
 template <typename T, typename ... Args>
 idp_t Domain::Create(idp_t ctx, std::string const& name, Args&& ... args)
 {
-    std::cout << "Domain::Create" << std::endl;
+    // std::cout << "Domain::Create" << std::endl;
     return _container.Create<T>(ctx, name, std::forward<Args>(args)...);
 }
 
@@ -68,7 +65,7 @@ auto Domain::Get(idp_t idp)
 }
 
 
-
 }
+
 
 #endif

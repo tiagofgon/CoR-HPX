@@ -6,10 +6,11 @@
 #include <atomic>
 #include <functional>
 
-#include <hpx/hpx.hpp>
-
 #include "cor/system/macros.hpp"
 #include "cor/external/dll/dll.hpp"
+
+#include <hpx/hpx.hpp>
+
 
 namespace cor {
 
@@ -24,6 +25,11 @@ friend class hpx::serialization::access;
 
 public:
     ~Executor();
+
+// protected:
+    Executor() = delete;
+    Executor(idp_t idp, std::function<R(P...)> const& f);
+    Executor(idp_t idp, std::string const& module, std::string const& function);
 
     // Executor(const Executor&) = delete;
     // Executor& operator=(const Executor&) = delete;
@@ -45,21 +51,8 @@ public:
 
     idp_t GetExecutorIdp() const;
 
-// protected:
-    Executor();
-
-    Executor(idp_t idp, std::function<R(P...)> const& f);
-    Executor(idp_t idp, std::string const& module, std::string const& function);
 
 private:
-	template <typename Archive>
-	void serialize(Archive& ar, unsigned) {
-        ar & _idp;
-        ar & _module_name;
-        ar & _function;
-		// std::cout << "serialized\n";
-	}
-
     idp_t _idp;
     std::string _module_name;
     std::string _function;
@@ -67,16 +60,16 @@ private:
 
     dll::DynamicLibrary* _module;
 
-    std::future<R> _future;
-    std::thread _thread;
-
     hpx::future<R> _future_hpx;
     std::uint64_t tid;
 
 };
 
+
 }
 
+
 #include "cor/elements/executor_hpx.tpp"
+
 
 #endif

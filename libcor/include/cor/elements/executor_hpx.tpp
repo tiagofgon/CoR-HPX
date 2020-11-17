@@ -1,13 +1,16 @@
 #ifdef COR_EXECUTOR_HPP
 
-#include <hpx/hpx.hpp>
+
 #include "cor/system/system.hpp"
 #include "cor/system/pod_client.hpp"
+
+#include <hpx/hpx.hpp>
+
 
 namespace cor {
 
 template <typename R, typename ... P>
-Executor<R(P...)>::Executor() = default;
+Executor<R(P...)>::~Executor() = default;
 
 template <typename R, typename ... P>
 Executor<R(P...)>::Executor(idp_t idp, std::function<R(P...)> const& f) :
@@ -29,8 +32,6 @@ Executor<R(P...)>::Executor(idp_t idp, std::string const& module, std::string co
     std::cout << "Criado um objeto da classe \"Executor\", com idp: " << _idp << std::endl;
 }
 
-template <typename R, typename ... P>
-Executor<R(P...)>::~Executor() = default;
 
 // template <typename R, typename ... P>
 // Executor<R(P...)>::Executor(Executor<R(P...)>&&) noexcept = default;
@@ -38,9 +39,6 @@ Executor<R(P...)>::~Executor() = default;
 // template <typename R, typename ... P>
 // Executor<R(P...)>& Executor<R(P...)>::operator=(Executor<R(P...)>&&) noexcept = default;
 
-
-
-// HPX RUN
 template <typename R, typename ... P>
 template <typename ... Args>
 void Executor<R(P...)>::Run(Args&&... args)
@@ -97,16 +95,15 @@ void Executor<R(P...)>::Wait()
 
 template <typename R, typename ... P>
 R Executor<R(P...)>::Get() {
-    //return _future.get();
     if constexpr (std::is_void<R>{}) {
-//std::cout << "Get()" << std::endl;
+        // std::cout << "Get()" << std::endl;
         _future_hpx.get();
-//std::cout << "~Get()" << std::endl;
+        // std::cout << "~Get()" << std::endl;
     } else {
-//std::cout << "Get()" << std::endl;
+        // std::cout << "Get()" << std::endl;
         auto res = _future_hpx.get();
         return res;
-//std::cout << "~Get()" << std::endl;
+        // std::cout << "~Get()" << std::endl;
     }
 }
 
@@ -139,6 +136,8 @@ idp_t Executor<R(P...)>::GetExecutorIdp() const {
     return _idp;
 }
 
+
 }
+
 
 #endif

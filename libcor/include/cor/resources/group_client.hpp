@@ -1,25 +1,16 @@
-
 #ifndef COR_GROUP_CLIENT_HPP
 #define COR_GROUP_CLIENT_HPP
 
-#include <hpx/hpx.hpp>
-
 #include "cor/resources/group.hpp"
 #include "cor/elements/dynamic_organizer.hpp"
+
+#include <hpx/hpx.hpp>
 
 
 namespace cor {
 
 struct Group_Client: hpx::components::client_base<Group_Client, Group>
 {
-
-private:
-	static hpx::future<hpx::id_type> create_server(idp_t idp, std::string const& module) {
-		return hpx::local_new<Group>(idp, module);
-	}
-	static hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, std::string const& module) {
-		return hpx::new_<Group>(locality, idp, module);
-	}
 
 public:
 	typedef hpx::components::client_base<Group_Client, Group> base_type;
@@ -28,13 +19,13 @@ public:
 
 	typedef DynamicOrganizer organizer;
 
-	/// Default construct an empty client side representation (not
-	/// connected to any existing component). Also needed for serialization
+	// Default construct an empty client side representation (not
+	// connected to any existing component). Also needed for serialization
 	Group_Client()
 	{}
 
-	/// Create a client side representation for the existing
-	/// Closure_Component instance with the given GID
+	// Create a client side representation for the existing
+	// Closure_Component instance with the given GID
 	Group_Client(hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
 		_idp(IdpGlobal())
@@ -50,7 +41,7 @@ public:
 		_idp(IdpGlobal())
 	{}
 
-	// Construtor para réplicas
+	// Constructor for replicas
 	Group_Client(idp_t idp, hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
 		_idp(idp)
@@ -78,39 +69,40 @@ public:
 	{}
 
 
-	/** Resource interface **/
-	// método que retorna o idp global do recurso, que está presente na classe Resource
+	/** Resource's interface **/
+	// method that returns the global idp of the resource, which is present in the class Resource
 	idp_t IdpGlobal()
 	{
-		typedef ResourceNonMigrable::Idp_action_ResourceNonMigrable action_type;
+		typedef Resource::Idp_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 
+	// method that returns the GID(hpx::id_type) of this resource locality
 	hpx::id_type GetLocalityGID()
 	{
-		typedef ResourceNonMigrable::GetLocalityGID_action_ResourceNonMigrable action_type;
+		typedef Resource::GetLocalityGID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 	
+	// method that returns the number of this resource locality
 	unsigned int GetLocalityID()
 	{
-		typedef ResourceNonMigrable::GetLocalityID_action_ResourceNonMigrable action_type;
+		typedef Resource::GetLocalityID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id()).get();
 	}
 	
 
-
-	/** Dynamic organizer interface **/
+	/** Dynamic organizer's interface **/
 	void Join(idp_t idp, std::string const& name)
 	{
-	  typedef Group::Join_action_Group action_type;
-	  return hpx::async<action_type>(this->get_id(), idp, name).get();
+		typedef Group::Join_action_Group action_type;
+		return hpx::async<action_type>(this->get_id(), idp, name).get();
 	}
 
 	void Leave(idp_t idp)
 	{
-	  typedef Group::Leave_action_Group action_type;
-	  return hpx::async<action_type>(this->get_id(), idp).get();
+		typedef Group::Leave_action_Group action_type;
+		return hpx::async<action_type>(this->get_id(), idp).get();
 	}
 
 	std::string GetModuleName()
@@ -162,8 +154,7 @@ public:
 	}
 
 
-
-	/** Local interface **/
+	/** Local Client's interface **/
 	// local idp of this resource
 	idp_t Idp() {
 		return _idp;
@@ -185,20 +176,29 @@ public:
 		6 - Data
 		7 - Barrier
 		8 - Mutex
+		9 - RWMutex
 		*/
 		return 2;
 	}
 
-	// Só para fins de compilação, não é usado aqui nunca!
+	// For compilation purposes only, it is never used here!
 	hpx::id_type GetMailboxGid() {
 		return hpx::find_here();
 	}
 	
-  private:
+
+private:
+	hpx::future<hpx::id_type> create_server(idp_t idp, std::string const& module) {
+		return hpx::local_new<Group>(idp, module);
+	}
+
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, std::string const& module) {
+		return hpx::new_<Group>(locality, idp, module);
+	}
+
 	template <typename Archive>
 	void serialize(Archive& ar, unsigned) {   
 		ar & _idp;
-		// std::cout << "serialized\n";
 	}
 
 	idp_t _idp; // local idp
@@ -207,5 +207,6 @@ public:
 
 
 }
+
 
 #endif

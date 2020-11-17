@@ -1,12 +1,10 @@
 #ifndef COR_DYNAMIC_ORGANIZER_HPP
 #define COR_DYNAMIC_ORGANIZER_HPP
 
-#include <string>
-#include <map>
-#include <vector>
+#include "cor/system/macros.hpp"
+
 #include <hpx/hpx.hpp>
 
-#include "cor/system/macros.hpp"
 
 namespace cor {
 
@@ -16,6 +14,10 @@ class DynamicOrganizer
 friend class hpx::serialization::access;
 friend class Domain;
 friend class Group;
+
+protected:
+    DynamicOrganizer();
+    explicit DynamicOrganizer(idp_t idp, std::string const& module);
 
 public:
     ~DynamicOrganizer();
@@ -42,9 +44,6 @@ public:
 
     idp_t GetDynamicOrganizerIdp() const;
 
-protected:
-    DynamicOrganizer();
-    explicit DynamicOrganizer(idp_t idp, std::string const& module);
 
 private:
 	template <typename Archive>
@@ -59,10 +58,12 @@ private:
     std::string _module;
     std::map<idp_t, std::pair<idm_t, std::string>> _members; // (idp (idm, name))
     idm_t _next_idm;
-    
-    // hpx::lcos::local::shared_mutex _mtx;
+    hpx::lcos::local::shared_mutex _mtx;
+
 };
 
+
 }
+
 
 #endif

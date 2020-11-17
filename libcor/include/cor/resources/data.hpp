@@ -1,23 +1,24 @@
 #ifndef COR_DATA_HPP
 #define COR_DATA_HPP
 
-#include "cor/resources/resource.hpp"
+#include "cor/resources/resource_migrable.hpp"
 #include "cor/elements/value.hpp"
+
+#include <hpx/hpx.hpp>
 
 
 namespace cor {
 
 template <typename T>
-// struct Data: public Resource, public hpx::components::component_base<Data<T>>
-struct Data: public hpx::components::abstract_migration_support< hpx::components::component_base<Data<T>>, Resource >
+struct Data: public hpx::components::abstract_migration_support< hpx::components::component_base<Data<T>>, ResourceMigrable >
 {
 
 using base_type = hpx::components::abstract_migration_support<
-    hpx::components::component_base<Data<T>>, Resource >;
+    hpx::components::component_base<Data<T>>, ResourceMigrable >;
 
 typedef typename hpx::components::component_base<Data<T>>::wrapping_type wrapping_type;
 typedef Data type_holder;
-typedef Resource base_type_holder;
+typedef ResourceMigrable base_type_holder;
 
 friend class hpx::serialization::access;
 
@@ -40,11 +41,10 @@ public:
 
     Data& operator=(Data&& rsc)
     {
-        this->Resource::operator=(std::move(static_cast<Resource&>(rsc)));
+        this->ResourceMigrable::operator=(std::move(static_cast<ResourceMigrable&>(rsc)));
         _value = rsc._value;
         return *this;
     }
-
 
     T &operator*() 
     { 
@@ -70,62 +70,44 @@ public:
         return &_value; 
     }
 
-
     T Fetch();
-
-	int Acquire();
-	void Release();
-
+    T* Get();
 
     HPX_DEFINE_COMPONENT_ACTION(Data, Fetch, Fetch_action_Data);
-    HPX_DEFINE_COMPONENT_ACTION(Data, Acquire, Acquire_action_Data);
-    HPX_DEFINE_COMPONENT_ACTION(Data, Release, Release_action_Data);
-
 
 
     template <typename Archive>
     void serialize(Archive& ar, unsigned version)
     {
-        ar & hpx::serialization::base_object<Resource>(*this);
+        ar & hpx::serialization::base_object<ResourceMigrable>(*this);
         ar & _value;
     }
     
+
 private:
     Value<T> _value;
-
 };
 
+
 }
+
 
 #include "cor/resources/data.tpp"
 
 #define REGISTER_DATA_DECLARATION(type)                                                                             \
     HPX_REGISTER_ACTION_DECLARATION(                                                                                \
         cor::Data<type>::Fetch_action_Data,                                                                         \
-        HPX_PP_CAT(__Data_Fetch_action_Data_, type));                                                                \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                                \
-        cor::Data<type>::Acquire_action_Data,                                                                         \
-        HPX_PP_CAT(__Data_Acquire_action_Data_, type));                                                                \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                                \
-        cor::Data<type>::Release_action_Data,                                                                         \
-        HPX_PP_CAT(__Data_Release_action_Data_, type));                                                                \
-
+        HPX_PP_CAT(__Data_Fetch_action_Data_, type));                                                               \
 
 #define REGISTER_DATA(type)                                                                                         \
     HPX_REGISTER_ACTION(                                                                                            \
         cor::Data<type>::Fetch_action_Data,                                                                         \
         HPX_PP_CAT(__Data_Fetch_action_Data_, type));                                                               \
-    HPX_REGISTER_ACTION(                                                                                            \
-        cor::Data<type>::Acquire_action_Data,                                                                         \
-        HPX_PP_CAT(__Data_Acquire_action_Data_, type));                                                               \
-    HPX_REGISTER_ACTION(                                                                                            \
-        cor::Data<type>::Release_action_Data,                                                                         \
-        HPX_PP_CAT(__Data_Release_action_Data_, type));                                                               \
     typedef ::hpx::components::component<cor::Data<type>>                                                           \
         HPX_PP_CAT(__Data_type, type);                                                                              \
     typedef cor::Data<type>                                                                                         \
         HPX_PP_CAT(__Data_, type);                                                                                  \
-    HPX_REGISTER_DERIVED_COMPONENT_FACTORY(HPX_PP_CAT(__Data_type, type), HPX_PP_CAT(__Data_, type), "Resource")    \
+    HPX_REGISTER_DERIVED_COMPONENT_FACTORY(HPX_PP_CAT(__Data_type, type), HPX_PP_CAT(__Data_, type), "ResourceMigrable")    \
 
 
 #endif
