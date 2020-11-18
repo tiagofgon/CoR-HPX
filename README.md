@@ -5,7 +5,7 @@ Caso as dependências da biblioteca não estejam instaladas nos caminhos padrão
 
 LibSSH_ROOT: caminho para a pasta do pacote libssh.
 
-
+## Compilação
 Para compilar, criar uma diretoria dentro da diretoria principal e executar:
 (necessário definir a variável LibSSH_ROOT caso seja necessário)
 
