@@ -146,6 +146,7 @@ private:
 
     std::condition_variable _cv;
     std::mutex _mtx;
+    hpx::lcos::local::spinlock _mtx2;
 
     std::string hpx_address;
     int hpx_port;

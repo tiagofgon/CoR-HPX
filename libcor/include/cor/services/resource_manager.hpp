@@ -113,6 +113,7 @@ private:
     bool _is_main_mgr;
 
     std::mutex _mtx;
+    hpx::lcos::local::spinlock _mtx2;
 
     std::map<idp_t, hpx::id_type> gids; // equivalente ao _cst_objs
 

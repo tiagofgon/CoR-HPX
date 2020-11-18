@@ -153,8 +153,11 @@ std::string Controller::GetLocalContext()
 
 unsigned int Controller::GetTotalPods()
 {    
-    std::unique_lock<std::mutex> lk(_mtx);
-    return _init_total_npods;
+    _mtx2.lock();
+    auto res = _init_total_npods;
+    _mtx2.unlock();
+
+    return res;
 }
 
 unsigned int Controller::GetTotalDomains()

@@ -29,7 +29,7 @@ private:
 
     idp_t _idp;
 
-    hpx::lcos::local::mutex _mtx;
+    hpx::lcos::local::spinlock _mtx;
     // hpx::lcos::local::condition_variable _cv;
 };
 

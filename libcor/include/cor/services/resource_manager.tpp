@@ -78,18 +78,18 @@ template <typename T>
 std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::string const& name, std::unique_ptr<T> rsc, std::string const& ctrl)
 {
     idp_t ori_ctx;
-    {
-        // lock to access resource manager variables
-        std::lock_guard<std::mutex> lk(_mtx);
-
-        // pick up the original ctx idp, it can be local or not
-        auto alias_it =_alias.find(ctx);
-        if ( alias_it == _alias.end() ) { // If the ctx does not belong to _alias
-            ori_ctx = ctx;
-        } else { 
-            ori_ctx = alias_it->second;
-        }
+    
+    // lock to access resource manager variables
+    _mtx2.lock();
+    // pick up the original ctx idp, it can be local or not
+    auto alias_it =_alias.find(ctx);
+    if ( alias_it == _alias.end() ) { // If the ctx does not belong to _alias
+        ori_ctx = ctx;
+    } else { 
+        ori_ctx = alias_it->second;
     }
+    _mtx2.unlock();
+    
 
     // ori_ctx must exist in the global component, to fetch their gid
     if (FindIdp(ori_ctx) == false) {
@@ -99,26 +99,24 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
         AttachResource(ctx, gid, idp, name); // attach resource to the context
     }
 
-    {
-        std::lock_guard<std::mutex> lk(_mtx);
 
-        typedef typename T::organizer element;
-        if(typeid(element) == typeid(StaticOrganizer))
-        { 
-                InsertStaticOrganizer_idps(idp);
-                std::cout << "adicionado ao StaticOrganizer " << idp << std::endl;
-        }
-        else if(typeid(element) == typeid(DynamicOrganizer))
-        {
-                InsertDynamicOrganizer_idps(idp);
-                std::cout << "adicionado ao dynamicOrganizer_idps " << idp << std::endl;
-        }
-        else if(typeid(element) == typeid(Mailbox))
-        {
-                InsertAgentMailbox(idp, rsc->GetMailboxGid());
-                std::cout << "adicionado ao _agents_mailbox " << idp << std::endl;
-        }
+    typedef typename T::organizer element;
+    if(typeid(element) == typeid(StaticOrganizer))
+    { 
+            InsertStaticOrganizer_idps(idp);
+            std::cout << "adicionado ao StaticOrganizer " << idp << std::endl;
     }
+    else if(typeid(element) == typeid(DynamicOrganizer))
+    {
+            InsertDynamicOrganizer_idps(idp);
+            std::cout << "adicionado ao dynamicOrganizer_idps " << idp << std::endl;
+    }
+    else if(typeid(element) == typeid(Mailbox))
+    {
+            InsertAgentMailbox(idp, rsc->GetMailboxGid());
+            std::cout << "adicionado ao _agents_mailbox " << idp << std::endl;
+    }
+    
 
     return rsc;
 }
@@ -141,11 +139,14 @@ std::unique_ptr<T> ResourceManager::CreateReference(idp_t idp, idp_t ctx, std::s
         rsc = AllocateResource(alias, ctx, name, std::move(rsc1), ctrl);
     }
 
-    {
-        // lock to access resource manager variables
-        std::lock_guard<std::mutex> lk(_mtx);
-        _alias.emplace(alias, idp);
-    }
+    
+    // lock to access resource manager variables
+    _mtx2.lock();
+
+    _alias.emplace(alias, idp);
+
+    _mtx2.unlock();
+    
 
     InsertPredecessorIdp(alias, ctx); // insert relationship of ancestry and alias
     return GetLocalResource<T>(alias);

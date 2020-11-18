@@ -24,6 +24,7 @@ ResourceManager::ResourceManager(Controller *ctrl, bool first) :
     _is_main_mgr{first},
     _predecessors{},
     _mtx{},
+    _mtx2{},
     dynamicOrganizer_idps{},
     staticOrganizer_idps{}
 {
@@ -84,7 +85,8 @@ void ResourceManager::FindMetaDomain(std::string const& ctrl)
 
 bool ResourceManager::ContainsResource(idp_t idp)
 {
-    std::unique_lock<std::mutex> lk(_mtx);
+    _mtx2.lock();
+
     auto it = _predecessors.find(idp);
     if ( it == _predecessors.end() ) {
        return false;
@@ -92,6 +94,7 @@ bool ResourceManager::ContainsResource(idp_t idp)
         return true;
     }
 
+    _mtx2.unlock();
 }
 
 std::string ResourceManager::SearchResource(idp_t idp)
@@ -133,7 +136,7 @@ unsigned int ResourceManager::GetTotalDomains()
 
 idp_t ResourceManager::GetDomainIdp(idp_t idp)
 {
-    std::unique_lock<std::mutex> lk(_mtx); // shared_lock
+    _mtx2.lock();
 
     auto ret = idp;
     auto ctx = _predecessors.at(ret);
@@ -143,41 +146,52 @@ idp_t ResourceManager::GetDomainIdp(idp_t idp)
         ctx = _predecessors.at(ret);
     }
 
+    _mtx2.unlock();
+
     return ret;
 }
 
 void ResourceManager::InsertPredecessorIdp(idp_t idp, idp_t idp_predecessor)
 {
-    std::unique_lock<std::mutex> lk(_mtx); // shared_lock
+    _mtx2.lock();
 
     _predecessors.emplace(idp, idp_predecessor);
     _ctrl->InsertPredecessorIdpGlobal(idp, idp_predecessor);
+
+    _mtx2.unlock();
 }
 
 bool ResourceManager::FindPredecessorIdp(idp_t idp)
 {
-    std::unique_lock<std::mutex> lk(_mtx); // shared_lock
-
+    _mtx2.lock();
+    bool res;
     auto it = _predecessors.find(idp);
     if ( it == _predecessors.end() ) {
-       return _ctrl->FindPredecessorIdpGlobal(idp);
+        res = _ctrl->FindPredecessorIdpGlobal(idp);
     } else { 
-        return true;
+        res = true;
     }
 
+    _mtx2.unlock();
+
+    return res;
 }
 
 idp_t ResourceManager::GetPredecessorIdp(idp_t idp)
 {
-    // lock to access resource manager variables
-    std::unique_lock<std::mutex> lk(_mtx); // shared_lock
+    _mtx2.lock();
 
+    idp_t res;
     auto it = _predecessors.find(idp);
     if (it != _predecessors.end()) {
-        return it->second;
+        res = it->second;
     } else { // in case the idp is remote
-        return _ctrl->GetPredecessorIdpGlobal(idp);
+        res = _ctrl->GetPredecessorIdpGlobal(idp);
     }
+
+    _mtx2.unlock();
+
+    return res;
 }
 
 void ResourceManager::RemovePredecessorIdp(idp_t idp)
@@ -190,13 +204,18 @@ void ResourceManager::RemovePredecessorIdp(idp_t idp)
 idp_t ResourceManager::ResolveIdp(idp_t idp)
 {
     // lock to access resource manager variables
-    std::unique_lock<std::mutex> lk(_mtx); //shared_lock
+    _mtx2.lock();
 
+    idp_t res;
     auto it = _alias.find(idp);
     if (it == _alias.end())
-        return idp;
+        res = idp;
     else
-        return it->second;
+        res = it->second;
+
+    _mtx2.unlock();
+
+    return res;
 }
 
 void ResourceManager::EraseResource(idp_t idp)
@@ -212,7 +231,7 @@ void ResourceManager::EraseResource(idp_t idp)
 
 void ResourceManager::DeallocateResource(idp_t idp)
 {
-    std::unique_lock<std::mutex> lk(_mtx);
+    _mtx2.lock();
 
     std::cout << "BEGIN <" << _ctrl->GetName() << "> DEALLOCATE RESOURCE " << std::to_string(idp) << std::endl;
 
@@ -251,6 +270,7 @@ void ResourceManager::DeallocateResource(idp_t idp)
         }
     }
 
+    _mtx2.unlock();
     std::cout << "END <" << _ctrl->GetName() << "> DEALLOCATE RESOURCE " << std::to_string(idp) << std::endl;
 }
 
@@ -261,88 +281,137 @@ idp_t ResourceManager::GenerateIdp()
 
 void ResourceManager::InsertIdp(idp_t idp, hpx::id_type gid)
 {
-    std::unique_lock<std::mutex> lk(_mtx); //shared_lock
+    _mtx2.lock();
 
     gids.emplace(idp, gid);
-    return _ctrl->InsertIdpGlobal(idp, gid);
+    _ctrl->InsertIdpGlobal(idp, gid);
+
+    _mtx2.unlock();
 }
 
 bool ResourceManager::FindIdp(idp_t idp)
 {
-    std::unique_lock<std::mutex> lk(_mtx); //shared_lock
+    _mtx2.lock();
 
+    bool res;
     auto it = _predecessors.find(idp);
     if ( it == _predecessors.end() ) {
-       return _ctrl->FindIdpGlobal(idp);
+       res = _ctrl->FindIdpGlobal(idp);
     } else { 
-        return true;
+        res = true;
     }
+
+    _mtx2.unlock();
+    
+    return res;
 }
 
 hpx::id_type ResourceManager::GetGidFromIdp(idp_t idp)
 {
-    std::unique_lock<std::mutex> lk(_mtx); //shared_lock
+    _mtx2.lock();
 
+    hpx::id_type res;
     auto it = gids.find(idp);
     if (it != gids.end()) {
-        return it->second;
+        res = it->second;
     } else { // in case the idp is remote
-        return _ctrl->GetGidFromIdpGlobal(idp);
+        res = _ctrl->GetGidFromIdpGlobal(idp);
     }
+
+    _mtx2.unlock();
+
+    return res;
 }
 
 void ResourceManager::RemoveIdp(idp_t idp)
 {
-    std::unique_lock<std::mutex> lk(_mtx); //shared_lock
+    _mtx2.lock();
 
     gids.erase(idp);
-    return _ctrl->RemoveIdpGlobal(idp);
+    _ctrl->RemoveIdpGlobal(idp);
+
+    _mtx2.unlock();
 }
 
 void ResourceManager::InsertDynamicOrganizer_idps(idp_t idp)
 {
+    _mtx2.lock();
+
     dynamicOrganizer_idps.insert(idp);
-    return _ctrl->InsertDynamicOrganizer_idpsGlobal(idp);
+    _ctrl->InsertDynamicOrganizer_idpsGlobal(idp);
+
+    _mtx2.unlock();
 }
 
 void ResourceManager::InsertStaticOrganizer_idps(idp_t idp)
 {
+    _mtx2.lock();
+
     staticOrganizer_idps.insert(idp);
-    return _ctrl->InsertStaticOrganizer_idpsGlobal(idp);
+    _ctrl->InsertStaticOrganizer_idpsGlobal(idp);
+
+    _mtx2.unlock();
 }
 
 bool ResourceManager::FindDynamicOrganizer_idps(idp_t idp)
 {
+    _mtx2.lock();
+
+    bool res;
     if(dynamicOrganizer_idps.find(idp) != dynamicOrganizer_idps.end()) {
-        return true;
+        res = true;
     }
-    return _ctrl->FindDynamicOrganizer_idpsGlobal(idp);
+    else {
+        res = _ctrl->FindDynamicOrganizer_idpsGlobal(idp);
+    }
+    
+    _mtx2.unlock();
+
+    return res;
 }
 
 bool ResourceManager::FindStaticOrganizer_idps(idp_t idp)
 {
+    _mtx2.lock();
+
+    bool res;
     if(staticOrganizer_idps.find(idp) != staticOrganizer_idps.end()) {
-        return true;
+        res = true;
     }
-    return _ctrl->FindStaticOrganizer_idpsGlobal(idp);
+    else {
+        res = _ctrl->FindStaticOrganizer_idpsGlobal(idp);
+    }
+
+    _mtx2.unlock();
+
+    return res;
 }
 
 void ResourceManager::InsertAgentMailbox(idp_t idp, hpx::id_type gid)
 {
+    _mtx2.lock();
+
     _agents_mailbox.emplace(idp, gid);
-    return _ctrl->InsertAgentMailboxGlobal(idp, gid);
+    _ctrl->InsertAgentMailboxGlobal(idp, gid);
+
+    _mtx2.unlock();
 }
 
 hpx::id_type ResourceManager::GetAgentMailbox(idp_t idp)
 {
-    std::unique_lock<std::mutex> lk(_mtx); //shared_lock
+    _mtx2.lock();
 
+    hpx::id_type res;   
     auto it = _agents_mailbox.find(idp);
     if (it != _agents_mailbox.end()) {
-        return it->second;
+        res = it->second;
     } else { // no caso do idp ser remoto
-        return _ctrl->GetAgentMailboxGlobal(idp);
+        res = _ctrl->GetAgentMailboxGlobal(idp);
     }
+
+    _mtx2.unlock();
+
+    return res;
 }
 
 void ResourceManager::AttachResource(idp_t ctx, hpx::id_type ctx_gid, idp_t idp, std::string const& name)
