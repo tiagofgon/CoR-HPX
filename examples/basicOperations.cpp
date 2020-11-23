@@ -17,7 +17,7 @@ void Main(int rsc_idp)
     auto agent = domain->GetLocalResource<cor::Agent_Client<void(int,char**)>>(agent_idp);
 
     // criar um grupo para introduzir um novo módulo do utilizador na aplicação
-    std::string const& path = "/opt/placor-hpx/examples/libcallableModule.so"; // é necessario fazer estas atribuições porque os argumentos de componentes tem de ser const
+    std::string const& path = "/home/pg38939/apps/placor-hpx/examples/libcallableModule.so"; // é necessario fazer estas atribuições porque os argumentos de componentes tem de ser const
     auto group = domain->CreateLocal<cor::Group_Client>(domain->Idp(), "group", path);
 
     // criar um dado no qual irá ser escrito o idp do agente que irá ser criado

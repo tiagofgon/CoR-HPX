@@ -11,7 +11,7 @@ Domain::Domain(idp_t idp, std::string const& module) :
     _dynamic_organizer{idp, module},
     _container{idp}
 {
-    std::cout << "Criado um componente \"Domain\", com idp: " << idp << std::endl;
+    //std::cout << "Criado um componente \"Domain\", com idp: " << idp << std::endl;
 }
 
 

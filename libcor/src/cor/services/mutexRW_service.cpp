@@ -6,7 +6,7 @@ namespace cor {
 
 MutexRWService::MutexRWService()
 {
-    std::cout << "Criado um componente MutexRWService" << std::endl;
+    //std::cout << "Criado um componente MutexRWService" << std::endl;
 }
 
 MutexRWService::~MutexRWService() = default;

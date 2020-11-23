@@ -9,7 +9,7 @@ RWMutex::RWMutex(idp_t idp) :
     Resource{idp}, 
     _srwmutex{idp}
 {
-    std::cout << "Criado um componente \"RWMutex\", com idp: " << idp << std::endl;
+    //std::cout << "Criado um componente \"RWMutex\", com idp: " << idp << std::endl;
 }
 
 

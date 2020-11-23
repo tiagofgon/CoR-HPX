@@ -15,7 +15,7 @@ StaticOrganizer::StaticOrganizer(idp_t idp, unsigned int total_members, idp_t pa
     _members{},
     _next_idm{0}
 {
-    std::cout << "Criado um objeto da classe \"StaticOrganizer\", com idp: " << _idp << std::endl;
+    //std::cout << "Criado um objeto da classe \"StaticOrganizer\", com idp: " << _idp << std::endl;
 }
 
 

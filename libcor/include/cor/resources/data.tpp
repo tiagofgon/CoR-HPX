@@ -17,7 +17,7 @@ Data<T>::Data(idp_t idp, Args&&... args) :
     base_type(idp),
     _value{idp, std::forward<Args>(args)...}
 {
-    std::cout << "Criado um componente \"Data\", com idp: " << idp << std::endl;
+    //std::cout << "Criado um componente \"Data\", com idp: " << idp << std::endl;
 }
 
 template <typename T>

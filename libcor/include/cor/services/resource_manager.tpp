@@ -104,17 +104,17 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
     if(typeid(element) == typeid(StaticOrganizer))
     { 
             InsertStaticOrganizer_idps(idp);
-            std::cout << "adicionado ao StaticOrganizer " << idp << std::endl;
+            //std::cout << "adicionado ao StaticOrganizer " << idp << std::endl;
     }
     else if(typeid(element) == typeid(DynamicOrganizer))
     {
             InsertDynamicOrganizer_idps(idp);
-            std::cout << "adicionado ao dynamicOrganizer_idps " << idp << std::endl;
+            //std::cout << "adicionado ao dynamicOrganizer_idps " << idp << std::endl;
     }
     else if(typeid(element) == typeid(Mailbox))
     {
             InsertAgentMailbox(idp, rsc->GetMailboxGid());
-            std::cout << "adicionado ao _agents_mailbox " << idp << std::endl;
+            //std::cout << "adicionado ao _agents_mailbox " << idp << std::endl;
     }
     
 

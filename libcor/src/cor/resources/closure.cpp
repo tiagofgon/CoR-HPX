@@ -9,7 +9,7 @@ Closure::Closure(idp_t idp, unsigned int total_members, idp_t parent) :
     Resource{idp},
     _staticOrganizer{idp, total_members, parent}
 {
-    std::cout << "Criado um componente \"Closure\", com idp: " << idp << std::endl;
+    //std::cout << "Criado um componente \"Closure\", com idp: " << idp << std::endl;
 }
 
 

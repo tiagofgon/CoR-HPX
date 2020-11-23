@@ -9,7 +9,7 @@ Group::Group(idp_t idp, std::string const& module) :
     Resource{idp},
     _dynamic_organizer{idp, module}
 {
-    std::cout << "Criado um componente \"Grupo\", com idp: " << idp << std::endl;
+    //std::cout << "Criado um componente \"Grupo\", com idp: " << idp << std::endl;
 }
 
 

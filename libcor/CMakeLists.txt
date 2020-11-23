@@ -13,6 +13,14 @@ target_include_directories(
         $<INSTALL_INTERFACE:include>
 )
 
+# Add this compile definition for debug builds, this same logic works for
+# target_compile_options, target_link_options, etc.
+target_compile_definitions(libcor PRIVATE
+    $<$<CONFIG:Debug>:
+        LIBCOR_DEBUG=1
+    >
+)
+
 target_link_libraries(
     libcor
     PRIVATE
@@ -23,7 +31,7 @@ target_link_libraries(
         # Cereal
         LibSSH
     PUBLIC
-	    hpx
+	    HPX::hpx
 )
 
 install(

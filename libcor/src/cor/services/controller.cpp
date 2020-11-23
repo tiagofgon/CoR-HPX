@@ -77,7 +77,7 @@ void Controller::StopService()
 
 void Controller::Initialize()
 {
-    std::cout << "Controller::Initialize()" << std::endl;
+    //std::cout << "Controller::Initialize()" << std::endl;
     // join app group and synchronize
     // _mbox->join(_app_group);
     bool _is_main_ctrl=false;
@@ -245,7 +245,6 @@ hpx::id_type Controller::GetAgentMailbox(idp_t idp)
 
 void Controller::InsertDynamicOrganizer_idpsGlobal(idp_t idp)
 {
-    std::cout << "cacacac5" << std::endl;
     return resourceManagerGlobal_object->InsertDynamicOrganizer_idps(idp);
 }
 
@@ -289,7 +288,7 @@ idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t pa
 
     // assemble command
     std::string cmd;
-    cmd.append("/opt/placor-hpx/bin/corhpx");
+    cmd.append("/home/pg38939/apps/placor-hpx/bin/corhpx");
     cmd.append(" ");
     cmd.append(_app_group);
     cmd.append(" ");
@@ -325,7 +324,7 @@ idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t pa
     cmd.append(" ");
     cmd.append("--hpx:threads=2");
     cmd.append(" ");
-    cmd.append("--hpx:ini=hpx.component_paths=/opt/placor-hpx/examples");
+    cmd.append("--hpx:ini=hpx.component_paths=/home/pg38939/apps/placor-hpx/examples");
 
     std::cout << "spawned comando: " << cmd << std::endl;
 

@@ -11,7 +11,7 @@ SBarrier::SBarrier(idp_t idp, idp_t clos) :
     _idp{idp},
     _clos{clos}
 {
-    std::cout << "Criado um objeto da classe \"SBarrier\", com idp: " << _idp << std::endl;
+    //std::cout << "Criado um objeto da classe \"SBarrier\", com idp: " << _idp << std::endl;
 }
 
 SBarrier::~SBarrier() = default;

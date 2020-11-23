@@ -19,7 +19,7 @@ Mailbox::Mailbox(idp_t idp) :
     _channel{hpx::find_here()},
     _channel_ctx{hpx::find_here()}
 {
-    std::cout << "Criado um objeto da classe \"Mailbox\", com idp: " << _idp << std::endl;
+    //std::cout << "Criado um objeto da classe \"Mailbox\", com idp: " << _idp << std::endl;
 
     std::string channel_name = "Mailbox-" + std::to_string(_idp);
     _channel.register_as(channel_name);

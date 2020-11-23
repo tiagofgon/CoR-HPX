@@ -15,5 +15,5 @@ void Main(int rsc_idp)
     auto rank = clos->GetIdm(agent_idp);
     auto parent_idp = clos->GetParent();
 
-    std::cout << agent_idp << "\t" << rank << "\t" << clos_idp << "\t" << clos_size << "\t" << parent_idp << "\n";
+    std::cout << agent_idp << "\t" << rank << "\t" << clos_idp << "\t" << clos_size << "\t" << parent_idp << "          hpx::locality= " << hpx::get_locality_id() << "\n";
 }

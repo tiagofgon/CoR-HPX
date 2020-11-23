@@ -7,7 +7,7 @@
 // #include <hpx/include/run_as.hpp>
 // #include <hpx/hpx_start.hpp>
 
-#include <hpx/include/iostreams.hpp>
+// #include <hpx/include/iostreams.hpp>
 #include <iostream>
 #include <cstdlib>
 
@@ -54,6 +54,12 @@ int funcaoTeste (int n1, int n2) {
 
 int hpx_main(int argc, char *argv[])
 {
+
+    #ifdef LIBCOR_DEBUG
+        std::cout << "************ DEBUG *******"  << std::endl;
+    #endif
+
+    
     std::string app_group, context, module;
     unsigned int npods;
     unsigned int total_members;
@@ -89,19 +95,19 @@ int hpx_main(int argc, char *argv[])
     auto clos = domain->CreateCollective<cor::Closure_Client>(domain->Idp(), "", npods, total_memberss, parentt);
     
 
-    std::cout << "************ Criação do agente principal no corhpx *******"  << std::endl;
+    //std::cout << "************ Criação do agente principal no corhpx *******"  << std::endl;
     auto agent = domain->CreateLocal<cor::Agent_Client<void(int)>>(clos->Idp(),  "", domain->GetModuleName(), Main);
     //auto agent = domain->CreateLocal<cor::Agent_Client<void(arg)>>(clos->Idp(),  "", domain->GetModuleName(), Main);
 
-    std::cout << "************ Execução do modulo *******"  << std::endl;
+    //std::cout << "************ Execução do modulo *******"  << std::endl;
 
     agent->Run(559);
     agent->Wait();
     agent->Get();
 
-    std::string address = hpx::get_config_entry("hpx.parcel.address", HPX_INITIAL_IP_ADDRESS);
-    int port = std::stoi(hpx::get_config_entry("hpx.parcel.port", std::to_string(HPX_INITIAL_IP_PORT)));
-    std::cout << address << ":" << port << std::endl;
+    // std::string address = hpx::get_config_entry("hpx.parcel.address", HPX_INITIAL_IP_ADDRESS);
+    // int port = std::stoi(hpx::get_config_entry("hpx.parcel.port", std::to_string(HPX_INITIAL_IP_PORT)));
+    // std::cout << address << ":" << port << std::endl;
 
     return hpx::finalize();
 }
@@ -110,6 +116,7 @@ int hpx_main(int argc, char *argv[])
 int main(int argc, char * argv[])
 {
     std::vector<std::string> const cfg = {
+    "hpx.run_hpx_main!=1",
     // Make sure networking will not be disabled
     "hpx.expect_connecting_localities!=1"
     // "hpx.parcel.port=7910"

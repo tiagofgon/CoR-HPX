@@ -9,7 +9,7 @@ Mutex::Mutex(idp_t idp) :
     Resource{idp}, 
     _smutex{idp}
 {
-    std::cout << "Criado um componente \"Mutex\", com idp: " << idp << std::endl;
+    //std::cout << "Criado um componente \"Mutex\", com idp: " << idp << std::endl;
 }
 
 

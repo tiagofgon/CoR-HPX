@@ -19,7 +19,7 @@ Executor<R(P...)>::Executor(idp_t idp, std::function<R(P...)> const& f) :
     _function{},
     _f{f}
 {
-    std::cout << "Criado um objeto da classe \"Executor\", com idp: " << _idp << std::endl;
+    //std::cout << "Criado um objeto da classe \"Executor\", com idp: " << _idp << std::endl;
 }
 
 template <typename R, typename ... P>
@@ -29,7 +29,7 @@ Executor<R(P...)>::Executor(idp_t idp, std::string const& module, std::string co
     _function{function},
     _f{}
 {
-    std::cout << "Criado um objeto da classe \"Executor\", com idp: " << _idp << std::endl;
+    //std::cout << "Criado um objeto da classe \"Executor\", com idp: " << _idp << std::endl;
 }
 
 

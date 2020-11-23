@@ -10,7 +10,7 @@ target_link_libraries(
     module
     PRIVATE
         libcor
-	hpx
+	HPX::hpx
 )
 
 
@@ -42,7 +42,7 @@ target_link_libraries(
         # Spread
         # SSRCSpread
         # Cereal
-	hpx
+	HPX::hpx
 )
 
 # callableModule
@@ -59,7 +59,7 @@ target_link_libraries(
         # Spread
         # SSRCSpread
         # Cereal
-	hpx
+	HPX::hpx
 )
 
 
@@ -77,7 +77,7 @@ target_link_libraries(
         # Spread
         # SSRCSpread
         # Cereal
-	hpx
+	HPX::hpx
 )
 
 
@@ -93,7 +93,7 @@ target_link_libraries(
     PRIVATE
         libcor
     PUBLIC
-        hpx
+        HPX::hpx
 )
 
 
@@ -109,7 +109,7 @@ target_link_libraries(
     PRIVATE
         libcor
     PUBLIC
-        hpx
+        HPX::hpx
 )
 
 
@@ -127,7 +127,7 @@ target_link_libraries(
         # Spread
         # SSRCSpread
         # Cereal
-	hpx
+	HPX::hpx
 )
 
 # inter_closure
@@ -144,7 +144,7 @@ target_link_libraries(
         # Spread
         # SSRCSpread
         # Cereal
-	hpx
+	HPX::hpx
 )
 # # spawn - HPX
 # add_library(spawn_hpx SHARED spawn_hpx.cpp)
@@ -160,7 +160,7 @@ target_link_libraries(
 #         # Spread
 #         # SSRCSpread
 #         # Cereal
-# 	    hpx
+# 	    HPX::hpx
 # )
 
 # # client
@@ -177,7 +177,7 @@ target_link_libraries(
 #         # Spread
 #         # SSRCSpread
 #         # Cereal
-# 	hpx
+# 	HPX::hpx
 # )
 
 # # server
@@ -211,7 +211,7 @@ target_link_libraries(
         # Spread
         # SSRCSpread
         # Cereal
-	hpx
+	HPX::hpx
 )
 
 # client_rpc
@@ -228,7 +228,7 @@ target_link_libraries(
         # Spread
         # SSRCSpread
         # Cereal
-	hpx
+	HPX::hpx
 )
 
 install(

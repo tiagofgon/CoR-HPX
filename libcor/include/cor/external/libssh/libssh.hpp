@@ -80,48 +80,48 @@ namespace ssh
 
         void PublicKeyAuth() const
         {
-            std::cout << "aqui-1" << std::endl;
+            // std::cout << "aqui-1" << std::endl;
             auto rc = ssh_userauth_publickey_auto(_session, nullptr, nullptr);
-            std::cout << "rc " << rc << std::endl;
+            // std::cout << "rc " << rc << std::endl;
             if (rc != SSH_OK)
                 throw SshException(_session);
 
 
-            if (rc == SSH_AUTH_ERROR)
-            {
-                std::cout << "aqui-3" << std::endl;
-                fprintf(stderr, "Authentication failed: %s\n",
-                ssh_get_error(_session));
-            }
+            // if (rc == SSH_AUTH_ERROR)
+            // {
+            //     std::cout << "aqui-3" << std::endl;
+            //     fprintf(stderr, "Authentication failed: %s\n",
+            //     ssh_get_error(_session));
+            // }
 
-            if (rc == SSH_AUTH_DENIED)
-            {
-                std::cout << "aqui-SSH_AUTH_DENIED" << std::endl;
-                fprintf(stderr, "Authentication failed: %s\n",
-                ssh_get_error(_session));
-            }
+            // if (rc == SSH_AUTH_DENIED)
+            // {
+            //     std::cout << "aqui-SSH_AUTH_DENIED" << std::endl;
+            //     fprintf(stderr, "Authentication failed: %s\n",
+            //     ssh_get_error(_session));
+            // }
 
-            if (rc == SSH_AUTH_PARTIAL)
-            {
-                std::cout << "aqui-SSH_AUTH_PARTIAL" << std::endl;
-                fprintf(stderr, "Authentication failed: %s\n",
-                ssh_get_error(_session));
-            }
+            // if (rc == SSH_AUTH_PARTIAL)
+            // {
+            //     std::cout << "aqui-SSH_AUTH_PARTIAL" << std::endl;
+            //     fprintf(stderr, "Authentication failed: %s\n",
+            //     ssh_get_error(_session));
+            // }
 
-            if (rc == SSH_AUTH_SUCCESS)
-            {
-                std::cout << "aqui-SSH_AUTH_SUCCESS" << std::endl;
-            }
+            // if (rc == SSH_AUTH_SUCCESS)
+            // {
+            //     std::cout << "aqui-SSH_AUTH_SUCCESS" << std::endl;
+            // }
 
-            if (rc == SSH_AUTH_AGAIN)
-            {
-                std::cout << "aqui-SSH_AUTH_AGAIN" << std::endl;
-                fprintf(stderr, "Authentication failed: %s\n",
-                ssh_get_error(_session));
-            }
+            // if (rc == SSH_AUTH_AGAIN)
+            // {
+            //     std::cout << "aqui-SSH_AUTH_AGAIN" << std::endl;
+            //     fprintf(stderr, "Authentication failed: %s\n",
+            //     ssh_get_error(_session));
+            // }
 
 
-            std::cout << "aqui-3" << std::endl;
+            // std::cout << "aqui-3" << std::endl;
         }
 
         socket_t getSocket() const

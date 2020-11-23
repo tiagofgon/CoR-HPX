@@ -143,7 +143,7 @@ public:
 	/** Data's interface **/
 	void AcquireRead()
 	{
-		std::cout << "AcquireRead()" << std::endl;
+		//std::cout << "AcquireRead()" << std::endl;
 		mutex->AcquireRead();
 		ensure_ptr();
 
@@ -151,20 +151,20 @@ public:
 
 	void ReleaseRead()
 	{
-		std::cout << "ReleaseRead()" << std::endl;
+		//std::cout << "ReleaseRead()" << std::endl;
 		mutex->ReleaseRead();
 	}
 
 	void Acquire()
 	{
-		std::cout << "AcquireWrite()" << std::endl;
+		//std::cout << "AcquireWrite()" << std::endl;
 		mutex->AcquireWrite();
 		ensure_ptr();
 	}
 
 	void Release()
 	{
-		std::cout << "ReleaseWrite()" << std::endl;
+		//std::cout << "ReleaseWrite()" << std::endl;
 		mutex->ReleaseWrite();
 	}
 
@@ -183,14 +183,14 @@ public:
 	}
 
 	T const &operator*() const {
-		std::cout << "AQUI_11" << std::endl;
+		// std::cout << "AQUI_11" << std::endl;
 		HPX_ASSERT(this->get_id());
 		
 		return **ptr;
 	}
 
 	T &operator*() {
-		std::cout << "AQUI_22" << std::endl;
+		// std::cout << "AQUI_22" << std::endl;
 		HPX_ASSERT(this->get_id());
 		
 		return **ptr;
@@ -198,7 +198,7 @@ public:
 
 	T const* operator->() const
 	{
-		std::cout << "AQUI_33" << std::endl;
+		// std::cout << "AQUI_33" << std::endl;
 		HPX_ASSERT(this->get_id());
 		
 		return &**ptr;
@@ -206,7 +206,7 @@ public:
 
 	T* operator->()
 	{
-		std::cout << "AQUI_44" << std::endl;
+		// std::cout << "AQUI_44" << std::endl;
 		HPX_ASSERT(this->get_id());
 		
 		return &**ptr;

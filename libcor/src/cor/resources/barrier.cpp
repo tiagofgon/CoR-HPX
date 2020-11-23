@@ -9,7 +9,7 @@ Barrier::Barrier(idp_t idp, idp_t clos) :
     Resource{idp},
     _sbarrier{idp, clos}
 {
-    std::cout << "Criado um componente \"Barrier\", com idp: " << idp << std::endl;
+    //std::cout << "Criado um componente \"Barrier\", com idp: " << idp << std::endl;
 }
 
 

@@ -16,7 +16,7 @@ DynamicOrganizer::DynamicOrganizer(idp_t idp, std::string const& module) :
     _members{},
     _next_idm{0}
 {
-    std::cout << "Criado um um objeto da classe \"DynamicOrganizer\", com idp: " << _idp << std::endl;
+    // std::cout << "Criado um um objeto da classe \"DynamicOrganizer\", com idp: " << _idp << std::endl;
     if (!module.empty())
         global::pod->LoadModule(module);
 }
@@ -27,11 +27,11 @@ DynamicOrganizer::DynamicOrganizer(idp_t idp, std::string const& module) :
 
 void DynamicOrganizer::Join(idp_t idp, std::string const& name)
 {   
-    std::cout << "Join DYNAMIC ORGANIZER ---------------------out----------------" << std::endl;
+    // std::cout << "Join DYNAMIC ORGANIZER ---------------------out----------------" << std::endl;
     // acquire write
     _mtx.lock();
 
-    std::cout << "Join DYNAMIC ORGANIZER ---------------------------------------------" << std::endl;
+    // std::cout << "Join DYNAMIC ORGANIZER ---------------------------------------------" << std::endl;
 
     // verify if the resource has already been attached
     if (_members.find(idp) != _members.end())

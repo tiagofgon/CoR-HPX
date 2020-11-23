@@ -8,7 +8,7 @@ namespace cor {
 PageManager::PageManager(Controller* ctrl) :
     _ctrl{ctrl}
 {
-    std::cout << "PageManager contrutor1" << std::endl;
+    //std::cout << "PageManager contrutor1" << std::endl;
 }
 
 PageManager::~PageManager() = default;

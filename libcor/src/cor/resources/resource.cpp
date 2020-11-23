@@ -6,7 +6,7 @@ Resource::Resource() = default;
 
 Resource::Resource(idp_t idp) : _idp{idp}
 {
-    std::cout << "Criado um componente \"Resource\", idp: " << _idp << std::endl;
+    //std::cout << "Criado um componente \"Resource\", idp: " << _idp << std::endl;
 }
 
 Resource::~Resource() = default;

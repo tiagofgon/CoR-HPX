@@ -6,7 +6,7 @@ ResourceMigrable::ResourceMigrable() = default;
 
 ResourceMigrable::ResourceMigrable(idp_t idp) : _idp{idp}
 {
-    std::cout << "Criado um componente \"ResourceMigrable\", idp: " << _idp << std::endl;
+    //std::cout << "Criado um componente \"ResourceMigrable\", idp: " << _idp << std::endl;
 }
 
 ResourceMigrable::~ResourceMigrable() = default;

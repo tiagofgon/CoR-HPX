@@ -9,7 +9,7 @@ SMutex::SMutex() = default;
 SMutex::SMutex(idp_t idp) : 
     _idp{idp} 
 {
-    
+    //std::cout << "Criado um objeto da classe \"SMutex\", com idp: " << _idp << std::endl;
 }
 
 SMutex::~SMutex() = default;

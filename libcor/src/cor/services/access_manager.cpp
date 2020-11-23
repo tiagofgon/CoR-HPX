@@ -22,7 +22,7 @@ void AccessManager::AddContext(std::string const& ctx)
 int AccessManager::GetPosition(std::string const& ctx)
 {
     int pos = _contexts[ctx];
-    std::cout << "contexto: " << ctx << ", return: " << _contexts[ctx] << std::endl;
+    //std::cout << "contexto: " << ctx << ", return: " << _contexts[ctx] << std::endl;
     _contexts[ctx] = _contexts[ctx] + 1;
     
     return pos;

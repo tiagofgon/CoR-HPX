@@ -15,7 +15,7 @@ Value<T>::Value(idp_t idp, Args&&... args) :
     _idp{idp},
     _value{std::forward<Args>(args)...}
 {
-    std::cout << "Criado um objeto da classe \"Value\", com idp: " << _idp << std::endl;
+    //std::cout << "Criado um objeto da classe \"Value\", com idp: " << _idp << std::endl;
 }
 
 // template <typename T>

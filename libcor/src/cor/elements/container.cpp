@@ -9,7 +9,7 @@ Container::~Container() = default;
 Container::Container(idp_t idp) : 
     _idp{idp} 
 {
-    std::cout << "Criado um objeto da classe \"Container\", com idp: " << _idp << std::endl;
+    // std::cout << "Criado um objeto da classe \"Container\", com idp: " << _idp << std::endl;
 }
 
 // Container::Container(Container&&) noexcept = default;

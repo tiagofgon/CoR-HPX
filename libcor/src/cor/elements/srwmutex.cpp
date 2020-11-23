@@ -7,7 +7,7 @@ SRWMutex::SRWMutex() = default;
 SRWMutex::SRWMutex(idp_t idp) : 
     _idp{idp} 
 {
-
+    //std::cout << "Criado um objeto da classe \"SRWMutex\", com idp: " << _idp << std::endl;
 }
 
 SRWMutex::~SRWMutex() = default;
