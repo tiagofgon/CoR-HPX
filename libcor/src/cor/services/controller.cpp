@@ -288,7 +288,7 @@ idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t pa
 
     // assemble command
     std::string cmd;
-    cmd.append("/home/pg38939/apps/placor-hpx/bin/corhpx");
+    cmd.append("/share/apps/placor-hpx/bin/corhpx");
     cmd.append(" ");
     cmd.append(_app_group);
     cmd.append(" ");
@@ -324,9 +324,9 @@ idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t pa
     cmd.append(" ");
     cmd.append("--hpx:threads=2");
     cmd.append(" ");
-    cmd.append("--hpx:ini=hpx.component_paths=/home/pg38939/apps/placor-hpx/examples");
+    cmd.append("--hpx:ini=hpx.component_paths=/share/apps/placor-hpx/examples");
 
-    std::cout << "spawned comando: " << cmd << std::endl;
+    //std::cout << "spawned comando: " << cmd << std::endl;
 
 
     _sess_mgr->CreateRemoteSession(host, "22", cmd);

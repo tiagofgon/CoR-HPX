@@ -19,9 +19,19 @@ void Main(int input)
     auto parent_idp = clos->GetParent();
 
     if (parent_idp == 0) {
-        auto new_clos_idp = domain->Spawn("ctx2", 1, "/home/pg38939/apps/placor-hpx/examples/libspawn.so", {}, { "127.0.0.1" });
+        auto new_clos_idp = domain->Spawn("ctx2", 1, "/share/apps/placor-hpx/examples/libspawn.so", {}, { "127.0.0.1" });
+
+        // std::cout << "Antes da barreira: " << std::endl;
+        // hpx::lcos::barrier barrier("barreira444", 2);
+        // barrier.wait();
+    }
+    else {
+        // std::cout << "FILHO" << std::endl;
+        // std::cout << "Antes da barreira: " << std::endl;
+        // hpx::lcos::barrier barrier("barreira444", 2);
+        // barrier.wait();
     }
 
-    std::cout << agent_idp << "\t" << rank << "\t" << clos_idp << "\t" << clos_size << "\t" << parent_idp << "\n";
+    std::cout << agent_idp << "\t" << rank << "\t" << clos_idp << "\t" << clos_size << "\t" << parent_idp << std::endl;
 
 }

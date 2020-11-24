@@ -53,7 +53,7 @@ void RemoteSession::operator()()
         _sess.SetOption(SSH_OPTIONS_PORT_STR, const_cast<char*>(_port.c_str()));
 
         _sess.Connect();
-        std::cout << "Connect()" << std::endl;
+        // std::cout << "Connect()" << std::endl;
         _sess.PublicKeyAuth();
         _ch.OpenSession();
         
@@ -68,7 +68,7 @@ void RemoteSession::operator()()
         // stderr
         _cerr.SetOutFD(2);
         _cerr.SetInChannel(_ch, SSH_CONNECTOR_STDERR);
-        std::cout << "Connect()2" << std::endl;
+        // std::cout << "Connect()2" << std::endl;
         // set event loop
         _event.AddConnector(_cin);
         _event.AddConnector(_cout);
@@ -76,20 +76,20 @@ void RemoteSession::operator()()
 
         // run command
         _ch.RequestExec(_cmd);
-        std::cout << "Connect()3" << std::endl;
+        // std::cout << "Connect()3" << std::endl;
         _event.DoPoll();
-        std::cout << "Connect()4" << std::endl;
+        // std::cout << "Connect()4" << std::endl;
         auto exit_status = _ch.GetExitStatus();
         if (exit_status)
             std::cerr << "ERROR: job terminated with exit status " << exit_status << std::endl;
-        std::cout << "Connect()5" << std::endl;
+        // std::cout << "Connect()5" << std::endl;
         _event.RemoveConnector(_cin);
         _event.RemoveConnector(_cout);
         _event.RemoveConnector(_cerr);
-        std::cout << "Connect6()" << std::endl;
+        // std::cout << "Connect6()" << std::endl;
         _ch.SendEof();
         _ch.Close();
-        std::cout << "Connect()7" << std::endl;
+        // std::cout << "Connect()7" << std::endl;
         //_sess.Disconnect();
     } catch (SshException const& ex) {
         std::cerr << "Error: " << ex.GetError() << "\n";
