@@ -216,18 +216,17 @@ public:
 		return hpx::async<action_type>(this->get_id(), ctx, name, std::forward<Args>(args)...).get();
 	}
 
-    template <typename T, typename ... Args>
-    idp_t CreateRemote(idp_t ctx, std::string const& name, Args&& ... args)
+	template <typename T, typename ... Args>
+	idp_t Create(idp_t ctx, std::string const& name, Args&& ... args)
 	{
-		typedef cor::Domain::CreateRemote_action_Domain<T, Args...> action_type;
+		typedef cor::Domain::Create_action_Domain<T, Args...> action_type;
 		return hpx::async<action_type>(this->get_id(), ctx, name, std::forward<Args>(args)...).get();
 	}
 
     template <typename T, typename ... Args>
-    idp_t Create(idp_t ctx, std::string const& name, Args&& ... args)
+    idp_t CreateRemote(idp_t ctx, std::string const& name, Args&& ... args)
 	{
-		// std::cout << "Domain_Client::Create" << std::endl;
-		typedef cor::Domain::Create_action_Domain<T, Args...> action_type;
+		typedef cor::Domain::CreateRemote_action_Domain<T, Args...> action_type;
 		return hpx::async<action_type>(this->get_id(), ctx, name, std::forward<Args>(args)...).get();
 	}
 

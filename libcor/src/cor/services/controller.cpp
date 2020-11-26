@@ -13,10 +13,86 @@
 #include <sys/wait.h>
 #include "cor/elements/mailbox_client.hpp"
 
+
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <cstring>
+#include <ifaddrs.h>
+
 // #include <thread>
 // #include <sstream>
 
 // #include <iostream> // to remove
+
+
+/* Auxiliar functions */
+// check if the given string is a numeric string or not
+bool chkNumber(const std::string& str){
+   return !str.empty() &&
+   (str.find_first_not_of("[0123456789]") == std::string::npos);
+}
+// Function to split string str using given delimiter
+std::vector<std::string> split(const std::string& str, char delim){
+   auto i = 0;
+   std::vector<std::string> list;
+   auto pos = str.find(delim);
+   while (pos != std::string::npos){
+      list.push_back(str.substr(i, pos - i));
+      i = ++pos;
+      pos = str.find(delim, pos);
+   }
+   list.push_back(str.substr(i, str.length()));
+   return list;
+}
+// Function to validate an IP address
+bool validateIP(std::string ip){
+   // split the string into tokens
+   std::vector<std::string> slist = split(ip, '.');
+   // if token size is not equal to four
+   if (slist.size() != 4)
+      return false;
+   for (std::string str : slist){
+      // check that string is number, positive, and range
+      if (!chkNumber(str) || stoi(str) < 0 || stoi(str) > 255)
+         return false;
+   }
+   return true;
+}
+
+std::string getIpAddress(std::string ip_name) {
+    if(validateIP(ip_name)) {
+        return ip_name;
+    }
+    if(ip_name == "localhost") {
+        // To retrieve hostname
+        char hostbuffer[256];
+        int hostname;
+        hostname = gethostname(hostbuffer, sizeof(hostbuffer));
+        hostent * record = gethostbyname(hostbuffer);
+        in_addr * address = (in_addr * )record->h_addr;
+        std::string ip_address = inet_ntoa(* address);
+        //std::cout << "ip_name : " << ip_name << " - " << ip_address << std::endl;
+        return ip_address;
+    }
+    else {
+        hostent * record = gethostbyname(ip_name.c_str());
+        in_addr * address = (in_addr * )record->h_addr;
+        std::string ip_address = inet_ntoa(* address);
+        //std::cout << "ip_name : " << ip_name << " - " << ip_address << std::endl;
+        return ip_address;
+    }
+}
+/*  */
+
+
 
 
 namespace cor {
@@ -282,13 +358,19 @@ idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t pa
     // Para os processos filho saberem quem é o primeiro, é adicionado um novo context ao accessManager_object
     accessManager_object->AddContext(context);
 
+    // tranformar os endereços dns para ips
+    auto hosts_ips = hosts;
+    for (int i = 0; i < hosts.size(); ++i) {
+        hosts_ips[i] = getIpAddress(hosts[i]);
+    }
+
     // spawn pods
     for (int i = 0; i < npods; ++i) {
     auto pos = i % hosts.size();
 
     // assemble command
     std::string cmd;
-    cmd.append("/share/apps/placor-hpx/bin/corhpx");
+    cmd.append("corhpx");
     cmd.append(" ");
     cmd.append(_app_group);
     cmd.append(" ");
@@ -305,9 +387,11 @@ idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t pa
     }
     cmd.append(" ");
 
+    
+
     // hpx command lines
-    unsigned int port_int = accessManager_object->GetNextPort(hosts[pos]); // buscar nova porta para o filho
-    std::string host = hosts[pos];
+    unsigned int port_int = accessManager_object->GetNextPort(hosts_ips[pos]); // buscar nova porta para o filho
+    std::string host = hosts_ips[pos];
     std::string port = std::to_string(port_int);
         
     cmd.append("--hpx:hpx=" + host + ":" + port);
@@ -338,123 +422,6 @@ idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t pa
     cor::Message msg;
     idp_t clos_idp = my_mailbox.ReceiveNewClos(context);
     return clos_idp;
-
-
-
-
-
-    // // Para os processos filho saberem quem é o primeiro, é adicionado um novo context ao accessManager_object
-    // accessManager_object->AddContext(context);
-
-  
-
-    // for(int i=0; i < npods; i++) {
-    //     auto pos = i % hosts.size();
-    //     unsigned int port_int = accessManager_object->GetNextPort(hosts[pos]); // buscar nova porta para o filho
-
-    //     int pid = fork();
-    //     if (pid == 0) {
-    //         std::cout << "I'm the child number " << i+1 << std::endl; 
-    //         // // // assemble command
-    //         std::vector<char*> exec_args;
-
-    //         char binaryPath1[] = "/opt/placor-hpx/bin/corhpx";
-    //         char *binaryPath = binaryPath1;
-    //         exec_args.push_back(binaryPath);
-            
-    //         char * arg1 = new char [_app_group.length()+1];
-    //         std::strcpy (arg1, _app_group.c_str());
-    //         exec_args.push_back(arg1);
-
-    //         char * arg2 = new char [context.length()+1];
-    //         std::strcpy (arg2, context.c_str());
-    //         exec_args.push_back(arg2);
-
-    //         char * arg3 = new char [std::to_string(npods).length()+1];
-    //         std::strcpy (arg3, std::to_string(npods).c_str());
-    //         exec_args.push_back(arg3);
-
-    //         char * arg4 = new char [std::to_string(parent).length()+1];
-    //         std::strcpy (arg4, std::to_string(parent).c_str());
-    //         exec_args.push_back(arg4);
-
-    //         char * arg5 = new char [module.length()+1];
-    //         std::strcpy (arg5, module.c_str());
-    //         exec_args.push_back(arg5);
-
-    //         for (int i = 0; i < args.size(); ++i) {
-    //             char * arg = new char [args[i].length()+1];
-    //             std::strcpy (arg, args[i].c_str());
-    //             exec_args.push_back(arg);
-    //         }
- 
-    //         // hpx command lines
-        
-    //         std::string host = hosts[pos];
-            
-    //         std::string port = std::to_string(port_int);
-             
-    //         std::string arg66 = "--hpx:hpx=" + host + ":" + port;
-    //         //std::string arg66 = "--hpx:hpx=" + hosts[pos];
-    //         std::string arg77 = "--hpx:agas=" + agas_address + ":" + std::to_string(agas_port);
-    //         std::string arg88 = "--hpx:run-hpx-main";
-    //         std::string arg99 = "--hpx:expect-connecting-localities";
-    //         std::string arg100 = "--hpx:worker";
-    //         std::string arg110 = "--hpx:threads=2";
-    //         // std::cout << "spawn_agas-> " << arg77 << std::endl;
-    //         // std::cout << "spawn_host-> " << arg66 << std::endl;
-    //         char * arg6 = new char [arg66.length()+1];
-    //         std::strcpy (arg6, arg66.c_str());
-    //         exec_args.push_back(arg6);
-
-    //         char * arg7 = new char [arg77.length()+1];
-    //         std::strcpy (arg7, arg77.c_str());
-    //         exec_args.push_back(arg7);
-
-    //         char * arg8 = new char [arg88.length()+1];
-    //         std::strcpy (arg8, arg88.c_str());
-    //         exec_args.push_back(arg8);
-
-    //         char * arg9 = new char [arg99.length()+1];
-    //         std::strcpy (arg9, arg99.c_str());
-    //         exec_args.push_back(arg9);
-
-    //         char * arg10 = new char [arg100.length()+1];
-    //         std::strcpy (arg10, arg100.c_str());
-    //         exec_args.push_back(arg10);
-
-    //         char * arg11 = new char [arg110.length()+1];
-    //         std::strcpy (arg11, arg110.c_str());
-    //         exec_args.push_back(arg11);
-
-    //         exec_args.push_back(NULL);
-    //         // printf("AAQUII - 2\n");
-
-    //         for(int j = 0; j < exec_args.size(); j++)
-    //         std::cout << exec_args[j] << std::endl;
-    //         // std::cout << binaryPath << " " << arg1 << " " << arg2 << " " << arg3 << " " << arg4 << " " << arg5 << " " << arg6 << " " << arg7 << " " << arg8 << " " << arg9 << " " << arg10 << std::endl;
-    //         // //auto res = system(cmd.c_str());
-    //         // //execl(cmd.c_str(), cmd.c_str(), nullptr);
-    //         // //execl(binaryPath, binaryPath, arg1, arg2, arg3, arg4, arg5, arg6, arg8, arg9, nullptr);
-    //         // execl(binaryPath, binaryPath, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, nullptr);
-    //         std::cout << "execl" << std::endl;
-    //         //execl("/opt/placor-hpx/bin/corhpx", "/opt/placor-hpx/bin/corhpx", "app", "ctx2", "2", "4294967038", "/opt/placor-hpx/examples/libspawn.so", "--hpx:hpx=localhost:1339", "--hpx:agas=localhost:1337", "--hpx:run-hpx-main", "--hpx:expect-connecting-localities", "--hpx:worker", "--hpx:threads=2", "--hpx:ini=hpx.component_paths=/opt/placor-hpx/examples", nullptr);      
-    //         execv(binaryPath, exec_args.data());
-    //         printf ("Erro no execl\n");
-    //         exit(-1);
-    //     }
-    //     else if (pid < 0)
-    //     {
-    //         // Error forking, still in parent process (there are no child process at this point)
-    //         std::cout << "Fork error: " << errno << ", " << strerror(errno) << '\n';
-    //     }
-
-    // } // end for
-
-
-
-    return 1;
-
 
 }
 

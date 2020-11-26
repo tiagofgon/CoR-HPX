@@ -147,17 +147,17 @@ public:
     }
 
     template <typename T, typename ... Args>
+    idp_t Create(idp_t ctx, std::string const& name, Args&& ... args)
+    {
+        typedef cor::Pod::Create_action_pod<T, Args...> action_type;
+        return hpx::async<action_type>(this->get_id(), ctx, name, std::forward<Args>(args)...).get();
+    }
+
+    template <typename T, typename ... Args>
     idp_t CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
     {
         typedef cor::Pod::CreateRemote_action_pod<T, Args...> action_type;
         return hpx::async<action_type>(this->get_id(), ctx, name, ctrl, std::forward<Args>(args)...).get();
-    }
-
-    template <typename T, typename ... Args>
-    idp_t Create(idp_t ctx, std::string const& name, Args&& ... args)
-    {
-        typedef cor::Pod::Create_action_pod<T, Args...> action_type;
-        return hpx::async<action_type>(this->get_id(), ctx, name, std::forward<Args>(args)...).get(); 
     }
 
     template <typename T>

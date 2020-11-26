@@ -27,11 +27,11 @@ void Main(int input)
         idp_t const& clos_idpp = clos_idp;
         auto initial_barrier = domain->CreateCollective<cor::Barrier_Client>(clos_idp, domain->Idp(), "Initial Barrier", clos_idpp);
         if (rank == 0) {
-            std::string const& path = "/opt/placor-hpx/examples/libcallableModule.so";
+            std::string const& path = "/share/apps/placor-hpx/examples/libcallableModule.so";
             int const& total_spawned = clos_size+spawned_domains;
             idp_t const& agent_idpp = agent_idp;
             global_clos = domain->CreateLocal<cor::Closure_Client>(domain->Idp(), "Global Closure", total_spawned, agent_idpp);
-            auto remote_clos_idp = domain->Spawn("ctx2", spawned_domains, "/opt/placor-hpx/examples/libinter_closure.so", {}, { "127.0.0.1" });
+            auto remote_clos_idp = domain->Spawn("ctx2", spawned_domains, "/share/apps/placor-hpx/examples/libinter_closure.so", {}, { "127.0.0.1" });
         } else {
             auto master_idp = clos->GetIdp(0);
             auto master_clos_idp = domain->GetPredecessorIdp(master_idp);

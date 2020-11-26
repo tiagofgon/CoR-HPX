@@ -27,39 +27,23 @@
 // #include "cor/resources/domain_component.hpp"
 #include "cor/services/access_manager_client.hpp"
 
-
-typedef void (*vfc)(int str);
-// auto asd = decltype(vfc);
-
-double foo(int, long);
-typedef std::function< decltype(foo) > FooType;
-
-typedef double mytype;
-
-
-// REGISTER_PROTOAGENT(void, int);
-// REGISTER_AGENT_COMPONENT(idp_t, idp_t);
-// REGISTER_DATA_COMPONENT(mytype);
-// REGISTER_DATA_COMPONENT(idp_t);
-// REGISTER_DATA_COMPONENT(int);
-
-// REGISTER_VALUE_COMPONENT(int);
-    // REGISTER_VALUE_COMPONENT(int)
-
-
-int funcaoTeste (int n1, int n2) {
-    return n1+n2;
-}
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <cstring>
+#include <ifaddrs.h>
 
 
 int hpx_main(int argc, char *argv[])
 {
 
-    #ifdef LIBCOR_DEBUG
-        std::cout << "************ DEBUG *******"  << std::endl;
-    #endif
-
-    
     std::string app_group, context, module;
     unsigned int npods;
     unsigned int total_members;
@@ -105,9 +89,7 @@ int hpx_main(int argc, char *argv[])
     agent->Wait();
     agent->Get();
 
-    // std::string address = hpx::get_config_entry("hpx.parcel.address", HPX_INITIAL_IP_ADDRESS);
-    // int port = std::stoi(hpx::get_config_entry("hpx.parcel.port", std::to_string(HPX_INITIAL_IP_PORT)));
-    // std::cout << address << ":" << port << std::endl;
+
 
     return hpx::finalize();
 }
@@ -115,12 +97,28 @@ int hpx_main(int argc, char *argv[])
 
 int main(int argc, char * argv[])
 {
-    std::vector<std::string> const cfg = {
+
+    // To retrieve hostname
+    char hostbuffer[256];
+    int hostname;
+    hostname = gethostname(hostbuffer, sizeof(hostbuffer));
+    //std::cout << "address " << hostbuffer << std::endl;
+    
+    hostent * record = gethostbyname(hostbuffer);
+    in_addr * address = (in_addr * )record->h_addr;
+	std::string ip_address = inet_ntoa(* address);
+    //std::cout << "ip_address " << ip_address << std::endl;
+
+    std::string endereco = "hpx.parcel.address=" + ip_address;
+
+    std::vector<std::string> cfg = {
     "hpx.run_hpx_main!=1",
     // Make sure networking will not be disabled
     "hpx.expect_connecting_localities!=1"
     // "hpx.parcel.port=7910"
+    // "hpx.parcel.address=ip_address"
     };
+    cfg.push_back(endereco);
 
     return hpx::init(argc, argv, cfg);
 }

@@ -20,17 +20,18 @@ std::unique_ptr<T> Controller::CreateLocal(idp_t ctx, std::string const& name, A
 }
 
 template <typename T, typename ... Args>
+idp_t Controller::Create(idp_t ctx, std::string const& name, Args&& ... args)
+{
+    // std::cout << "idp_t_createLocal_Controller: "<< ctx << std::endl;
+    return _rsc_mgr->Create<T, Args...>(ctx, name, GetName(), std::forward<Args>(args)...);
+}
+
+template <typename T, typename ... Args>
 idp_t Controller::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
 {
     //std::cout << "Controller::CreateRemote" << std::endl;
     // std::cout << "idp_t_createRemote_Controller: "<< ctx << std::endl;
     return _rsc_mgr->CreateRemote<T, Args...>(ctx, name, ctrl, std::forward<Args>(args)...);
-}
-
-template <typename T, typename ... Args>
-idp_t Controller::Create(idp_t ctx, std::string const& name, Args&& ... args)
-{
-    return _rsc_mgr->Create<T>(ctx, name, GetName(), std::forward<Args>(args)...);
 }
 
 template <typename T>

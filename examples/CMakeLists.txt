@@ -112,6 +112,20 @@ target_link_libraries(
         HPX::hpx
 )
 
+# parallel_remote - HPX
+add_library(parallel_remote SHARED parallel_remote.cpp)
+target_compile_features(parallel_remote PUBLIC cxx_std_17)
+set_target_properties(parallel_remote PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(parallel_remote PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(parallel_remote PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(parallel_remote PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    parallel_remote
+    PRIVATE
+        libcor
+    PUBLIC
+        HPX::hpx
+)
 
 # spawn
 add_library(spawn SHARED spawn.cpp)
@@ -239,6 +253,7 @@ install(
         parallel
         parallel_hpx2
         parallel_hpx3
+        parallel_remote
         spawn
         inter_closure
         # spawn_hpx

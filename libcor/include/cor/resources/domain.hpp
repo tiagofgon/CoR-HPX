@@ -71,10 +71,10 @@ public:
     std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args&& ... args);
 
     template <typename T, typename ... Args>
-    idp_t CreateRemote(idp_t ctx, std::string const& name, Args&& ... args);
+    idp_t Create(idp_t ctx, std::string const& name, Args&& ... args);
 
     template <typename T, typename ... Args>
-    idp_t Create(idp_t ctx, std::string const& name, Args&& ... args);
+    idp_t CreateRemote(idp_t ctx, std::string const& name, Args&& ... args);
 
     template <typename T>
     std::unique_ptr<T> CreateReference(idp_t idp, idp_t ctx, std::string const& name);
@@ -127,18 +127,18 @@ public:
     {};
 
     template <typename T, typename ... Args>
-    struct CreateRemote_action_Domain
-    : hpx::actions::make_action<
-        decltype(&Domain::CreateRemote<T, Args...>),
-        &Domain::CreateRemote<T, Args...>
-    >::type
-    {};
-
-    template <typename T, typename ... Args>
     struct Create_action_Domain
     : hpx::actions::make_action<
         decltype(&Domain::Create<T, Args...>),
         &Domain::Create<T, Args...>
+    >::type
+    {};
+
+    template <typename T, typename ... Args>
+    struct CreateRemote_action_Domain
+    : hpx::actions::make_action<
+        decltype(&Domain::CreateRemote<T, Args...>),
+        &Domain::CreateRemote<T, Args...>
     >::type
     {};
 

@@ -230,7 +230,8 @@ private:
 	}
 
 	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, std::string const& module, std::string const& function) {
-		return hpx::new_<Agent<R(P...)>>(locality, idp, module, function);
+		auto res = hpx::new_<Agent<R(P...)>>(locality, idp, module, function);
+		return res;
 	}
 
 	template <typename Archive>

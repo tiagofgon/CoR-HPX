@@ -21,29 +21,42 @@ std::unique_ptr<T> Container::CreateLocal(idp_t ctx, std::string const& name, Ar
     return global::pod->CreateLocal<T, Args...>(ctx, name, std::forward<Args>(args)...);
 }
 
+template <typename T, typename ... Args>
+idp_t Container::Create(idp_t ctx, std::string const& name, Args&& ... args)
+{
+    // If the ctx resource belongs to the _predecessors list, the resource is created in this pod, if it does not create remotely
+    if (global::pod->ContainsResource(ctx)) {
+        // std::cout << "Create - local" << std::endl;
+        return global::pod->Create<T, Args...>(ctx, name, std::forward<Args>(args)...);
+    }
+    else {
+        // std::cout << "Create - remoto" << std::endl;
+        return CreateRemote<T, Args...>(ctx, name, std::forward<Args>(args)...);
+    }
+}
+
 // ACABAR AQUI
 template <typename T, typename ... Args>
 idp_t Container::CreateRemote(idp_t ctx, std::string const& name, Args&& ... args)
 {
-    std::cout << "Container::CreateRemote" << std::endl;
     auto ctrl = global::pod->SearchResource(ctx);
     ctrl[1] = 'R';
-    return global::pod->CreateRemote<T>(ctx, name, ctrl, std::forward<Args>(args)...);
+    return global::pod->CreateRemote<T, Args...>(ctx, name, ctrl, std::forward<Args>(args)...);
 }
 
-template <typename T, typename ... Args>
-idp_t Container::Create(idp_t ctx, std::string const& name, Args&& ... args)
-{   
-    // If the ctx resource belongs to the _predecessors list, the resource is created in this pod, if it does not create remotely
-    if (global::pod->ContainsResource(ctx)) {
-        std::cout << "Create - local" << std::endl;
-        return global::pod->Create<T>(ctx, name, std::forward<Args>(args)...);
-    }
-    else {
-        std::cout << "Create - remoto" << std::endl;
-        return CreateRemote<T>(ctx, name, std::forward<Args>(args)...);
-    }
-}
+// template <typename T, typename ... Args>
+// idp_t Container::Create(idp_t ctx, std::string const& name, Args&& ... args)
+// {   
+//     // If the ctx resource belongs to the _predecessors list, the resource is created in this pod, if it does not create remotely
+//     if (global::pod->ContainsResource(ctx)) {
+//         std::cout << "Create - local" << std::endl;
+//         return global::pod->Create<T, Args...>(ctx, name, std::forward<Args>(args)...);
+//     }
+//     else {
+//         std::cout << "Create - remoto" << std::endl;
+//         return CreateRemote<T, Args...>(ctx, name, std::forward<Args>(args)...);
+//     }
+// }
 
 template <typename T>
 std::unique_ptr<T> Container::CreateReference(idp_t idp, idp_t ctx, std::string const& name)

@@ -12,7 +12,7 @@ Agent<R(P...)>::Agent(idp_t idp, std::function<R(P...)> const& f) :
     _executor{idp, f},
     _mailBox{idp}
 {
-    //std::cout << "Criado um componente \"Agent\", com idp: " << idp << std::endl;
+    // std::cout << "Criado um componente \"Agent\", com idp: " << idp << std::endl;
 }
 
 template <typename R, typename ... P>
@@ -21,7 +21,7 @@ Agent<R(P...)>::Agent(idp_t idp, std::string const& module, std::string const& f
     _executor{idp, module, function},
     _mailBox{idp}
 {
-    //std::cout << "Criado um componente \"Agent\", com idp: " << idp << std::endl;
+    // std::cout << "Criado um componente \"Agent\", com idp: " << idp << std::endl;
 }
 
 

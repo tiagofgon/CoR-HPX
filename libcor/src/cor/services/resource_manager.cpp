@@ -87,14 +87,17 @@ bool ResourceManager::ContainsResource(idp_t idp)
 {
     _mtx2.lock();
 
+    bool res;
     auto it = _predecessors.find(idp);
     if ( it == _predecessors.end() ) {
-       return false;
+       res = false;
     } else { 
-        return true;
+        res = true;
     }
 
     _mtx2.unlock();
+
+    return res;
 }
 
 std::string ResourceManager::SearchResource(idp_t idp)
@@ -291,8 +294,9 @@ void ResourceManager::InsertIdp(idp_t idp, hpx::id_type gid)
 
 bool ResourceManager::FindIdp(idp_t idp)
 {
+    //std::cout << "-- " << idp << std::endl;
     _mtx2.lock();
-
+    //std::cout << "2FindIdp(ctx)" << idp << std::endl;
     bool res;
     auto it = _predecessors.find(idp);
     if ( it == _predecessors.end() ) {
@@ -433,9 +437,9 @@ hpx::id_type ResourceManager::AttachResourceRemote(hpx::id_type ctx_gid, idp_t i
 {
     // Criar um componente cliente localmente, que se refere ao componente remoto
     std::unique_ptr<Domain_Client> rsc_remote = std::make_unique<Domain_Client>(std::move(ctx_gid));
+
     // Retornar a localidade de onde o Domain está
     auto locality = rsc_remote->GetLocalityGID();
-
     // attach resource to the context (remote domain)
     rsc_remote->Join(idp, name);
 

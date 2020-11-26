@@ -47,18 +47,36 @@ std::unique_ptr<T> Pod::CreateLocal(idp_t ctx, std::string const& name, Args&& .
 }
 
 template <typename T, typename ... Args>
-idp_t Pod::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
+idp_t Pod::Create(idp_t ctx, std::string const& name, Args&& ... args)
 {
-    std::cout << "Pod::CreateRemote" << std::endl;
+    // if(hpx::get_locality_id()==0) {
+    //     std::vector<hpx::id_type> localities = hpx::find_remote_localities();
+        
+    //     std::cout << "Minha localidade: " << hpx::find_here() << std::endl;
+
+    //     auto id_type = hpx::new_<Teste>(hpx::find_here()).get();
+
+    //     for (hpx::id_type const& id : localities)
+    //     {
+    //         std::cout << "Localidade remota: " << id << std::endl;
+    //         // std::cout << "O Dado está na localidade: " << data->GetLocalityGID() << std::endl;
+    //         auto newgid = hpx::components::migrate<Teste>(id_type, id).get();
+
+    //         std::cout << "O Dado está na localidade: " << hpx::get_colocation_id(hpx::launch::sync, newgid) << std::endl;
+
+    //     }
+    // }
+
     // std::cout << "idp_t: " << ctx << std::endl;
-    // std::cout << "CreateRemote no Pod para adicionar ao ascendente recurso "<< ctx << std::endl;
-    return _ctrl->CreateRemote<T, Args...>(ctx, name, ctrl, std::forward<Args>(args)...);
+    // std::cout << "CreateLocal no Pod para adicionar ao ascendente recurso "<< ctx << std::endl;
+    return _ctrl->Create<T, Args...>(ctx, name, std::forward<Args>(args)...);
 }
 
 template <typename T, typename ... Args>
-idp_t Pod::Create(idp_t ctx, std::string const& name, Args&& ... args)
+idp_t Pod::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
 {
-    return _ctrl->Create<T, Args...>(ctx, name, std::forward<Args>(args)...);
+    // std::cout << "CreateRemote no Pod para adicionar ao ascendente recurso "<< ctx << std::endl;
+    return _ctrl->CreateRemote<T, Args...>(ctx, name, ctrl, std::forward<Args>(args)...);
 }
 
 template <typename T>

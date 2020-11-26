@@ -44,10 +44,10 @@ public:
     std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args&& ... args);
 
     template <typename T, typename ... Args>
-    idp_t CreateRemote(idp_t ctx, std::string const& name, Args&& ... args);
+    idp_t Create(idp_t ctx, std::string const& name, Args&& ... args);
 
     template <typename T, typename ... Args>
-    idp_t Create(idp_t ctx, std::string const& name, Args&& ... args);
+    idp_t CreateRemote(idp_t ctx, std::string const& name, Args&& ... args);
 
     template <typename T>
     std::unique_ptr<T> CreateReference(idp_t idp, idp_t ctx, std::string const& name);

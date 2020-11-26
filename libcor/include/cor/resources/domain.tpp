@@ -16,16 +16,15 @@ std::unique_ptr<T> Domain::CreateLocal(idp_t ctx, std::string const& name, Args&
 }
 
 template <typename T, typename ... Args>
-idp_t Domain::CreateRemote(idp_t ctx, std::string const& name, Args&& ... args)
+idp_t Domain::Create(idp_t ctx, std::string const& name, Args&& ... args)
 {
-    return _container.CreateRemote<T, Args...>(ctx, name, std::forward<Args>(args)...);
+    return _container.Create<T, Args...>(ctx, name, std::forward<Args>(args)...);
 }
 
 template <typename T, typename ... Args>
-idp_t Domain::Create(idp_t ctx, std::string const& name, Args&& ... args)
+idp_t Domain::CreateRemote(idp_t ctx, std::string const& name, Args&& ... args)
 {
-    // std::cout << "Domain::Create" << std::endl;
-    return _container.Create<T>(ctx, name, std::forward<Args>(args)...);
+    return _container.CreateRemote<T, Args...>(ctx, name, std::forward<Args>(args)...);
 }
 
 template <typename T>
