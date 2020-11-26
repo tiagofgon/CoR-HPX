@@ -7,9 +7,9 @@ Bibliotecas necessárias:
 - Cmake (3 mínimo)
 
 ## Compilação
-$HPX_LOCATION -> Localização da biblioteca hpx
-$Libssh_LOCATION -> Localização da biblioteca Libssh
-$INSTALATION_DIR -> Destino para a instalação do PlaCoR + HPX
+- $HPX_LOCATION -> Localização da biblioteca hpx
+- $Libssh_LOCATION -> Localização da biblioteca Libssh
+- $INSTALATION_DIR -> Destino para a instalação do PlaCoR + HPX
 
 cmake -DCMAKE_PREFIX_PATH=$HPX_LOCATION -DLibSSH_ROOT=$Libssh_LOCATION -DCMAKE_INSTALL_PREFIX=$INSTALATION_DIR ..
 
