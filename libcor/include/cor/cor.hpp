@@ -20,6 +20,10 @@
 
 typedef char *arg[];
 typedef std::vector<char> data_type;
+typedef void* tipo1;
+typedef std::shared_ptr<void> tipo2;
+typedef std::shared_ptr<const void> tipo3;
+
 HPX_REGISTER_CHANNEL(data_type);
 HPX_REGISTER_CHANNEL(idp_t);
 
@@ -32,6 +36,13 @@ REGISTER_AGENT(void, int, arg);
 REGISTER_PROTOAGENT(idp_t, idp_t);
 REGISTER_PROTOAGENT(void, int);
 REGISTER_PROTOAGENT(void, idp_t);
+REGISTER_PROTOAGENT(int, int, int);
+REGISTER_PROTOAGENT(void, tipo1);
+REGISTER_PROTOAGENT(void, tipo2);
+REGISTER_PROTOAGENT(void, tipo3);
+REGISTER_PROTOAGENT(void);
+
+
 REGISTER_DATA(int);
 REGISTER_DATA(idp_t);
 

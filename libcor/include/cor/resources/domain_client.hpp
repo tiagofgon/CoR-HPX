@@ -209,6 +209,14 @@ public:
 		return hpx::async<action_type>(this->get_id(), idp).get(); 
 	}
 
+	template <typename T>
+	std::unique_ptr<T> CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(void*)> const& func)
+	{
+		std::cout << "aquiii" << std::endl;
+		typedef cor::Domain::CreateLocal_agent_action_Domain<T> action_type;
+		return hpx::async<action_type>(this->get_id(), ctx, name, func).get();
+	}
+
 	template <typename T, typename ... Args>
 	std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args&& ... args)
 	{

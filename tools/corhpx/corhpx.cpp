@@ -1,7 +1,7 @@
 
 // #include <hpx/hpx_main.hpp>
 #include <hpx/hpx_init.hpp>
-
+#include <hpx/hpx.hpp>
 
 // #include <hpx/hpx.hpp>
 // #include <hpx/include/run_as.hpp>
@@ -14,6 +14,7 @@
 // #include "corhpx.cpp"
 // #include "cor/cor.hpp"
 #include "cor/cor.hpp"
+#include "cor/PlaCoRConfig.h"
 // #include "cor/resources/domain_component_client.hpp"
 // #include "cor/resources/group_component_client.hpp"
 // #include "cor/resources/agent_component.hpp"
@@ -40,9 +41,38 @@
 #include <cstring>
 #include <ifaddrs.h>
 
+struct PrintNum {
+    void operator()(void *arg) const
+    {
+        std::cout << "Ola Tiago" << std::endl;
+    }
+};
+
+int funcaoTeste (int n1, int n2) {
+    return n1+n2;
+}
+void funcaoTeste2 (std::shared_ptr<const void> arg) {
+    std::cout << "Ola Tiago" << std::endl;
+}
+void funcaoTeste3 (void *arg) {
+    std::cout << "Ola Tiago" << std::endl;
+}
+void funcaoTeste4 () {
+    std::cout << "Ola Tiago" << std::endl;
+}
+
+hpx::function<void(void*)> funcaoTeste5 = PrintNum();
+
 
 int hpx_main(int argc, char *argv[])
 {
+        
+    if (argc < 2) {
+        // report version
+        std::cout << argv[0] << " Version " << PlaCoR_VERSION_MAJOR << "."
+                << PlaCoR_VERSION_MINOR << std::endl;
+        return hpx::finalize();
+    }
 
     std::string app_group, context, module;
     unsigned int npods;
@@ -60,7 +90,16 @@ int hpx_main(int argc, char *argv[])
 
 
     auto domain = cor::Initialize_hpx(app_group, context, npods, module);
-
+    idp_t asda = 878;
+    //cor::ProtoAgent_Client<void(void*)> agent3(asda, funcaoTeste3);
+    //cor::ProtoAgent_Client<void(std::shared_ptr<const void>)> agent3(asda, funcaoTeste2);
+    //cor::ProtoAgent_Client<void()> agent3(asda, funcaoTeste4);
+    
+    // int as=4;
+    std::shared_ptr<const void> as = NULL; //= std::make_shared<void>();
+    // agent3.Run();
+    // agent3.Wait();
+    // agent3.Get();
 
     // minhafuncao1(app_group, context, npods, module);
     // cor::Domain_Component_Client domain(std::move(domain_gid));
@@ -78,6 +117,12 @@ int hpx_main(int argc, char *argv[])
     idp_t const& parentt = parent ;
     auto clos = domain->CreateCollective<cor::Closure_Client>(domain->Idp(), "", npods, total_memberss, parentt);
     
+    // auto agent2 = domain->CreateLocal_agent<cor::ProtoAgent_Client<void(void*)>>(clos->Idp(),  "", funcaoTeste5);
+    // agent2->Run();
+    // agent2->Wait();
+    // agent2->Get();
+
+
 
     //std::cout << "************ Criação do agente principal no corhpx *******"  << std::endl;
     auto agent = domain->CreateLocal<cor::Agent_Client<void(int)>>(clos->Idp(),  "", domain->GetModuleName(), Main);

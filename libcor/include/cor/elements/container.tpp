@@ -15,6 +15,12 @@ std::unique_ptr<T> Container::GetLocalResource(idp_t idp)
     return global::pod->GetLocalResource<T>(idp);
 }
 
+template <typename T>
+std::unique_ptr<T> Container::CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(void*)> const& func)
+{
+    return global::pod->CreateLocal_agent<T>(ctx, name, func);
+}
+
 template <typename T, typename ... Args>
 std::unique_ptr<T> Container::CreateLocal(idp_t ctx, std::string const& name, Args&& ... args)
 {

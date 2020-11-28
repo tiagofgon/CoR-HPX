@@ -25,6 +25,12 @@ ProtoAgent<R(P...)>::ProtoAgent(idp_t idp, std::string const& module, std::strin
 
 /* Executor's interface */
 template <typename R, typename ... P>
+void ProtoAgent<R(P...)>::Run_void(std::shared_ptr<void> arg)
+{
+    return _executor.Run_void(arg);
+}
+
+template <typename R, typename ... P>
 template <typename ... Args>
 void ProtoAgent<R(P...)>::Run(Args&&... args)
 {

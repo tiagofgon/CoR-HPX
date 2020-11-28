@@ -25,16 +25,19 @@ typedef typename hpx::components::component_base<ProtoAgent<R(P...)>>::wrapping_
 typedef ProtoAgent type_holder;
 typedef Resource base_type_holder;
 
-protected:
-    ProtoAgent(idp_t idp, std::function<R(P...)> const& f);
-    ProtoAgent(idp_t idp, std::string const& module, std::string const& function);
+// protected:
+    // ProtoAgent(idp_t idp, std::function<R(P...)> const& f);
+    // ProtoAgent(idp_t idp, std::string const& module, std::string const& function);
 
 public:
     ProtoAgent() = delete;
     ~ProtoAgent();
-
+    ProtoAgent(idp_t idp, std::function<R(P...)> const& f);
+    ProtoAgent(idp_t idp, std::string const& module, std::string const& function);
 
     /* Executor interface */
+    void Run_void(std::shared_ptr<void> arg);
+
     template <typename ... Args>
     void Run(Args&&... args);
 
@@ -49,6 +52,7 @@ public:
 
     idp_t GetExecutorIdp();
 
+    HPX_DEFINE_COMPONENT_ACTION(ProtoAgent, Run_void, Run_void_action_ProtoAgent);
     HPX_DEFINE_COMPONENT_ACTION(ProtoAgent, Wait, Wait_action_ProtoAgent);
     HPX_DEFINE_COMPONENT_ACTION(ProtoAgent, Get, Get_action_ProtoAgent) ;
     HPX_DEFINE_COMPONENT_ACTION(ProtoAgent, ChangeIdp, ChangeIdp_action_ProtoAgent);
@@ -56,6 +60,7 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(ProtoAgent, CurrentIdp, CurrentIdp_action_ProtoAgent);
     HPX_DEFINE_COMPONENT_ACTION(ProtoAgent, OriginalIdp, OriginalIdp_action_ProtoAgent);
     HPX_DEFINE_COMPONENT_ACTION(ProtoAgent, GetExecutorIdp, GetExecutorIdp_action_ProtoAgent);
+
 
     template <typename ... Args>
     struct Run_action_ProtoAgent
@@ -82,6 +87,9 @@ private:
 
 #define REGISTER_PROTOAGENT_DECLARATION(res, ...)                                                                   \
     HPX_REGISTER_ACTION_DECLARATION(                                                                                \
+        cor::ProtoAgent<res(__VA_ARGS__)>::Run_void_action_ProtoAgent,                                              \
+        HPX_PP_CAT(__ProtoAgent_Run_void_action_ProtoAgent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));           \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                                \
         cor::ProtoAgent<res(__VA_ARGS__)>::Wait_action_ProtoAgent,                                                  \
         HPX_PP_CAT(__ProtoAgent_Wait_action_ProtoAgent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));               \
     HPX_REGISTER_ACTION_DECLARATION(                                                                                \
@@ -105,6 +113,9 @@ private:
 
 
 #define REGISTER_PROTOAGENT(res, ...)                                                                               \
+    HPX_REGISTER_ACTION(                                                                                            \
+        cor::ProtoAgent<res(__VA_ARGS__)>::Run_void_action_ProtoAgent,                                              \
+        HPX_PP_CAT(__ProtoAgent_Run_void_action_ProtoAgent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));           \
     HPX_REGISTER_ACTION(                                                                                            \
         cor::ProtoAgent<res(__VA_ARGS__)>::Wait_action_ProtoAgent,                                                  \
         HPX_PP_CAT(__ProtoAgent_Wait_action_ProtoAgent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));               \

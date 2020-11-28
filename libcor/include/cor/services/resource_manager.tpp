@@ -10,6 +10,22 @@ namespace cor {
 class Mailbox;
 
 // CreateLocal que retorna o cliente object do recurso criado
+template <typename T>
+std::unique_ptr<T> ResourceManager::CreateLocal_agent(idp_t ctx, std::string const& name, std::string const& ctrl, hpx::function<void(void*)> const& func)
+{
+    auto idp = GenerateIdp();
+
+    // // (std::cout << ... << args); std::cout << std::endl;
+    std::unique_ptr<T> rsc = std::make_unique<T>(idp, func);
+    rsc = AllocateResource(idp, ctx, name, std::move(rsc), ctrl);
+    // InsertIdp(idp, rsc->GetGid()); // insert association between gids and idps
+    // InsertPredecessorIdp(idp, ctx); // insert association between idps and predecessors
+    
+    return GetLocalResource<T>(idp);
+    //return nullptr;
+}
+
+// CreateLocal que retorna o cliente object do recurso criado
 template <typename T, typename ... Args>
 std::unique_ptr<T> ResourceManager::CreateLocal(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
 {
