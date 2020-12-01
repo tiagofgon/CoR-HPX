@@ -2,138 +2,81 @@
 
 namespace cor
 {
-    void AgentFunc(void *arg)
-    {
-        Pool *p = (Pool*) arg;
-        p->PeerAgent();
-    }
-
     Pool::Pool(std::size_t num_agents) :
         _num_agents{num_agents},
-        _barrier{new Barrier(num_agents)},
         _fct{nullptr},
         _arg{nullptr},
-        _shut{false}
+        barrier{num_agents}
     {
         auto domain = cor::GetDomain();
         auto agent_idp = domain->GetActiveResourceIdp();
-
-        auto group = domain->CreateLocal<cor::Group>(domain->Idp(), "", "");
+        std::string const& path = "";
+        auto group = domain->CreateLocal<cor::Group_Client>(domain->Idp(), "", path);
         _group = group->Idp();
 
-        for (std::size_t i = 0; i < num_agents; ++i) {
-            auto agent = domain->CreateLocal<cor::ProtoAgent<void(void*)>>(group->Idp(), "", AgentFunc);
-            agent->Run((void*)this);
-            _agents.push_back(agent->Idp());
-        }
+        _futures.reserve(num_agents);
+        th_ids.reserve(num_agents);
+        // for (std::size_t i = 0; i < num_agents; ++i) {
+        //     auto agent = domain->CreateLocal<cor::ProtoAgent<void(void*)>>(group->Idp(), "", AgentFunc);
+        //     agent->Run((void*)this);
+        //     _agents.push_back(agent->Idp());
+        // }
     }
 
     Pool::~Pool()
     {        
-        if (!_shut)
-            JoinAgents();
+
     }
 
-    void Pool::Dispatch(void (*fct)(void*), void *arg)
+    void Pool::Dispatch(void (*funct)(void *), void *arg)
     {
-        _barrier->WaitForIdle();
+        //this->Run(fct, arg);
 
-        {
-            std::unique_lock<std::mutex> lk(_mtx);
-            _fct = fct;
-            _arg = arg;
+        for(int i=0; i<_num_agents; i++) {
+            _futures.push_back(
+                hpx::async([this, &funct, &arg](){
+                    th_ids.push_back(hpx::this_thread::get_id());
+                    // std::cout << "thread_id_1: " << hpx::this_thread::get_id() << std::endl;
+                    // std::cout << "aux_2: " << aux << std::endl;
+                    barrier.wait();
+                    funct(arg);
+                })
+            );
+        }
+        
+
+
+
+
+    }
+
+    int Pool::GetRank()
+    {
+        int n;
+        int my_rank=-1;
+        auto my_id = hpx::this_thread::get_id();
+        //std::cout << "thread_id_2: " << my_id << std::endl;
+        //std::cout << "aux_3: " << aux << std::endl;
+        for(int n=0; n<_num_agents; n++) {
+            // std::cout << "my_id: " << my_id << std::endl;
+            // std::cout << "fr_id: " << th_ids[n] << std::endl;
+            if(th_ids[n] == my_id) {
+                my_rank = n;
+                break;
+            }
         }
 
-        _barrier->ReleaseThreads();
+        // if(n==_num_agents) my_rank = -1;    // OK, return rank
+        // else my_rank = n;     // else, return error
+        return my_rank;
+        //return th_ids.size();
     }
 
     void Pool::WaitForIdle()
     {
-        _barrier->WaitForIdle();  
+        hpx::wait_all(_futures);
+        //_barrier->WaitForIdle();  
     }
 
-    void Pool::PeerAgent()
-    {
-        bool my_shut;
 
-        for(;;)
-        {
-            _barrier->Wait();
-
-            {
-                std::unique_lock<std::mutex> lk(_mtx);
-                my_shut = _shut;
-            }
-
-            if (!my_shut)
-                (*(_fct))(_arg);
-            else
-                break;
-        }
-    }
-
-    void Pool::JoinAgents()
-    {
-        {
-            std::unique_lock<std::mutex> lk(_mtx);
-            _shut = true;
-        }
-
-        _barrier->WaitForIdle();
-        _barrier->ReleaseThreads();
-
-        // join agents
-        auto domain = cor::GetDomain();
-
-        for (auto idp: _agents) {
-            auto agent = domain->GetLocalResource<cor::ProtoAgent<void(void*)>>(idp);
-            agent->Wait();
-            agent->Get();
-        }
-    }
-
-    Pool::Barrier::Barrier(std::size_t count) :
-        _nthreads{count},
-        _counter{0},
-        _status{true},
-        _is_idle{false}
-    {}
-
-    Pool::Barrier::~Barrier() = default;
-
-    void Pool::Barrier::Wait()
-    {
-        bool lstatus;
-        
-        {
-            std::unique_lock<std::mutex> lk(_mtx);
-        
-            lstatus = _status;
-            _counter++;
-
-            if (_counter == _nthreads) {
-                _counter = 0;
-                _is_idle = true;
-                _qidle.notify_all();
-            }
-
-            while (lstatus == _status)
-                _qtask.wait(lk);
-        }
-    }
-
-    void Pool::Barrier::WaitForIdle()
-    {
-        std::unique_lock<std::mutex> lk(_mtx);
-        while (!_is_idle)
-            _qidle.wait(lk);
-    }
-
-    void Pool::Barrier::ReleaseThreads()
-    {
-        std::unique_lock<std::mutex> lk(_mtx);
-        _is_idle = false;
-        _status = !_status;
-        _qtask.notify_all();
-    }
 }

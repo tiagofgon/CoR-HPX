@@ -5,6 +5,7 @@
 
 #include <mutex>
 #include <condition_variable>
+#include <hpx/hpx.hpp>
 
 namespace cor
 {
@@ -15,46 +16,26 @@ namespace cor
         Pool(std::size_t num_agents);
         ~Pool();
 
-        void Dispatch(void (*fct)(void*), void *arg);
+        //void Dispatch(hpx::function<void(void*)> fct, void *arg);
+        void Dispatch(void (*taskfct)(void *), void *arg);
         void WaitForIdle();
 
-    protected:
-        void PeerAgent();
+        hpx::function<void(void *arg)> AgentFunc;
+        int GetRank();
 
     private:
-        class Barrier
-        {
-            public:
-                Barrier(std::size_t count);
-                ~Barrier();
-                void Wait();
-                void WaitForIdle();
-                void ReleaseThreads();
-
-            private:
-                std::mutex _mtx;
-                std::condition_variable _qtask;
-                std::condition_variable _qidle;
-                std::size_t _nthreads;
-                std::size_t _counter;
-                bool _status;
-                bool _is_idle;
-        };
-
-        void JoinAgents();
-
-        friend void AgentFunc(void *arg);
-
         std::size_t _num_agents;
-        Barrier *_barrier;
-
-        std::mutex _mtx;
         void (*_fct)(void*);
         void *_arg;
-        bool _shut;
 
         idp_t _group;
         std::vector<idp_t> _agents;
+
+
+        std::vector<hpx::future<void>> _futures;
+        std::vector<hpx::thread::id> th_ids;
+        hpx::lcos::local::barrier barrier;
+        int aux = 99;
     };
 }
 

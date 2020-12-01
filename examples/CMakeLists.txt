@@ -245,6 +245,24 @@ target_link_libraries(
 	HPX::hpx
 )
 
+# teste_pool
+add_library(teste_pool SHARED teste_pool.cpp)
+target_compile_features(teste_pool PUBLIC cxx_std_17)
+set_target_properties(teste_pool PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(teste_pool PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(teste_pool PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(teste_pool PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    teste_pool
+    PRIVATE
+        libcor
+        # pool
+        # Spread
+        # SSRCSpread
+        # Cereal
+	HPX::hpx
+)
+
 install(
     TARGETS
         module
@@ -256,6 +274,7 @@ install(
         parallel_remote
         spawn
         inter_closure
+        teste_pool
         # spawn_hpx
         # client
         # server

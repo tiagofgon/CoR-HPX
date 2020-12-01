@@ -42,7 +42,14 @@
 #include <ifaddrs.h>
 
 struct PrintNum {
-    void operator()(void *arg) const
+    void operator()(std::shared_ptr<void> arg)
+    {
+        std::cout << "Ola Tiago" << std::endl;
+    }
+};
+
+struct PrintNum2 {
+    void operator()(int arg)
     {
         std::cout << "Ola Tiago" << std::endl;
     }
@@ -51,7 +58,7 @@ struct PrintNum {
 int funcaoTeste (int n1, int n2) {
     return n1+n2;
 }
-void funcaoTeste2 (std::shared_ptr<const void> arg) {
+void funcaoTeste2 (std::shared_ptr<void> arg) {
     std::cout << "Ola Tiago" << std::endl;
 }
 void funcaoTeste3 (void *arg) {
@@ -61,8 +68,9 @@ void funcaoTeste4 () {
     std::cout << "Ola Tiago" << std::endl;
 }
 
-hpx::function<void(void*)> funcaoTeste5 = PrintNum();
 
+hpx::function<void(std::shared_ptr<void> arg)> funcaoTeste5 = PrintNum();
+hpx::function<void(int)> funcaoTeste6 = PrintNum2();
 
 int hpx_main(int argc, char *argv[])
 {
@@ -90,25 +98,14 @@ int hpx_main(int argc, char *argv[])
 
 
     auto domain = cor::Initialize_hpx(app_group, context, npods, module);
-    idp_t asda = 878;
-    //cor::ProtoAgent_Client<void(void*)> agent3(asda, funcaoTeste3);
-    //cor::ProtoAgent_Client<void(std::shared_ptr<const void>)> agent3(asda, funcaoTeste2);
-    //cor::ProtoAgent_Client<void()> agent3(asda, funcaoTeste4);
-    
-    // int as=4;
-    std::shared_ptr<const void> as = NULL; //= std::make_shared<void>();
-    // agent3.Run();
-    // agent3.Wait();
-    // agent3.Get();
 
-    // minhafuncao1(app_group, context, npods, module);
-    // cor::Domain_Component_Client domain(std::move(domain_gid));
-    // // // auto agent = domain.CreateLocal<cor::Agent_Component<idp_t(idp_t)>>(5, "", domain.GetModuleName(), "Main");
     std::string nome("group");
     std::string main("Main");
     std::string const& basePathExternal = module ;
     std::string const& group = nome ;
     std::string const& Main = main ;
+
+
 
 
 
@@ -121,6 +118,22 @@ int hpx_main(int argc, char *argv[])
     // agent2->Run();
     // agent2->Wait();
     // agent2->Get();
+
+
+
+    idp_t asda = 221;
+    //cor::Operon<void(std::shared_ptr<void>)> operon(asda, funcaoTeste2);
+    
+    int num = 2;
+    //cor::Operon_Client operon(asda, 2);
+    // auto operon = domain->CreateLocal<cor::Operon_Client>(clos->Idp(),  "", 1);
+    // operon->Dispatch(PrintNum());
+
+    //auto operon = domain->CreateLocal_agent<cor::Operon<void(int)>>(clos->Idp(),  "", funcaoTeste6);
+    //cor::ProtoAgent_Client<void(void*)> agent3(asda, funcaoTeste3);
+    //cor::ProtoAgent_Client<void(std::shared_ptr<const void>)> agent3(asda, funcaoTeste2);
+    //cor::ProtoAgent_Client<void()> agent3(asda, funcaoTeste4);
+
 
 
 
