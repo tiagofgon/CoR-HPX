@@ -36,9 +36,7 @@ public:
 
     // Executor(Executor&&) noexcept;
     // Executor& operator=(Executor&&) noexcept;
-
-    void Run_void(std::shared_ptr<void> arg);
-
+    
     template <typename ... Args>
     void Run(Args&&... args);
 

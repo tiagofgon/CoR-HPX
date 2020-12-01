@@ -18,6 +18,8 @@
 #include "cor/resources/rwmutex_client.hpp"
 #include "cor/resources/agent_client.hpp"
 
+#include "cor/resources/operon_client.hpp"
+
 typedef char *arg[];
 typedef std::vector<char> data_type;
 typedef void* tipo1;
@@ -41,7 +43,6 @@ REGISTER_PROTOAGENT(void, tipo1);
 REGISTER_PROTOAGENT(void, tipo2);
 REGISTER_PROTOAGENT(void, tipo3);
 REGISTER_PROTOAGENT(void);
-
 
 REGISTER_DATA(int);
 REGISTER_DATA(idp_t);

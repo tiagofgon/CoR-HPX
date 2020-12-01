@@ -35,9 +35,6 @@ public:
     ProtoAgent(idp_t idp, std::function<R(P...)> const& f);
     ProtoAgent(idp_t idp, std::string const& module, std::string const& function);
 
-    /* Executor interface */
-    void Run_void(std::shared_ptr<void> arg);
-
     template <typename ... Args>
     void Run(Args&&... args);
 
@@ -87,9 +84,6 @@ private:
 
 #define REGISTER_PROTOAGENT_DECLARATION(res, ...)                                                                   \
     HPX_REGISTER_ACTION_DECLARATION(                                                                                \
-        cor::ProtoAgent<res(__VA_ARGS__)>::Run_void_action_ProtoAgent,                                              \
-        HPX_PP_CAT(__ProtoAgent_Run_void_action_ProtoAgent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));           \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                                \
         cor::ProtoAgent<res(__VA_ARGS__)>::Wait_action_ProtoAgent,                                                  \
         HPX_PP_CAT(__ProtoAgent_Wait_action_ProtoAgent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));               \
     HPX_REGISTER_ACTION_DECLARATION(                                                                                \
@@ -113,9 +107,6 @@ private:
 
 
 #define REGISTER_PROTOAGENT(res, ...)                                                                               \
-    HPX_REGISTER_ACTION(                                                                                            \
-        cor::ProtoAgent<res(__VA_ARGS__)>::Run_void_action_ProtoAgent,                                              \
-        HPX_PP_CAT(__ProtoAgent_Run_void_action_ProtoAgent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));           \
     HPX_REGISTER_ACTION(                                                                                            \
         cor::ProtoAgent<res(__VA_ARGS__)>::Wait_action_ProtoAgent,                                                  \
         HPX_PP_CAT(__ProtoAgent_Wait_action_ProtoAgent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));               \

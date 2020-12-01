@@ -9,4 +9,5 @@ target_sources(
         "${CMAKE_CURRENT_LIST_DIR}/rwmutex.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/resource.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/resource_migrable.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/operon.cpp"
 )

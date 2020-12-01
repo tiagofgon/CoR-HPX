@@ -68,7 +68,7 @@ public:
     std::unique_ptr<T> GetLocalResource(idp_t idp);
 
     template <typename T>
-    std::unique_ptr<T> CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(void*)> const& func);
+    std::unique_ptr<T> CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func);
 
     template <typename T, typename ... Args>
     std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args&& ... args);

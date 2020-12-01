@@ -13,7 +13,7 @@ std::unique_ptr<T> Controller::GetLocalResource(idp_t idp)
 }
 
 template <typename T>
-std::unique_ptr<T> Controller::CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(void*)> const& func)
+std::unique_ptr<T> Controller::CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func)
 {
     // std::cout << "idp_t_createLocal_Controller: "<< ctx << std::endl;
     return _rsc_mgr->CreateLocal_agent<T>(ctx, name, GetName(), func);

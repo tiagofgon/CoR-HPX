@@ -21,7 +21,7 @@ std::unique_ptr<T> Pod::GetLocalResource(idp_t idp)
 }
 
 template <typename T>
-std::unique_ptr<T> Pod::CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(void*)> const& func)
+std::unique_ptr<T> Pod::CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func)
 {
     return _ctrl->CreateLocal_agent<T>(ctx, name, func);
 }
