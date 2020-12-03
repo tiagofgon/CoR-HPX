@@ -1,5 +1,6 @@
 #include "cor/cor.hpp"
-
+#include "units/pool.hpp"
+#include "units/utils.hpp"
 #include "external/CpuTimer.h"
 #include "external/Rand.h"
 
@@ -10,11 +11,9 @@ std::vector<long> accepted;
 long nsamples = 1000000000;
 Rand R(999);
 
-std::shared_ptr<cor::Operon_Client> operon;
-
 extern "C"
 {
-    void Main(int argc);
+    void Main(int argc, char *argv[]);
 }
 
 void McPi(void *)
@@ -28,32 +27,32 @@ void McPi(void *)
         if ((x*x+y*y) <= 1.0)
             ++ct;
     }
-    auto rank = operon->GetRank();
-    accepted[rank-1] = ct;
+    auto rank = GetRank<cor::Group>();
+    accepted[rank] = ct;
 }
 
-void Main(int argc)
+void Main(int argc, char *argv[])
 {
-    auto domain = cor::GetDomain();
     CpuTimer T;
     double pi, result = 0;
-    std::size_t const& pool_size = 16;
+    std::size_t pool_size = 4;
 
+    if (argc >= 1) pool_size = std::atoi(argv[0]);
+    if (argc == 2) nsamples = atoi(argv[1]);
 
     nsamples /= pool_size;
     accepted.resize(pool_size, 0L);
-
-    operon = std::move(domain->CreateLocal<cor::Operon_Client>(domain->Idp(),  "", pool_size));
+    auto pool = new cor::Pool(pool_size);
 
     T.Start();
-    operon->Dispatch(McPi, nullptr);
-
+    pool->Dispatch(McPi, nullptr);
+    pool->WaitForIdle();
     result = std::accumulate(accepted.begin(), accepted.end(), result);
-    //result = accepted[0];
     pi = 4.0 * (double) (result/(pool_size*nsamples));
     T.Stop();
 
     T.Report();
     std::cout << "Value of PI = " << pi << std::endl;
 
+    delete pool;
 }

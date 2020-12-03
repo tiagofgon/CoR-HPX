@@ -32,7 +32,7 @@ add_subdirectory(tools)
 add_subdirectory(units)
 add_subdirectory(examples)
 add_subdirectory(tests)
-#add_subdirectory(cap6)
+add_subdirectory(cap6)
 
 install(
     DIRECTORY
