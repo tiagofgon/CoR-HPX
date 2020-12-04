@@ -91,7 +91,7 @@ int ExecutorPool::GetRank()
 
 void ExecutorPool::WaitForIdle()
 {
-    std::cout << "hpx::wait_all" << std::endl;
+    //std::cout << "hpx::wait_all" << std::endl;
     // hpx::wait_all(_futures);
     //hpx::when_all(_futures).get();
     //_futures[0].get();
@@ -114,19 +114,52 @@ std::pair<int,int> ExecutorPool::ScheduleStatic(int Beg, int End) {
 
    end = Beg;
    for(n=1; n<=rank; n++)
-      {
+   {
       beg = end;
       end = beg+D;
       if(R)
-         {
+      {
          end++;
          R--;
-         }
       }
+   }
    Beg = beg;
    End = end;
    return std::make_pair (Beg,End);
 }
+
+std::vector<std::pair<int,int>> ExecutorPool::ScheduleStatic(int Beg, int End, int chunk)
+{
+   int n, rank, beg, end;
+   int size, D, R;
+   rank = GetRank();
+   
+   size = End-Beg;
+   int nchunks = (size/chunk); // numero de chunks
+   R = size%chunk; // tamanho do chunk que resta, caso nao seja multiplo
+   std::vector< std::vector<std::pair<int,int>> > res(_num_hpx_threads+1); // +1 porque o rank começa no 1
+
+   end = Beg;
+   int pos = 1;
+   for(n=0; n<nchunks; n++)
+   {
+      pos = (n % _num_hpx_threads)+1; // calcular a posição do array para a thread respetiva
+      beg = end;
+      end = beg+chunk;
+      res[pos].push_back(std::make_pair (beg,end));
+   }
+   if(R!=0) {
+      pos = (n % _num_hpx_threads)+1;
+      beg = end;
+      end = beg+R;
+      res[pos].push_back(std::make_pair (beg,end));
+   }
+
+   return res[rank];
+}
+
+
+
 
 std::pair<int,int> ExecutorPool::ScheduleDynamic(int Beg, int End, int chunk)
    {

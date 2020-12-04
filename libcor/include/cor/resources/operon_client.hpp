@@ -127,6 +127,12 @@ public:
 		return ptr->ScheduleStatic(Beg, End);
 	}
 
+	std::vector<std::pair<int,int>> ScheduleStatic(int Beg, int End, int chunk)
+	{
+		ensure_ptr();
+		return ptr->ScheduleStatic(Beg, End, chunk);
+	}
+
 	std::pair<int,int> ScheduleDynamic(int Beg, int End, int chunk)
 	{
 		ensure_ptr();

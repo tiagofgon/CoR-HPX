@@ -37,6 +37,11 @@ std::pair<int,int> Operon::ScheduleStatic(int Beg, int End)
     return _executor_pool.ScheduleStatic(Beg, End);
 }
 
+std::vector<std::pair<int,int>> Operon::ScheduleStatic(int Beg, int End, int chunk)
+{
+    return _executor_pool.ScheduleStatic(Beg, End, chunk);
+}
+
 std::pair<int,int> Operon::ScheduleDynamic(int Beg, int End, int chunk)
 {
     return _executor_pool.ScheduleDynamic(Beg, End, chunk);

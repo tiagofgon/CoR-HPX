@@ -4,10 +4,11 @@
 
 #include "cor/elements/dynamic_organizer.hpp"
 #include "cor/elements/static_organizer.hpp"
+#include "cor/elements/mailbox.hpp"
 
 namespace cor {
 
-class Mailbox;
+//class Mailbox;
 
 // CreateLocal que retorna o cliente object do recurso criado
 template <typename T>

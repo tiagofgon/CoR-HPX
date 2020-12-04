@@ -25,6 +25,7 @@ namespace cor
         int GetNumThreads();
 
         std::pair<int,int> ScheduleStatic(int Beg, int End);
+        std::vector<std::pair<int,int>> ScheduleStatic(int Beg, int End, int chunk);
         std::pair<int,int> ScheduleDynamic(int Beg, int End, int chunk);
         std::pair<int,int> ScheduleGuided(int Beg, int End, int chunk);
 
@@ -46,7 +47,7 @@ namespace cor
 
         // index for sheduling
         std::atomic<int> index;
-
+        hpx::future<void> _future;
         hpx::mutex _mtx;
 
     };

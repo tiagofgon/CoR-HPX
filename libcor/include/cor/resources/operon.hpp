@@ -36,6 +36,7 @@ public:
     int GetNumThreads();
 
     std::pair<int,int> ScheduleStatic(int Beg, int End);
+    std::vector<std::pair<int,int>> ScheduleStatic(int Beg, int End, int chunk);
     std::pair<int,int> ScheduleDynamic(int Beg, int End, int chunk);
     std::pair<int,int> ScheduleGuided(int Beg, int End, int chunk);
 
