@@ -8,6 +8,12 @@
 
 std::vector<long> accepted;
 long nsamples = 1000000000;
+
+std::vector<long> accepted_static;
+std::atomic<unsigned long> sum_static=0;
+long nsamples_static = 500;
+
+
 Rand R(999);
 
 std::shared_ptr<cor::Operon_Client> operon;
@@ -32,6 +38,40 @@ void McPi(void *)
     accepted[rank-1] = ct;
 }
 
+void McPi_static(void *)
+{
+    unsigned long ct;
+    double x, y;
+    ct = 0;
+    auto [beg, end] = operon->ScheduleStatic(0, nsamples_static);
+    for (auto n = beg; n < end; ++n) {
+        x = R.draw();
+        y = R.draw();
+        if ((x*x+y*y) <= 1.0)
+            ++ct;
+    }
+    sum_static.fetch_add(ct);
+}
+
+void McPi_static_chunk(void *)
+{
+    unsigned long ct;
+    double x, y;
+    ct = 0;
+    auto vec = operon->ScheduleStatic(0, nsamples_static, 10);
+    for(int i=0; i<vec.size(); i++){
+        auto [beg, end] = vec[i];
+        for (auto n = beg; n < end; ++n) {
+            x = R.draw();
+            y = R.draw();
+            if ((x*x+y*y) <= 1.0)
+                ++ct;
+        }
+    }
+
+    sum_static.fetch_add(ct);
+}
+
 void Main(int argc)
 {
     auto domain = cor::GetDomain();
@@ -40,20 +80,28 @@ void Main(int argc)
     std::size_t const& pool_size = 16;
 
 
-    nsamples /= pool_size;
-    accepted.resize(pool_size, 0L);
+    // nsamples /= pool_size;
+    // accepted.resize(pool_size, 0L);
 
-    operon = std::move(domain->CreateLocal<cor::Operon_Client>(domain->Idp(),  "", pool_size));
+    operon = domain->CreateLocal<cor::Operon_Client>(domain->Idp(),  "", pool_size);
 
     T.Start();
-    operon->Dispatch(McPi, nullptr);
+    // operon->Dispatch(McPi, nullptr);
+    // result = std::accumulate(accepted.begin(), accepted.end(), result);
+    // pi = 4.0 * (double) (result/(pool_size*nsamples));
+    // std::cout << "Value of PI = " << pi << std::endl;
 
-    result = std::accumulate(accepted.begin(), accepted.end(), result);
-    //result = accepted[0];
-    pi = 4.0 * (double) (result/(pool_size*nsamples));
+    // operon->Dispatch(McPi_static, nullptr);
+    // pi = 4.0 * double(sum_static)/nsamples_static;
+    // std::cout << "Value of PI Static = " << pi << std::endl;
+
+    operon->Dispatch(McPi_static_chunk, nullptr);
+    pi = 4.0 * double(sum_static)/nsamples_static;
+    std::cout << "Value of PI Static = " << pi << std::endl;
+
     T.Stop();
 
     T.Report();
-    std::cout << "Value of PI = " << pi << std::endl;
+    
 
 }

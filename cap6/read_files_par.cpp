@@ -16,33 +16,33 @@ static std::vector<int> vec(2);
 static size_t pool_size = 2;
 static std::size_t in = 0, fin = 10;
 
-void ReadFiles(void *)
-{
-    ReadChain rc("CollectionTree", "/Users/brunoribeiro/Desktop/rootfiles");
-    rc.SetFileRange(in, fin);                                   
-    rc.Initialize();
-    rc.ProcessChain();
-    auto rank = GetRank<cor::Group>();
-    vec[rank] = rc.GetIntSum();
-}
+// void ReadFiles(void *)
+// {
+//     ReadChain rc("CollectionTree", "/Users/brunoribeiro/Desktop/rootfiles");
+//     rc.SetFileRange(in, fin);                                   
+//     rc.Initialize();
+//     rc.ProcessChain();
+//     auto rank = GetRank<cor::Group>();
+//     vec[rank] = rc.GetIntSum();
+// }
 
 void Main(int argc, char *argv[])
 {
-    if (argc >= 1) { pool_size = std::atoi(argv[0]); vec.resize(pool_size); }
-    if (argc >= 2) in = std::atoi(argv[1]);
-    if (argc >= 3) fin = std::atoi(argv[2]);
+    // if (argc >= 1) { pool_size = std::atoi(argv[0]); vec.resize(pool_size); }
+    // if (argc >= 2) in = std::atoi(argv[1]);
+    // if (argc >= 3) fin = std::atoi(argv[2]);
 
-    ROOT::EnableThreadSafety();
-    CpuTimer T;
-    Int_t result = 0;
-    auto pool = new cor::Pool(pool_size);
+    // ROOT::EnableThreadSafety();
+    // CpuTimer T;
+    // Int_t result = 0;
+    // auto pool = new cor::Pool(pool_size);
 
-    T.Start();
-    pool->Dispatch(ReadFiles, nullptr);
-    pool->WaitForIdle();
-    result = std::accumulate(vec.begin(), vec.end(), result);
-    T.Stop();
+    // T.Start();
+    // pool->Dispatch(ReadFiles, nullptr);
+    // pool->WaitForIdle();
+    // result = std::accumulate(vec.begin(), vec.end(), result);
+    // T.Stop();
 
-    T.Report();
-    std::cout << "Final Value: " << result << std::endl;
+    // T.Report();
+    // std::cout << "Final Value: " << result << std::endl;
 }

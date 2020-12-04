@@ -32,10 +32,6 @@ target_include_directories(
 # 	    ROOT::Core
 #         ${ROOT_LIBRARIES}
 #         libcor
-#         pool
-#         Spread
-#         SSRCSpread
-#         Cereal
 # )
 # target_include_directories(
 #     read_files_par
