@@ -89,6 +89,12 @@ public:
 
 
 	/** Executor's interface **/
+	void Dispatch_funtion(hpx::function<void(std::shared_ptr<void>)> fct, std::shared_ptr<void> arg)
+	{
+		ensure_ptr();
+		return ptr->Dispatch_funtion(fct, arg);
+	}
+
 	void Dispatch(void (*taskfct)(void *), void *arg)
 	{
 		ensure_ptr();
@@ -144,6 +150,15 @@ public:
 		ensure_ptr();
 		return ptr->ScheduleGuided(Beg, End, chunk);
 	}
+
+
+    template < typename Func, typename ... Args >
+    void DispatchTemplated(Func && func, Args && ... args) {
+		std::cout << "aqui1" << std::endl;
+        return ptr->DispatchTemplated(func, args...);
+    }
+
+
 
 	/** Local Client's interface **/
 	// local idp of this resource

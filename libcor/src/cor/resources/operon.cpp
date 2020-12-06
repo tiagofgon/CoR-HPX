@@ -13,6 +13,11 @@ Operon::Operon(idp_t idp, std::size_t num_hpx_threads) :
 
 
 /* DynamicOrganizer's interface */
+void Operon::Dispatch_funtion(hpx::function<void(std::shared_ptr<void>)> fct, std::shared_ptr<void> arg)
+{
+    return _executor_pool.Dispatch_funtion(fct, arg);
+}
+
 void Operon::Dispatch(void (*taskfct)(void *), void *arg)
 {
     return _executor_pool.Dispatch(taskfct, arg);

@@ -39,30 +39,59 @@ namespace cor
 
     }
 
+   //  void ExecutorPool::Dispatch(void (*funct)(void *), void *arg)
+   //  {
+   //      // std::cout << "ola3" << std::endl;
+   //      // std::cout << "_num_hpx_threads: " << _num_hpx_threads << std::endl;
+
+
+   //      for(int i=0; i<_num_hpx_threads; i++) {
+   //          // std::cout << "ola" << std::endl;
+            
+   //          hpx::future<void> fut = hpx::async([&](){
+   //             th_ids.push_back(hpx::this_thread::get_id());
+   //             // std::cout << "thread_id_1: " << hpx::this_thread::get_id() << std::endl;
+   //             // std::cout << "aux_2: " << aux << std::endl;
+   //             barrier.wait();
+   //             funct(arg);
+   //          });
+   //          _futures.emplace_back(std::move(fut));
+   //          //_futures.push_back(std::move(fut));
+   //      }
+        
+   //      hpx::wait_all(_futures);
+   //      //_futures[0].wait();
+   //  }
+   void ExecutorPool::Dispatch_funtion(hpx::function<void(std::shared_ptr<void>)> fct, std::shared_ptr<void> arg)
+   {
+      for(int i=0; i<_num_hpx_threads; i++) {
+
+         auto func_aux = [this](hpx::function<void(std::shared_ptr<void>)> fct, std::shared_ptr<void> arg){
+            th_ids.push_back(hpx::this_thread::get_id());
+            fct(arg);
+         };
+
+      hpx::future<void> fut = hpx::async(func_aux, fct, arg);
+         
+      _futures.emplace_back(std::move(fut));
+      }
+   }
+
     void ExecutorPool::Dispatch(void (*funct)(void *), void *arg)
     {
-        // std::cout << "ola3" << std::endl;
-        // std::cout << "_num_hpx_threads: " << _num_hpx_threads << std::endl;
-
-
         for(int i=0; i<_num_hpx_threads; i++) {
-            // std::cout << "ola" << std::endl;
-            
-                hpx::future<void> fut = hpx::async([this, &funct, &arg](){
-                    th_ids.push_back(hpx::this_thread::get_id());
-                    // std::cout << "thread_id_1: " << hpx::this_thread::get_id() << std::endl;
-                    // std::cout << "aux_2: " << aux << std::endl;
-                    barrier.wait();
-                    funct(arg);
-                });
-            
-            _futures.push_back(std::move(fut));
-        }
-        
-        hpx::wait_all(_futures);
-        //_futures[0].wait();
-    }
 
+            auto func_aux = [this](void (*funct)(void *), void *arg){
+               th_ids.push_back(hpx::this_thread::get_id());
+               funct(arg);
+            };
+
+         hpx::future<void> fut = hpx::async(func_aux, funct, arg);
+            
+         _futures.emplace_back(std::move(fut));
+        }
+
+    }
 
 // ------------------------------------------------------------
 // This function will be called by worker threads if they need
@@ -91,11 +120,8 @@ int ExecutorPool::GetRank()
 
 void ExecutorPool::WaitForIdle()
 {
-    //std::cout << "hpx::wait_all" << std::endl;
-    // hpx::wait_all(_futures);
-    //hpx::when_all(_futures).get();
-    //_futures[0].get();
-    //_barrier->WaitForIdle();  
+   std::cout << "WaitForIdle()" << std::endl;
+   hpx::wait_all(_futures);
 }
 
 int ExecutorPool::GetNumThreads() {

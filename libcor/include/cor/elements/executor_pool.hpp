@@ -16,7 +16,7 @@ namespace cor
         ExecutorPool(idp_t idp, std::size_t num_hpx_threads);
         ~ExecutorPool();
 
-        //void Dispatch(hpx::function<void(void*)> fct, void *arg);
+        void Dispatch_funtion(hpx::function<void(std::shared_ptr<void>)> fct, std::shared_ptr<void> arg);
         void Dispatch(void (*taskfct)(void *), void *arg);
         void WaitForIdle();
 
@@ -28,6 +28,9 @@ namespace cor
         std::vector<std::pair<int,int>> ScheduleStatic(int Beg, int End, int chunk);
         std::pair<int,int> ScheduleDynamic(int Beg, int End, int chunk);
         std::pair<int,int> ScheduleGuided(int Beg, int End, int chunk);
+
+        template < typename Func, typename ... Args >
+        void DispatchTemplated(Func && func, Args && ... args);
 
 
     private:
@@ -52,5 +55,7 @@ namespace cor
 
     };
 }
+
+#include "cor/elements/executor_pool.tpp"
 
 #endif
