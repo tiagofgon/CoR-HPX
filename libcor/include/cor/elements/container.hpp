@@ -3,15 +3,17 @@
 
 #include "cor/system/macros.hpp"
 
-#include <hpx/hpx.hpp>
-
+//#include <hpx/hpx.hpp>
+#include <string>
+#include <memory>
+#include <vector>
 
 namespace cor {
 
 class Container
 {
 
-friend class hpx::serialization::access;
+//friend class hpx::serialization::access;
 friend class Domain;
 
 protected:
@@ -40,8 +42,8 @@ public:
     template <typename T>
     std::unique_ptr<T> GetLocalResource(idp_t idp);
 
-    template <typename T>
-    std::unique_ptr<T> CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func);
+    // template <typename T>
+    // std::unique_ptr<T> CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func);
 
     template <typename T, typename ... Args>
     std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args&& ... args);

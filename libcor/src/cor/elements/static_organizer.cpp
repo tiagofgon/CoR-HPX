@@ -1,7 +1,5 @@
 #include "cor/elements/static_organizer.hpp"
 
-#include <hpx/hpx.hpp>
-
 
 namespace cor {
 

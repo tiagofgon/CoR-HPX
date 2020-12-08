@@ -89,33 +89,11 @@ public:
 
 
 	/** Executor's interface **/
-	void Dispatch_funtion(hpx::function<void(std::shared_ptr<void>)> fct, std::shared_ptr<void> arg)
-	{
-		ensure_ptr();
-		return ptr->Dispatch_funtion(fct, arg);
-	}
-
-	void Dispatch(void (*taskfct)(void *), void *arg)
-	{
-		ensure_ptr();
-		// typedef Operon::Dispatch_action_Operon action_type;
-		// return hpx::async<action_type>(this->get_id(), f).get();
-		//std::shared_ptr<Operon> ptr2 = hpx::get_ptr<Operon>(hpx::launch::sync, this->get_id());
-		return ptr->Dispatch(taskfct, arg);
-	}
-
 	int GetRank()
 	{
 		ensure_ptr();
 		//std::shared_ptr<Operon> ptr2 = hpx::get_ptr<Operon>(hpx::launch::sync, this->get_id());
 		return ptr->GetRank();
-	}
-
-	void WaitForIdle()
-	{
-		ensure_ptr();
-		//std::shared_ptr<Operon> ptr2 = hpx::get_ptr<Operon>(hpx::launch::sync, this->get_id());
-		return ptr->WaitForIdle();
 	}
 
 	int GetNumThreads()
@@ -151,14 +129,16 @@ public:
 		return ptr->ScheduleGuided(Beg, End, chunk);
 	}
 
-
-    template < typename Func, typename ... Args >
-    void DispatchTemplated(Func && func, Args && ... args) {
-		std::cout << "aqui1" << std::endl;
-        return ptr->DispatchTemplated(func, args...);
+	template < typename ... Args >
+    hpx::future<void> Dispatch(hpx::function<void(Args...)> func, Args ... args) {
+		typedef Operon::Dispatch_action_Operon<Args...> action_type;
+		return hpx::async<action_type>(this->get_id(), func, args...);
     }
 
-
+    hpx::future<void> Dispatch(hpx::function<void()> func) {
+		typedef Operon::Dispatch_void_action_Operon action_type;
+		return hpx::async<action_type>(this->get_id(), func);
+    }
 
 	/** Local Client's interface **/
 	// local idp of this resource
@@ -183,8 +163,9 @@ public:
 		7 - Barrier
 		8 - Mutex
 		9 - RWMutex
+		10 - Operon
 		*/
-		return 4;
+		return 10;
 	}
 
 	// For compilation purposes only, it is never used here!
@@ -208,7 +189,7 @@ private:
 
 	void ensure_ptr() const {
 		if (!ptr) {
-			std::cout << "ensure_ptr()" << std::endl;
+			//std::cout << "ensure_ptr()" << std::endl;
 			ptr = hpx::get_ptr<Operon>(hpx::launch::sync, this->get_id());
 		}
 	}

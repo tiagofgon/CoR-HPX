@@ -2,14 +2,12 @@
 #define COR_SBARRIER_HPP
 
 #include "cor/system/macros.hpp"
-#include <hpx/hpx.hpp>
 
 namespace cor {
 
 class SBarrier
 {
 
-friend class hpx::serialization::access;
 friend class Barrier;
 
 public:

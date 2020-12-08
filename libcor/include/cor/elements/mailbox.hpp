@@ -1,15 +1,11 @@
 #ifndef COR_MAILBOX_HPP
 #define COR_MAILBOX_HPP
 
-#include <vector>
-
 #include "cor/system/macros.hpp"
 #include "cor/message.hpp"
 
 #include <queue>
-#include <atomic>
-#include <functional>
-#include <mutex>
+
 
 #include <hpx/hpx.hpp>
 

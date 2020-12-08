@@ -3,11 +3,6 @@
 #include "cor/system/system.hpp"
 #include "cor/system/pod_client.hpp"
 
-#include <queue>
-#include <atomic>
-#include <functional>
-#include <mutex>
-
 
 namespace cor {
 

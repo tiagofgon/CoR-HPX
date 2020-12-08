@@ -1,7 +1,5 @@
 #include "cor/elements/smutex.hpp"
 
-#include "cor/system/system.hpp"
-
 namespace cor {
 
 SMutex::SMutex() = default;

@@ -1,6 +1,5 @@
 #ifndef COR_SYSTEM_HPP
 #define COR_SYSTEM_HPP
-#include <hpx/hpx.hpp>
 
 namespace cor {
 

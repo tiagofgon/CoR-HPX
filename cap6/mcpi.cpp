@@ -9,9 +9,7 @@
 std::vector<long> accepted;
 long nsamples = 1000000000;
 
-std::vector<long> accepted_static;
 std::atomic<unsigned long> sum_static=0;
-long nsamples_static = 500;
 
 
 Rand R(999);
@@ -23,85 +21,143 @@ extern "C"
     void Main(int argc);
 }
 
-void McPi(void *)
-{
-    unsigned long ct;
-    double x, y;
-    ct = 0;
-    for (auto n = 0; n < nsamples; ++n) {
-        x = R.draw();
-        y = R.draw();
-        if ((x*x+y*y) <= 1.0)
-            ++ct;
-    }
-    auto rank = operon->GetRank();
-    accepted[rank-1] = ct;
-}
 
-void McPi_static(void *)
-{
-    unsigned long ct;
-    double x, y;
-    ct = 0;
-    auto [beg, end] = operon->ScheduleStatic(0, nsamples_static);
-    for (auto n = beg; n < end; ++n) {
-        x = R.draw();
-        y = R.draw();
-        if ((x*x+y*y) <= 1.0)
-            ++ct;
-    }
-    sum_static.fetch_add(ct);
-}
-
-void McPi_static_chunk(void *)
-{
-    unsigned long ct;
-    double x, y;
-    ct = 0;
-    auto vec = operon->ScheduleStatic(0, nsamples_static, 10);
-    for(int i=0; i<vec.size(); i++){
-        auto [beg, end] = vec[i];
+struct piCalc_static {
+    void operator()() {
+    //std::cout << "McPi_static " << std::endl;
+        unsigned long ct;
+        double x, y;
+        ct = 0;
+        auto [beg, end] = operon->ScheduleStatic(0, nsamples);
         for (auto n = beg; n < end; ++n) {
             x = R.draw();
             y = R.draw();
             if ((x*x+y*y) <= 1.0)
                 ++ct;
         }
+        sum_static.fetch_add(ct);
     }
+};
+piCalc_static _piCalc_static;
+hpx::function<void()> McPi_static(_piCalc_static);
 
-    sum_static.fetch_add(ct);
-}
+
+
+
+struct piCalc_static_chunk {
+    void operator()() {
+        //std::cout << "McPi_static_chunk " << std::endl;
+        unsigned long ct;
+        double x, y;
+        ct = 0;
+        auto vec = operon->ScheduleStatic(0, nsamples, 500);
+        for(int i=0; i<vec.size(); i++){
+            auto [beg, end] = vec[i];
+            for (auto n = beg; n < end; ++n) {
+                x = R.draw();
+                y = R.draw();
+                if ((x*x+y*y) <= 1.0)
+                    ++ct;
+            }
+        }
+
+        sum_static.fetch_add(ct);
+    }
+};
+piCalc_static_chunk _piCalc_static_chunk;
+hpx::function<void()> McPi_static_chunk(_piCalc_static_chunk);
+
+
+
+struct piCalc_static_dynamic {
+    void operator()() {
+        //std::cout << "McPi_static_chunk " << std::endl;
+        unsigned long ct;
+        double x, y;
+        ct = 0;
+        int beg, end;
+        beg = 0;                    // initialize [beg, end) to global range
+        end = nsamples;
+
+        while(beg<nsamples) {
+            std::pair<int, int> par = operon->ScheduleDynamic(0, nsamples, 500);
+            beg=par.first;
+            end=par.second;
+            for(auto n = beg; n < end; ++n) {
+                x = R.draw();
+                y = R.draw();
+                if ((x*x+y*y) <= 1.0)
+                    ++ct;
+            }
+        }
+
+        sum_static.fetch_add(ct);
+    }
+};
+piCalc_static_dynamic _piCalc_static_dynamic;
+hpx::function<void()> McPi_static_dynamic(_piCalc_static_dynamic);
+
+
+struct Func {
+    void operator()(std::vector<int> v, int a) {
+            std::cout << a << " " << v[0] << std::endl;
+
+    }
+};
+Func func_aux;
+hpx::function<void(std::vector<int>, int)> func(func_aux);
 
 void Main(int argc)
 {
     auto domain = cor::GetDomain();
     CpuTimer T;
     double pi, result = 0;
-    std::size_t const& pool_size = 16;
-
-
-    // nsamples /= pool_size;
-    // accepted.resize(pool_size, 0L);
+    std::size_t const& pool_size = 4;
 
     operon = domain->CreateLocal<cor::Operon_Client>(domain->Idp(),  "", pool_size);
 
+    /* -------------- */
+
+
     T.Start();
-    // operon->Dispatch(McPi, nullptr);
-    // result = std::accumulate(accepted.begin(), accepted.end(), result);
-    // pi = 4.0 * (double) (result/(pool_size*nsamples));
-    // std::cout << "Value of PI = " << pi << std::endl;
-
-    // operon->Dispatch(McPi_static, nullptr);
-    // pi = 4.0 * double(sum_static)/nsamples_static;
-    // std::cout << "Value of PI Static = " << pi << std::endl;
-
-    operon->Dispatch(McPi_static_chunk, nullptr);
-    pi = 4.0 * double(sum_static)/nsamples_static;
-    std::cout << "Value of PI Static = " << pi << std::endl;
-
+    auto fut1 = operon->Dispatch(McPi_static);
+    fut1.get();
+    pi = 4.0 * double(sum_static)/nsamples;
+    std::cout << "\nValue of PI McPi_static = " << pi << std::endl;
     T.Stop();
-
     T.Report();
-    
+
+
+    /* -------------- */
+
+
+    T.Start();
+    sum_static = 0;
+    auto fut2 = operon->Dispatch(McPi_static_chunk);
+    fut2.get();
+    pi = 4.0 * double(sum_static)/nsamples;
+    std::cout << "\nValue of PI McPi_static_chunk = " << pi << std::endl;
+    T.Stop();
+    T.Report();
+
+
+    /* -------------- */
+
+
+    T.Start();
+    sum_static = 0;
+    auto fut3 = operon->Dispatch(McPi_static_dynamic);
+    fut3.get();
+    pi = 4.0 * double(sum_static)/nsamples;
+    std::cout << "\nValue of PI McPi_static_dynamic = " << pi << std::endl;
+    T.Stop();
+    T.Report();
+
+
+    /* -------------- */
+
+    int a = 1;
+    std::vector<int> v = {1, 2};
+    operon->Dispatch(func, v, 1).get();
 
 }

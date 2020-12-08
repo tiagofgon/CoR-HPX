@@ -4,9 +4,6 @@
 #include "cor/system/system.hpp"
 #include "cor/system/pod_client.hpp"
 
-#include <hpx/hpx.hpp>
-
-
 namespace cor {
 
 template <typename R, typename ... P>

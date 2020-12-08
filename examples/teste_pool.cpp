@@ -131,7 +131,7 @@ void Main(int input) {
 
 
 
-    operon = std::move(domain->CreateLocal<cor::Operon_Client>(domain->Idp(),  "", 1));
+    operon = std::move(domain->CreateLocal<cor::Operon_Client>(domain->Idp(),  "", 2));
 
     operon->Dispatch(funcStatic, nullptr);
     // operon->Dispatch(funcDynamic, nullptr);

@@ -12,8 +12,8 @@ std::unique_ptr<T> Domain::GetLocalResource(idp_t idp)
 template <typename T>
 std::unique_ptr<T> Domain::CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func)
 {
-    return _container.CreateLocal_agent<T>(ctx, name, func);
-    //return nullptr;
+    //return _container.CreateLocal_agent<T>(ctx, name, func);
+    return nullptr;
 }
 
 template <typename T, typename ... Args>

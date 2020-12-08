@@ -1,8 +1,5 @@
 #include "cor/elements/sbarrier.hpp"
 
-// #include "cor/system/system.hpp"
-// #include "cor/system/pod_client.hpp"
-
 namespace cor {
 
 SBarrier::SBarrier() = default;

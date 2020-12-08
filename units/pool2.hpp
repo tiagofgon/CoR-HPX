@@ -16,6 +16,11 @@ namespace cor
         ExecutorPool(idp_t idp, std::size_t num_hpx_threads);
         ~ExecutorPool();
 
+        //void Dispatch(hpx::function<void(void*)> fct, void *arg);
+        void Dispatch(void (*taskfct)(void *), void *arg);
+        void WaitForIdle();
+
+        hpx::function<void(void *arg)> AgentFunc;
         int GetRank();
         int GetNumThreads();
 
@@ -24,21 +29,29 @@ namespace cor
         std::pair<int,int> ScheduleDynamic(int Beg, int End, int chunk);
         std::pair<int,int> ScheduleGuided(int Beg, int End, int chunk);
 
-        template < typename ... Args >
-        void Dispatch(hpx::function<void(Args...)> func, Args ... args);
+        template < typename Func, typename ... Args >
+        void DispatchTemplated(Func && func, Args && ... args);
 
-        void Dispatch(hpx::function<void()> func);
 
     private:
         idp_t _idp;
         std::size_t _num_hpx_threads;
+        void (*_fct)(void*);
+        void *_arg;
+
+        idp_t _group;
+        std::vector<idp_t> _agents;
+
 
         std::vector<hpx::future<void>> _futures;
         std::vector<hpx::thread::id> th_ids;
+        hpx::lcos::local::barrier barrier;
+        int aux = 99;
 
         // index for sheduling
+        std::atomic<int> index;
+        hpx::future<void> _future;
         hpx::mutex _mtx;
-        std::atomic<int> _index;
 
     };
 }
