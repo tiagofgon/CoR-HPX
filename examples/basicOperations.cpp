@@ -8,7 +8,7 @@ extern "C"
 void Main(int rsc_idp)
 {
     // obter o domínio local
-    auto domain = cor::GetDomain();
+    auto domain = cor::GetDomain().get();
 
     // obter o idp do agent que está a executar a função de entrada do módulo do utilizador
     auto agent_idp = domain->GetActiveResourceIdp();

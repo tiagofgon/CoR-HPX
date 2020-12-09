@@ -8,7 +8,7 @@ extern "C"
 idp_t Test(idp_t rsc_idp)
 {
     // obter o domínio local
-    auto domain = cor::GetDomain();
+    auto domain = cor::GetDomain().get();
 
     // obter o idp do agent que está a executar uma função preente no módulo do utilizador
     auto agent_idp = domain->GetActiveResourceIdp();

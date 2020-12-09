@@ -13,7 +13,7 @@ void ClientFunction(idp_t idp)
 
 void Main(int input)
 {
-    auto domain = cor::GetDomain();
+    auto domain = cor::GetDomain().get();
     auto domain_idp = domain->Idp();
     auto agent_idp = domain->GetActiveResourceIdp();
     auto clos_idp = domain->GetPredecessorIdp(agent_idp);

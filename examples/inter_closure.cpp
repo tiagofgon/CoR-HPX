@@ -12,7 +12,7 @@ int spawned_domains = 2;
 void Main(int input)
 {
 
-    auto domain = cor::GetDomain();
+    auto domain = cor::GetDomain().get();
     auto agent_idp = domain->GetActiveResourceIdp();
     auto clos_idp = domain->GetPredecessorIdp(agent_idp);
     auto clos = domain->GetLocalResource<cor::Closure_Client>(clos_idp);

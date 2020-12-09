@@ -7,7 +7,7 @@ extern "C"
 
 void Main(int rsc_idp)
 {
-    auto domain = cor::GetDomain();
+    auto domain = cor::GetDomain().get();
     auto agent_idp = domain->GetActiveResourceIdp();
 
     auto agent = domain->GetLocalResource<cor::Agent_Client<void(int)>>(agent_idp);

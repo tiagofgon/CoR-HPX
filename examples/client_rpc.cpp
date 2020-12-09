@@ -17,7 +17,7 @@ const int spawned_domains = 1;
 
 void Main(int argc)
 { 
-    auto domain = cor::GetDomain();
+    auto domain = cor::GetDomain().get();
 
     auto domain_idp = domain->Idp();
     auto agent_idp = domain->GetActiveResourceIdp();

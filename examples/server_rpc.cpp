@@ -10,7 +10,7 @@ extern "C"
 
 idp_t ServerFunction(idp_t domain_idp)
 {
-    auto domain = cor::GetDomain();
+    auto domain = cor::GetDomain().get();
     std::string module = "libclient_rpc.so";
     std::string function = "ClientFunction";
     std::string const& modulee = module;
@@ -27,7 +27,7 @@ idp_t ServerFunction(idp_t domain_idp)
 
 void Main(int argc)
 {
-    auto domain = cor::GetDomain();
+    auto domain = cor::GetDomain().get();
     auto agent_idp = domain->GetActiveResourceIdp();
     auto clos_idp = domain->GetPredecessorIdp(agent_idp);
     auto clos = domain->GetLocalResource<cor::Closure_Client>(clos_idp);
