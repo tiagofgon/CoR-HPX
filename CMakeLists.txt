@@ -16,7 +16,7 @@ if(APPLE)
     set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
-set(LibSSH_ROOT /share/apps/libssh-0.8.6)
+#set(LibSSH_ROOT /share/apps/libssh-0.8.6)
 
 # find dependencies
 find_package(HPX REQUIRED)
@@ -29,7 +29,7 @@ find_package(LibSSH REQUIRED)
 # check subdirectories
 add_subdirectory(libcor)
 add_subdirectory(tools)
-add_subdirectory(units)
+#add_subdirectory(units)
 add_subdirectory(examples)
 add_subdirectory(tests)
 add_subdirectory(cap6)
