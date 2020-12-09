@@ -110,29 +110,6 @@ hpx::function<void(std::vector<int>, int)> func(func_aux);
 
 
 
-auto calc_pi = [](){
-    std::atomic<unsigned long> sum=0;
-
-    // The interior of the vector is handled with a parallel for loop. HPX
-    // implicitly creates a task for each chunk of the input range. HPX does not
-    // create one task for each index.
-    hpx::for_loop(hpx::execution::par, 0, nsamples,
-        [&](auto i) {
-            auto x = R.draw();
-            auto y = R.draw();
-            if ((x*x+y*y) <= 1.0)
-                ++sum;
-        });
-
-    double pi = 4.0 * double(sum)/nsamples;
-    std::cout << "\nValue of PI McPi_chunk = " << pi << std::endl;
-};
-
-
-
-
-
-
 void Main(int argc)
 {
     auto domain = cor::GetDomain().get();
@@ -145,49 +122,45 @@ void Main(int argc)
     /* -------------- */
 
 
-    // T.Start();
-    // auto fut1 = operon->Dispatch(McPi_static);
-    // fut1.get();
-    // pi = 4.0 * double(sum_static)/nsamples;
-    // std::cout << "\nValue of PI McPi_static = " << pi << std::endl;
-    // T.Stop();
-    // T.Report();
+    T.Start();
+    auto fut1 = operon->Dispatch(McPi_static);
+    fut1.get();
+    pi = 4.0 * double(sum_static)/nsamples;
+    std::cout << "\nValue of PI McPi_static = " << pi << std::endl;
+    T.Stop();
+    T.Report();
 
 
-    // /* -------------- */
+    /* -------------- */
 
 
-    // T.Start();
-    // sum_static = 0;
-    // auto fut2 = operon->Dispatch(McPi_static_chunk);
-    // fut2.get();
-    // pi = 4.0 * double(sum_static)/nsamples;
-    // std::cout << "\nValue of PI McPi_static_chunk = " << pi << std::endl;
-    // T.Stop();
-    // T.Report();
+    T.Start();
+    sum_static = 0;
+    auto fut2 = operon->Dispatch(McPi_static_chunk);
+    fut2.get();
+    pi = 4.0 * double(sum_static)/nsamples;
+    std::cout << "\nValue of PI McPi_static_chunk = " << pi << std::endl;
+    T.Stop();
+    T.Report();
 
 
-    // /* -------------- */
+    /* -------------- */
 
 
-    // T.Start();
-    // sum_static = 0;
-    // auto fut3 = operon->Dispatch(McPi_static_dynamic);
-    // fut3.get();
-    // pi = 4.0 * double(sum_static)/nsamples;
-    // std::cout << "\nValue of PI McPi_static_dynamic = " << pi << std::endl;
-    // T.Stop();
-    // T.Report();
+    T.Start();
+    sum_static = 0;
+    auto fut3 = operon->Dispatch(McPi_static_dynamic);
+    fut3.get();
+    pi = 4.0 * double(sum_static)/nsamples;
+    std::cout << "\nValue of PI McPi_static_dynamic = " << pi << std::endl;
+    T.Stop();
+    T.Report();
 
 
-    // /* -------------- */
+    /* -------------- */
 
-    // int a = 1;
-    // std::vector<int> v = {1, 2};
-    // operon->Dispatch(func, v, 1).get();
+    int a = 1;
+    std::vector<int> v = {1, 2};
+    operon->Dispatch(func, v, 1).get();
 
-T.Start();
-    calc_pi();
-T.Stop();
-T.Report();
 }
