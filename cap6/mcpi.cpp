@@ -98,15 +98,34 @@ piCalc_static_dynamic _piCalc_static_dynamic;
 hpx::function<void()> McPi_static_dynamic(_piCalc_static_dynamic);
 
 
-struct Func {
-    void operator()(std::vector<int> v, int a) {
-            std::cout << a << " " << v[0] << std::endl;
+template <typename ExPolicy, typename... Parameters>
+double Func(ExPolicy&& policy, Parameters&&... params) {
+    //std::cout << "McPi_static_chunk " << std::endl;
+    unsigned long ct;
+    ct = 0;
+    int end = 1000000000;   
+    auto pool_size_ = hpx::get_os_thread_count();
+    std::vector<long> accepted_local(pool_size_);
 
-    }
-};
-Func func_aux;
-hpx::function<void(std::vector<int>, int)> func(func_aux);
 
+    using namespace hpx::parallel;
+
+    hpx::for_loop(execution::par(execution::task).on(std::forward<ExPolicy>(policy)).with(std::forward<Parameters>(params)...), 0, end,
+    [&accepted_local](std::size_t samples) {
+        unsigned long ct=0;
+        auto x = R.draw();
+        auto y = R.draw();
+        if ((x*x+y*y) <= 1.0) {
+            auto rank = hpx::get_worker_thread_num();
+            accepted_local[rank]++;
+        }
+    });
+
+    double result = std::accumulate(accepted_local.begin(), accepted_local.end(), result);
+    double pi = 4.0 * double(result)/end;
+    return pi;
+
+}
 
 
 
@@ -159,8 +178,19 @@ void Main(int argc)
 
     /* -------------- */
 
-    int a = 1;
-    std::vector<int> v = {1, 2};
-    operon->Dispatch(func, v, 1).get();
+    T.Start();
+    // hpx::parallel::execution::parallel_executor par_exec;
+    // hpx::parallel::execution::auto_chunk_size scs;
+
+    hpx::parallel::execution::parallel_executor par_exec;
+    hpx::parallel::execution::dynamic_chunk_size scs(500);
+
+    pi = Func(par_exec, scs);
+
+    T.Stop();
+
+    T.Report();
+    std::cout << "Value of PI = " << pi << std::endl;
+
 
 }
