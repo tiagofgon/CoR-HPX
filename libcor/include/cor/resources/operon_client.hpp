@@ -16,7 +16,7 @@ public:
 
 	friend class hpx::serialization::access;
 
-	typedef nullptr_t organizer;
+	typedef Mailbox organizer;
 	
 	// Default construct an empty client side representation (not
 	// connected to any existing component). Also needed for serialization
@@ -139,6 +139,52 @@ public:
 		typedef Operon::Dispatch_void_action_Operon action_type;
 		return hpx::async<action_type>(this->get_id(), func);
     }
+
+
+    /* Mailbox's interface */
+    void Send(idp_t dest, Message const& msg)
+	{
+		typedef typename cor::Operon::Send1_action_Operon action_type;
+		return hpx::async<action_type>(this->get_id(), dest, msg).get();
+	}
+
+    void Send(std::vector<idp_t> const& dests, Message const& msg)
+	{
+		typedef typename cor::Operon::Send2_action_Operon action_type;
+		return hpx::async<action_type>(this->get_id(), dests, msg).get();
+	}
+
+    Message Receive()
+	{
+		typedef typename cor::Operon::Receive1_action_Operon action_type;
+		return hpx::async<action_type>(this->get_id()).get();
+	}
+
+    Message Receive(idp_t source)
+	{
+		typedef typename cor::Operon::Receive2_action_Operon action_type;
+		return hpx::async<action_type>(this->get_id(), source).get();
+	}
+
+    void Broadcast(idp_t clos, Message const& msg)
+	{
+		typedef typename cor::Operon::Broadcast_action_Operon action_type;
+		return hpx::async<action_type>(this->get_id(), clos, msg).get();
+	}
+
+    void Send(idm_t rank, idp_t clos, Message const& msg)
+	{
+		typedef typename cor::Operon::Send3_action_Operon action_type;
+		return hpx::async<action_type>(this->get_id(), rank, clos, msg).get();
+	}
+
+    Message Receive(idm_t rank, idp_t clos)
+	{
+		typedef typename cor::Operon::Receive3_action_Operon action_type;
+		return hpx::async<action_type>(this->get_id(), rank, clos).get();
+	}
+
+
 
 	/** Local Client's interface **/
 	// local idp of this resource
