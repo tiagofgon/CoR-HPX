@@ -8,7 +8,9 @@ extern "C"
 
 void Main(int input) {
 
-    auto domain = cor::GetDomain().get();
-    std::cout << domain->GetActiveResourceIdp() << "\n";
+    cor::GetDomain().then(hpx::util::unwrapping([](auto domain){ 
+        std::cout << domain->GetActiveResourceIdp() << "\n"; 
+    })).get();
+    
 
 }

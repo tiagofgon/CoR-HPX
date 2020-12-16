@@ -29,39 +29,46 @@ public:
 	// Closure instance with the given GID
 	Domain_Client(hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal())
+		_idp(IdpGlobal()),
+		_idp_agent(0)
 	{}
 
 	Domain_Client(hpx::shared_future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal())
+		_idp(IdpGlobal()),
+		_idp_agent(0)
 	{}
 
 	Domain_Client(hpx::id_type && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal())
+		_idp(IdpGlobal()),
+		_idp_agent(0)
 	{}
 
 	// Constructor for replicas
 	Domain_Client(idp_t idp, hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(idp)
+		_idp(idp),
+		_idp_agent(0)
 	{}
 
 	Domain_Client(idp_t idp, hpx::shared_future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(idp)
+		_idp(idp),
+		_idp_agent(0)
 	{}
 
 	Domain_Client(idp_t idp, hpx::id_type && id) :
 		base_type(std::move(id)),
-		_idp(idp)
+		_idp(idp),
+		_idp_agent(0)
 	{}
 
 	// Standard constructor with parameters
 	Domain_Client(idp_t idp, std::string const& module) :
 		base_type(create_server(idp, module)),
-		_idp(idp)
+		_idp(idp),
+		_idp_agent(0)
 	{
 		global::pod->setDomainIdp(idp); // Update domain idp variable's Pod
 	}
@@ -69,7 +76,8 @@ public:
 	// This can only be done when remote domains will be implemented!
 	Domain_Client(idp_t idp, hpx::id_type locality, std::string const& module) :
 		base_type(create_server_remote(idp, locality, module)),
-		_idp(idp)
+		_idp(idp),
+		_idp_agent(0)
 	{
 		global::pod->setDomainIdp(idp); // Update domain idp variable's Pod
 	}
@@ -187,13 +195,19 @@ public:
 
 	idp_t GetActiveResourceIdp()
 	{
-		auto id = hpx::threads::get_self_id();
-		uint64_t* ptr=(uint64_t*) &id;
-		auto ptr2 = (*ptr);
-		// std::cout << "Thread HPX - GetActiveResourceIdp: " << ptr2 << std::endl;
+		// primeira chamada desta funcao, dentro do cor GetDomain()
+		if(_idp_agent == 0) {
+			auto id = hpx::threads::get_self_id();
+			uint64_t* ptr=(uint64_t*) &id;
+			auto ptr2 = (*ptr);
+			// std::cout << "Thread HPX - GetActiveResourceIdp: " << ptr2 << std::endl;
 
-		typedef cor::Domain::GetActiveResourceIdp_action_Domain action_type;
-		return hpx::async<action_type>(this->get_id(), ptr2).get(); 
+			typedef cor::Domain::GetActiveResourceIdp_action_Domain action_type;
+			auto res = hpx::async<action_type>(this->get_id(), ptr2).get(); 
+			_idp_agent = res;
+			return _idp_agent;
+		}
+		return _idp_agent;
 	}
 
 	idp_t GetPredecessorIdp(idp_t idp)
@@ -337,6 +351,7 @@ private:
 	}
 
 	idp_t _idp; // local idp
+	idp_t _idp_agent; // idp do agent que arranca o código do dominio
 
 };
 

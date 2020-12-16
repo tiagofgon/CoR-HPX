@@ -10,10 +10,32 @@ target_link_libraries(
     PRIVATE
         libcor
         HPX::hpx
+	    # ROOT::Core
+        # ${ROOT_LIBRARIES}
 
 )
 target_include_directories(
     mcpi
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:include>
+)
+
+add_library(mcpi_for_loop SHARED mcpi_for_loop.cpp)
+target_compile_features(mcpi_for_loop PUBLIC cxx_std_17)
+set_target_properties(mcpi_for_loop PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(mcpi_for_loop PROPERTIES POSITION_INDEPENDENT_CODE ON) 
+set_target_properties(mcpi_for_loop PROPERTIES COMPILE_FLAGS -O2) 
+set_target_properties(mcpi_for_loop PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+	mcpi_for_loop
+    PRIVATE
+        libcor
+        HPX::hpx
+
+)
+target_include_directories(
+    mcpi_for_loop
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
         $<INSTALL_INTERFACE:include>
@@ -189,6 +211,7 @@ target_include_directories(
 install(
     TARGETS
         mcpi
+        mcpi_for_loop
         # read_files_par
         # read_files_dist_v1
         # read_files_dist_v2

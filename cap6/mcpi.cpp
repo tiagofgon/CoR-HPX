@@ -69,7 +69,7 @@ hpx::function<void()> McPi_static_chunk(_piCalc_static_chunk);
 
 
 
-struct piCalc_static_dynamic {
+struct piCalc_dynamic {
     void operator()() {
         //std::cout << "McPi_static_chunk " << std::endl;
         unsigned long ct;
@@ -94,39 +94,8 @@ struct piCalc_static_dynamic {
         sum_static.fetch_add(ct);
     }
 };
-piCalc_static_dynamic _piCalc_static_dynamic;
-hpx::function<void()> McPi_static_dynamic(_piCalc_static_dynamic);
-
-
-template <typename ExPolicy, typename... Parameters>
-double Func(ExPolicy&& policy, Parameters&&... params) {
-    //std::cout << "McPi_static_chunk " << std::endl;
-    unsigned long ct;
-    ct = 0;
-    int end = 1000000000;   
-    auto pool_size_ = hpx::get_os_thread_count();
-    std::vector<long> accepted_local(pool_size_);
-
-
-    using namespace hpx::parallel;
-
-    hpx::for_loop(execution::par(execution::task).on(std::forward<ExPolicy>(policy)).with(std::forward<Parameters>(params)...), 0, end,
-    [&accepted_local](std::size_t samples) {
-        unsigned long ct=0;
-        auto x = R.draw();
-        auto y = R.draw();
-        if ((x*x+y*y) <= 1.0) {
-            auto rank = hpx::get_worker_thread_num();
-            accepted_local[rank]++;
-        }
-    });
-
-    double result = std::accumulate(accepted_local.begin(), accepted_local.end(), result);
-    double pi = 4.0 * double(result)/end;
-    return pi;
-
-}
-
+piCalc_dynamic _piCalc_dynamic;
+hpx::function<void()> McPi_dynamic(_piCalc_dynamic);
 
 
 void Main(int argc)
@@ -168,29 +137,15 @@ void Main(int argc)
 
     T.Start();
     sum_static = 0;
-    auto fut3 = operon->Dispatch(McPi_static_dynamic);
+    auto fut3 = operon->Dispatch(McPi_dynamic);
     fut3.get();
     pi = 4.0 * double(sum_static)/nsamples;
-    std::cout << "\nValue of PI McPi_static_dynamic = " << pi << std::endl;
+    std::cout << "\nValue of PI McPi_dynamic = " << pi << std::endl;
     T.Stop();
     T.Report();
 
 
     /* -------------- */
-
-    T.Start();
-    // hpx::parallel::execution::parallel_executor par_exec;
-    // hpx::parallel::execution::auto_chunk_size scs;
-
-    hpx::parallel::execution::parallel_executor par_exec;
-    hpx::parallel::execution::dynamic_chunk_size scs(500);
-
-    pi = Func(par_exec, scs);
-
-    T.Stop();
-
-    T.Report();
-    std::cout << "Value of PI = " << pi << std::endl;
 
 
 }
