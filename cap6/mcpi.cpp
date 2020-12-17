@@ -28,7 +28,7 @@ struct piCalc_static {
         unsigned long ct;
         double x, y;
         ct = 0;
-        auto [beg, end] = operon->ScheduleStatic(0, nsamples);
+        auto [beg, end] = operon->ScheduleStatic(0, nsamples).get();
         for (auto n = beg; n < end; ++n) {
             x = R.draw();
             y = R.draw();
@@ -50,7 +50,7 @@ struct piCalc_static_chunk {
         unsigned long ct;
         double x, y;
         ct = 0;
-        auto vec = operon->ScheduleStatic(0, nsamples, 500);
+        auto vec = operon->ScheduleStatic(0, nsamples, 500).get();
         for(int i=0; i<vec.size(); i++){
             auto [beg, end] = vec[i];
             for (auto n = beg; n < end; ++n) {
@@ -80,7 +80,7 @@ struct piCalc_dynamic {
         end = nsamples;
 
         while(beg<nsamples) {
-            std::pair<int, int> par = operon->ScheduleDynamic(0, nsamples, 500);
+            std::pair<int, int> par = operon->ScheduleDynamic(0, nsamples, 500).get();
             beg=par.first;
             end=par.second;
             for(auto n = beg; n < end; ++n) {
@@ -105,7 +105,7 @@ void Main(int argc)
     double pi, result = 0;
     std::size_t const& pool_size = 4;
 
-    operon = domain->CreateLocal<cor::Operon_Client>(domain->Idp(),  "", pool_size);
+    operon = domain->CreateLocal<cor::Operon_Client>(domain->Idp().get(),  "", pool_size).get();
 
     /* -------------- */
 

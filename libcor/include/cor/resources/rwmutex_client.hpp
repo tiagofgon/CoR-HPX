@@ -27,17 +27,17 @@ public:
 	// Closure_Component instance with the given GID
 	RWMutex_Client(hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal())
+		_idp(IdpGlobal().get())
 	{}
 
 	RWMutex_Client(hpx::shared_future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal())
+		_idp(IdpGlobal().get())
 	{}
 
 	RWMutex_Client(hpx::id_type && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal())
+		_idp(IdpGlobal().get())
 	{}
 
 	// Constructor for replicas
@@ -70,65 +70,65 @@ public:
 
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource
-	idp_t IdpGlobal()
+	hpx::future<idp_t> IdpGlobal()
 	{
 	  typedef Resource::Idp_action_Resource action_type;
-	  return hpx::async<action_type>(base_type::get_id()).get();
+	  return hpx::async<action_type>(base_type::get_id());
 	}
 
 	// method that returns the GID(hpx::id_type) of this resource locality
-	hpx::id_type GetLocalityGID()
+	hpx::future<hpx::id_type> GetLocalityGID()
 	{
 		typedef Resource::GetLocalityGID_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
 	}
 
 	// method that returns the number of this resource locality
-	unsigned int GetLocalityID()
+	hpx::future<unsigned int> GetLocalityID()
 	{
 		typedef Resource::GetLocalityID_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
 	}
 
 
 	/** RWMutex's interface **/
-    void AcquireRead()
+    hpx::future<void> AcquireRead()
 	{
 	  typedef RWMutex::AcquireRead_action_RWMutex action_type;
-	  return hpx::async<action_type>(this->get_id()).get();
+	  return hpx::async<action_type>(this->get_id());
 	}
 
-    void ReleaseRead()
+    hpx::future<void> ReleaseRead()
 	{
 	  typedef RWMutex::ReleaseRead_action_RWMutex action_type;
-	  return hpx::async<action_type>(this->get_id()).get();
+	  return hpx::async<action_type>(this->get_id());
 	}
 
-    void AcquireWrite()
+    hpx::future<void> AcquireWrite()
 	{
 	  typedef RWMutex::AcquireWrite_action_RWMutex action_type;
-	  return hpx::async<action_type>(this->get_id()).get();
+	  return hpx::async<action_type>(this->get_id());
 	}
 
-    void ReleaseWrite()
+    hpx::future<void> ReleaseWrite()
 	{
 	  typedef RWMutex::ReleaseWrite_action_RWMutex action_type;
-	  return hpx::async<action_type>(this->get_id()).get();
+	  return hpx::async<action_type>(this->get_id());
 	}
 
 
 	/** Local Client's interface **/
 	// local idp of this resource
-	idp_t Idp() {
-		return _idp;
+	hpx::future<idp_t> Idp() {
+		return hpx::make_ready_future(_idp);
 	}
 
 	// Returns component's GID
-	hpx::id_type GetGid() {
-	  return this->get_id();
+	hpx::future<hpx::id_type> GetGid() {
+	  return hpx::make_ready_future(this->get_id());
 	}
 
-	int GetComponentType()
+	hpx::future<int> GetComponentType()
 	{
 		/* Resource identification
 		1 - Domain
@@ -141,12 +141,12 @@ public:
 		8 - Mutex
 		9 - RWMutex
 		*/
-		return 9;
+		return hpx::make_ready_future(9);
 	}
 
 	// For compilation purposes only, it is never used here!
-	hpx::id_type GetMailboxGid() {
-		return hpx::find_here();
+	hpx::future<hpx::id_type> GetMailboxGid() {
+		return hpx::make_ready_future(hpx::find_here());
 	}
 
 

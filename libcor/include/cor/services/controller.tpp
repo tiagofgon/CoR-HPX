@@ -64,8 +64,8 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
         rsc_ptr = CreateLocal<T>(ctx, name, std::forward<Args>(args)...);
         hpx::register_with_basename(basename, rsc_ptr->GetGid(), 0);
 
-        auto parent = rsc_ptr->GetParent();
-        auto clos_idp = rsc_ptr->Idp();
+        auto parent = rsc_ptr->GetParent().get();
+        auto clos_idp = rsc_ptr->Idp().get();
         // enviar ao agente que fez o spawn, o idp da clausura
         if(parent != 0) {
             cor::Message msg;

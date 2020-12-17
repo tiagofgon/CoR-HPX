@@ -80,7 +80,7 @@ idp_t ResourceManager::CreateRemote(idp_t ctx, std::string const& name, std::str
             // Criar o recurso na localidade do remote Domain
             std::unique_ptr<T> rsc_remote = std::make_unique<T>(idp, ctx_locality, std::forward<Args>(args)...);
             // insert association between gids and idps
-            InsertIdp(idp, rsc_remote->GetGid()); // Informar o componente global da associação idp-gid
+            InsertIdp(idp, rsc_remote->GetGid().get()); // Informar o componente global da associação idp-gid
 
             // _predecessors.emplace(idp, ctx);
             InsertPredecessorIdp(idp, ctx);
@@ -116,7 +116,7 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
     
     
 
-    InsertIdp(idp, rsc->GetGid()); // insert association between gids and idps
+    InsertIdp(idp, rsc->GetGid().get()); // insert association between gids and idps
     InsertPredecessorIdp(idp, ctx); // insert association between idps and predecessors
 
     
@@ -136,7 +136,7 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
     }
     else if(typeid(element) == typeid(Mailbox))
     {
-            InsertAgentMailbox(idp, rsc->GetMailboxGid());
+            InsertAgentMailbox(idp, rsc->GetMailboxGid().get());
             //std::cout << "adicionado ao _agents_mailbox " << idp << std::endl;
     }
     // std::cout << "ResourceManager::AllocateResource 4" << std::endl;

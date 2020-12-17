@@ -58,7 +58,7 @@ void Main(int argc)
     double pi, result = 0;
     std::size_t const& pool_size = 4;
 
-    operon = domain->CreateLocal<cor::Operon_Client>(domain->Idp(),  "", pool_size);
+    operon = domain->CreateLocal<cor::Operon_Client>(domain->Idp().get(),  "", pool_size).get();
 
     /* -------------- */
 

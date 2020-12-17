@@ -30,39 +30,39 @@ public:
 	// Closure instance with the given GID
 	Closure_Client(hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal()),
-		_total_members(GetFixedTotalMembers())
+		_idp(IdpGlobal().get()),
+		_total_members(GetFixedTotalMembers().get())
 	{}
 
 	Closure_Client(hpx::shared_future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal()),
-		_total_members(GetFixedTotalMembers())
+		_idp(IdpGlobal().get()),
+		_total_members(GetFixedTotalMembers().get())
 	{}
 
 	Closure_Client(hpx::id_type && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal()),
-		_total_members(GetFixedTotalMembers())
+		_idp(IdpGlobal().get()),
+		_total_members(GetFixedTotalMembers().get())
 	{}
 
 	// Constructor for replicas
 	Closure_Client(idp_t idp, hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
 		_idp(idp),
-		_total_members(GetFixedTotalMembers())
+		_total_members(GetFixedTotalMembers().get())
 	{}
 
 	Closure_Client(idp_t idp, hpx::shared_future<hpx::id_type> && id) :
 		base_type(std::move(id)),
 		_idp(idp),
-		_total_members(GetFixedTotalMembers())
+		_total_members(GetFixedTotalMembers().get())
 	{}
 
 	Closure_Client(idp_t idp, hpx::id_type && id) :
 		base_type(std::move(id)),
 		_idp(idp),
-		_total_members(GetFixedTotalMembers())
+		_total_members(GetFixedTotalMembers().get())
 	{}
 
 	/// Standard constructor with parameters
@@ -81,110 +81,110 @@ public:
 
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource
-	idp_t IdpGlobal()
+	hpx::future<idp_t> IdpGlobal()
 	{
 		typedef Resource::Idp_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
 	}
 
 	// method that returns the GID(hpx::id_type) of this resource locality
-	hpx::id_type GetLocalityGID()
+	hpx::future<hpx::id_type> GetLocalityGID()
 	{
 		typedef Resource::GetLocalityGID_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
 	}
 
 	// method that returns the number of this resource locality
-	unsigned int GetLocalityID()
+	hpx::future<unsigned int> GetLocalityID()
 	{
 		typedef Resource::GetLocalityID_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
 	}
 
 
 	/** Static organizer's interface **/
-	void Join(idp_t idp, std::string const& name)
+	hpx::future<void> Join(idp_t idp, std::string const& name)
 	{
 		typedef Closure::Join_action_Closure action_type;
-		hpx::async<action_type>(this->get_id(), idp, name).get();
+		hpx::async<action_type>(this->get_id(), idp, name);
 
 		// this barrier had to be placed here, and not inside the static organizer because it only works outside of components and the component only accepts one action at a time
 		// synchronization between the elements of the static_organizer, to ensure the insertion of all resources and the same level of synchronization
 		if(_total_members > 1) 
 		{
-			hpx::lcos::barrier barrier(std::to_string(IdpGlobal()), _total_members, GetIdm(idp));
+			hpx::lcos::barrier barrier(std::to_string(IdpGlobal().get()), _total_members, GetIdm(idp).get());
 			barrier.wait();
 		}
-		return;
+		return hpx::make_ready_future();
 	}
 
-	void Leave(idp_t idp)
+	hpx::future<void> Leave(idp_t idp)
 	{
 		typedef Closure::Leave_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id(), idp).get();
+		return hpx::async<action_type>(this->get_id(), idp);
 	}
 
-	idp_t GetParent()
+	hpx::future<idp_t> GetParent()
 	{
 		typedef Closure::GetParent_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id()).get();
+		return hpx::async<action_type>(this->get_id());
 	}
 
-	std::size_t GetTotalMembers()
+	hpx::future<std::size_t> GetTotalMembers()
 	{
 		typedef Closure::GetTotalMembers_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id()).get();
+		return hpx::async<action_type>(this->get_id());
 	}
 
-	std::size_t GetFixedTotalMembers()
+	hpx::future<std::size_t> GetFixedTotalMembers()
 	{
 		typedef Closure::GetFixedTotalMembers_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id()).get();
+		return hpx::async<action_type>(this->get_id());
 	}
 
-	std::vector<idp_t> GetMemberList()
+	hpx::future<std::vector<idp_t>> GetMemberList()
 	{
 		typedef Closure::GetMemberList_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id()).get();
+		return hpx::async<action_type>(this->get_id());
 	}
 
-    idp_t GetIdp(idm_t idm)
+    hpx::future<idp_t> GetIdp(idm_t idm)
 	{
 		typedef Closure::GetIdp1_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id(), idm).get();
+		return hpx::async<action_type>(this->get_id(), idm);
 	}
 
-    idm_t GetIdm(idp_t idp)
+    hpx::future<idm_t> GetIdm(idp_t idp)
 	{
 		typedef Closure::GetIdm1_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id(), idp).get();
+		return hpx::async<action_type>(this->get_id(), idp);
 	}
 
-    idm_t GetIdm(std::string const& name)
+    hpx::future<idm_t> GetIdm(std::string const& name)
 	{
 		typedef Closure::GetIdm2_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id(), name).get();
+		return hpx::async<action_type>(this->get_id(), name);
 	}
 
-	idp_t GetStaticOrganizerIdp()
+	hpx::future<idp_t> GetStaticOrganizerIdp()
 	{
 		typedef Closure::GetStaticOrganizerIdp_action_Closure action_type;
-		return hpx::async<action_type>(this->get_id()).get();
+		return hpx::async<action_type>(this->get_id());
 	}
 
 
 	/** Local Client's interface **/
 	// local idp of this resource
-	idp_t Idp() {
-		return _idp;
+	hpx::future<idp_t> Idp() {
+		return hpx::make_ready_future(_idp);
 	}
 
 	// Returns component's GID
-	hpx::id_type GetGid() {
-	  	return this->get_id();
+	hpx::future<hpx::id_type> GetGid() {
+	  	return hpx::make_ready_future(this->get_id());
 	}
 
-	int GetComponentType()
+	hpx::future<int> GetComponentType()
 	{
 		/* Resource identification
 		1 - Domain
@@ -197,12 +197,12 @@ public:
 		8 - Mutex
 		9 - RWMutex
 		*/
-		return 3;
+		return hpx::make_ready_future(3);
 	}
 
 	// For compilation purposes only, it is never used here!
-	hpx::id_type GetMailboxGid() {
-		return hpx::find_here();
+	hpx::future<hpx::id_type> GetMailboxGid() {
+		return hpx::make_ready_future(hpx::find_here());
 	}
 
 

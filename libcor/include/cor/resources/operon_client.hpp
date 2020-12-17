@@ -27,17 +27,17 @@ public:
 	// Operon instance with the given GID
 	Operon_Client(hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal())
+		_idp(IdpGlobal().get())
 	{}
 
 	Operon_Client(hpx::shared_future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal())
+		_idp(IdpGlobal().get())
 	{}
 
 	Operon_Client(hpx::id_type && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal())
+		_idp(IdpGlobal().get())
 	{}
 
 	// Constructor for replicas
@@ -67,66 +67,66 @@ public:
 
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource
-	idp_t IdpGlobal()
+	hpx::future<idp_t> IdpGlobal()
 	{
 		typedef Resource::Idp_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
 	}
 
 	// method that returns the GID(hpx::id_type) of this resource locality
-	hpx::id_type GetLocalityGID()
+	hpx::future<hpx::id_type> GetLocalityGID()
 	{
 		typedef Resource::GetLocalityGID_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
 	}
 
 	// method that returns the number of this resource locality
-	unsigned int GetLocalityID()
+	hpx::future<unsigned int> GetLocalityID()
 	{
 		typedef Resource::GetLocalityID_action_Resource action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
 	}
 
 
 	/** Executor's interface **/
-	int GetRank()
+	hpx::future<int> GetRank()
 	{
 		ensure_ptr();
 		//std::shared_ptr<Operon> ptr2 = hpx::get_ptr<Operon>(hpx::launch::sync, this->get_id());
-		return ptr->GetRank();
+		return hpx::make_ready_future(ptr->GetRank());
 	}
 
-	int GetNumThreads()
+	hpx::future<int> GetNumThreads()
 	{
 		ensure_ptr();
 		//std::shared_ptr<Operon> ptr2 = hpx::get_ptr<Operon>(hpx::launch::sync, this->get_id());
-		return ptr->GetNumThreads();
+		return hpx::make_ready_future(ptr->GetNumThreads());
 		// typedef Operon::GetNumThreads_action_Operon action_type;
-		// return hpx::async<action_type>(this->get_id()).get();
+		// return hpx::async<action_type>(this->get_id());
 	}
 
-	std::pair<int,int> ScheduleStatic(int Beg, int End)
+	hpx::future<std::pair<int,int>> ScheduleStatic(int Beg, int End)
 	{
 		ensure_ptr();
-		return ptr->ScheduleStatic(Beg, End);
+		return hpx::make_ready_future(ptr->ScheduleStatic(Beg, End));
 	}
 
-	std::vector<std::pair<int,int>> ScheduleStatic(int Beg, int End, int chunk)
+	hpx::future<std::vector<std::pair<int,int>>> ScheduleStatic(int Beg, int End, int chunk)
 	{
 		ensure_ptr();
-		return ptr->ScheduleStatic(Beg, End, chunk);
+		return hpx::make_ready_future(ptr->ScheduleStatic(Beg, End, chunk));
 	}
 
-	std::pair<int,int> ScheduleDynamic(int Beg, int End, int chunk)
+	hpx::future<std::pair<int,int>> ScheduleDynamic(int Beg, int End, int chunk)
 	{
 		ensure_ptr();
-		return ptr->ScheduleDynamic(Beg, End, chunk);
+		return hpx::make_ready_future(ptr->ScheduleDynamic(Beg, End, chunk));
 	}
 
-	std::pair<int,int> ScheduleGuided(int Beg, int End, int chunk)
+	hpx::future<std::pair<int,int>> ScheduleGuided(int Beg, int End, int chunk)
 	{
 		ensure_ptr();
-		return ptr->ScheduleGuided(Beg, End, chunk);
+		return hpx::make_ready_future(ptr->ScheduleGuided(Beg, End, chunk));
 	}
 
 	template < typename ... Args >
@@ -142,62 +142,62 @@ public:
 
 
     /* Mailbox's interface */
-    void Send(idp_t dest, Message const& msg)
+    hpx::future<void> Send(idp_t dest, Message const& msg)
 	{
 		typedef typename cor::Operon::Send1_action_Operon action_type;
-		return hpx::async<action_type>(this->get_id(), dest, msg).get();
+		return hpx::async<action_type>(this->get_id(), dest, msg);
 	}
 
-    void Send(std::vector<idp_t> const& dests, Message const& msg)
+    hpx::future<void> Send(std::vector<idp_t> const& dests, Message const& msg)
 	{
 		typedef typename cor::Operon::Send2_action_Operon action_type;
-		return hpx::async<action_type>(this->get_id(), dests, msg).get();
+		return hpx::async<action_type>(this->get_id(), dests, msg);
 	}
 
-    Message Receive()
+    hpx::future<Message> Receive()
 	{
 		typedef typename cor::Operon::Receive1_action_Operon action_type;
-		return hpx::async<action_type>(this->get_id()).get();
+		return hpx::async<action_type>(this->get_id());
 	}
 
-    Message Receive(idp_t source)
+    hpx::future<Message> Receive(idp_t source)
 	{
 		typedef typename cor::Operon::Receive2_action_Operon action_type;
-		return hpx::async<action_type>(this->get_id(), source).get();
+		return hpx::async<action_type>(this->get_id(), source);
 	}
 
-    void Broadcast(idp_t clos, Message const& msg)
+    hpx::future<void> Broadcast(idp_t clos, Message const& msg)
 	{
 		typedef typename cor::Operon::Broadcast_action_Operon action_type;
-		return hpx::async<action_type>(this->get_id(), clos, msg).get();
+		return hpx::async<action_type>(this->get_id(), clos, msg);
 	}
 
-    void Send(idm_t rank, idp_t clos, Message const& msg)
+    hpx::future<void> Send(idm_t rank, idp_t clos, Message const& msg)
 	{
 		typedef typename cor::Operon::Send3_action_Operon action_type;
-		return hpx::async<action_type>(this->get_id(), rank, clos, msg).get();
+		return hpx::async<action_type>(this->get_id(), rank, clos, msg);
 	}
 
-    Message Receive(idm_t rank, idp_t clos)
+    hpx::future<Message> Receive(idm_t rank, idp_t clos)
 	{
 		typedef typename cor::Operon::Receive3_action_Operon action_type;
-		return hpx::async<action_type>(this->get_id(), rank, clos).get();
+		return hpx::async<action_type>(this->get_id(), rank, clos);
 	}
 
 
 
 	/** Local Client's interface **/
 	// local idp of this resource
-	idp_t Idp() {
-		return _idp;
+	hpx::future<idp_t> Idp() {
+		return hpx::make_ready_future(_idp);
 	}
 
 	// Returns component's GID
-	hpx::id_type GetGid() {
-	  return this->get_id();
+	hpx::future<hpx::id_type> GetGid() {
+	  return hpx::make_ready_future(this->get_id());
 	}
 
-	int GetComponentType()
+	hpx::future<int> GetComponentType()
 	{
 		/* Resource identification
 		1 - Domain
@@ -211,12 +211,12 @@ public:
 		9 - RWMutex
 		10 - Operon
 		*/
-		return 10;
+		return hpx::make_ready_future(10);
 	}
 
 	// For compilation purposes only, it is never used here!
-	hpx::id_type GetMailboxGid() {
-		return hpx::find_here();
+	hpx::future<hpx::id_type> GetMailboxGid() {
+		return hpx::make_ready_future(hpx::find_here());
 	}
 	
 private:

@@ -71,7 +71,7 @@ hpx::future<std::shared_ptr<Domain_Client>> GetDomain()
     // std::cout << "domain_idp: " << domain_idp << std::endl;
     auto dom = global::pod->GetLocalResource<Domain_Client>(domain_idp);
     std::shared_ptr<Domain_Client> dom_shared = std::move(dom);
-    dom_shared->GetActiveResourceIdp();
+    dom_shared->GetActiveResourceIdp().get();
 
     return hpx::make_ready_future(dom_shared);
 

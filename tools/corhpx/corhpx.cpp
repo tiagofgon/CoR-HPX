@@ -112,7 +112,7 @@ int hpx_main(int argc, char *argv[])
     idp_t const& npodss = npods ;
     unsigned int const& total_memberss = total_members ;
     idp_t const& parentt = parent ;
-    auto clos = domain->CreateCollective<cor::Closure_Client>(domain->Idp(), "", npods, total_memberss, parentt);
+    auto clos = domain->CreateCollective<cor::Closure_Client>(domain->Idp().get(), "", npods, total_memberss, parentt).get();
     
     // auto agent2 = domain->CreateLocal_agent<cor::ProtoAgent_Client<void(void*)>>(clos->Idp(),  "", funcaoTeste5);
     // agent2->Run();
@@ -138,7 +138,7 @@ int hpx_main(int argc, char *argv[])
 
 
     //std::cout << "************ Criação do agente principal no corhpx *******"  << std::endl;
-    auto agent = domain->CreateLocal<cor::Agent_Client<void(int)>>(clos->Idp(),  "", domain->GetModuleName(), Main);
+    auto agent = domain->CreateLocal<cor::Agent_Client<void(int)>>(clos->Idp().get(),  "", domain->GetModuleName().get(), Main).get();
     //auto agent = domain->CreateLocal<cor::Agent_Client<void(arg)>>(clos->Idp(),  "", domain->GetModuleName(), Main);
 
     //std::cout << "************ Execução do modulo *******"  << std::endl;

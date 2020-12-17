@@ -31,17 +31,17 @@ public:
 	// Data instance with the given GID
     Data_Client(hpx::future<hpx::id_type> && id) :
         base_type(std::move(id)),
-		_idp(IdpGlobal())
+		_idp(IdpGlobal().get())
     {}
 
     Data_Client(hpx::shared_future<hpx::id_type> && id) :
         base_type(std::move(id)),
-		_idp(IdpGlobal())
+		_idp(IdpGlobal().get())
     {}
 
     Data_Client(hpx::id_type && id) :
         base_type(std::move(id)),
-		_idp(IdpGlobal())
+		_idp(IdpGlobal().get())
     {}
 
 	// Constructor for replicas
@@ -49,7 +49,7 @@ public:
         base_type(std::move(id)),
 		_idp(idp)
     {
-		std::string basename = std::to_string(IdpGlobal()) + "Datamutex";
+		std::string basename = std::to_string(IdpGlobal().get()) + "Datamutex";
 		hpx::id_type mutex_gid = hpx::find_from_basename(basename, 0).get();
 		mutex = new MutexRWService_Client(std::move(mutex_gid));
 	}
@@ -58,7 +58,7 @@ public:
         base_type(std::move(id)),
 		_idp(idp)
     {
-		std::string basename = std::to_string(IdpGlobal()) + "Datamutex";
+		std::string basename = std::to_string(IdpGlobal().get()) + "Datamutex";
 		hpx::id_type mutex_gid = hpx::find_from_basename(basename, 0).get();
 		mutex = new MutexRWService_Client(std::move(mutex_gid));
 	}
@@ -67,7 +67,7 @@ public:
         base_type(std::move(id)),
 		_idp(idp)
     {
-		std::string basename = std::to_string(IdpGlobal()) + "Datamutex";
+		std::string basename = std::to_string(IdpGlobal().get()) + "Datamutex";
 		hpx::id_type mutex_gid = hpx::find_from_basename(basename, 0).get();
 		mutex = new MutexRWService_Client(std::move(mutex_gid));
 	}
@@ -98,81 +98,84 @@ public:
 
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource
-    idp_t IdpGlobal()
+    hpx::future<idp_t> IdpGlobal()
     {
 		typedef ResourceMigrable::Idp_action_ResourceMigrable action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
     }
 
-    idp_t IdpGlobal_here()
+    hpx::future<idp_t> IdpGlobal_here()
     {
 		Migrate(hpx::find_here());
 		typedef ResourceMigrable::Idp_action_ResourceMigrable action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
     }
 
 	// method that returns the GID(hpx::id_type) of this resource locality
-	hpx::id_type GetLocalityGID()
+	hpx::future<hpx::id_type> GetLocalityGID()
 	{
 		typedef ResourceMigrable::GetLocalityGID_action_ResourceMigrable action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
 	}
 	
-	hpx::id_type GetLocalityGID_here()
+	hpx::future<hpx::id_type> GetLocalityGID_here()
 	{
 		Migrate(hpx::find_here());
 		typedef ResourceMigrable::GetLocalityGID_action_ResourceMigrable action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
 	}
 
 	// method that returns the number of this resource locality
-	unsigned int GetLocalityID()
+	hpx::future<unsigned int> GetLocalityID()
 	{
 		typedef ResourceMigrable::GetLocalityID_action_ResourceMigrable action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
 	}
 
-	unsigned int GetLocalityID_here()
+	hpx::future<unsigned int> GetLocalityID_here()
 	{
 		Migrate(hpx::find_here());
 		typedef ResourceMigrable::GetLocalityID_action_ResourceMigrable action_type;
-		return hpx::async<action_type>(base_type::get_id()).get();
+		return hpx::async<action_type>(base_type::get_id());
 	}
 
 
 	/** Data's interface **/
-	void AcquireRead()
+	hpx::future<void> AcquireRead()
 	{
 		//std::cout << "AcquireRead()" << std::endl;
 		mutex->AcquireRead();
 		ensure_ptr();
-
+		return hpx::make_ready_future();
 	}
 
-	void ReleaseRead()
+	hpx::future<void> ReleaseRead()
 	{
 		//std::cout << "ReleaseRead()" << std::endl;
 		mutex->ReleaseRead();
+		return hpx::make_ready_future();
 	}
 
-	void Acquire()
+	hpx::future<void> Acquire()
 	{
 		//std::cout << "AcquireWrite()" << std::endl;
 		mutex->AcquireWrite();
 		ensure_ptr();
+		return hpx::make_ready_future();
 	}
 
-	void Release()
+	hpx::future<void> Release()
 	{
 		//std::cout << "ReleaseWrite()" << std::endl;
 		mutex->ReleaseWrite();
+		return hpx::make_ready_future();
 	}
 
-    T Fetch()
+    hpx::future<T> Fetch()
     {
 		AcquireRead();
 		typedef typename Data<T>::Fetch_action_Data action_type;
-		auto dado = hpx::async<action_type>(base_type::get_id()).get();
+		auto dado = hpx::async<action_type>(base_type::get_id());
 		ReleaseRead();
 		return dado;
     }
@@ -215,16 +218,16 @@ public:
 
 	/** Local Client's interface **/
 	// local idp of this resource
-	idp_t Idp() {
-		return _idp;
+	hpx::future<idp_t> Idp() {
+		return hpx::make_ready_future(_idp);
 	}
 
 	// Returns component's GID
-    hpx::id_type GetGid() {
-      return this->get_id();
+    hpx::future<hpx::id_type> GetGid() {
+      return hpx::make_ready_future(this->get_id());
     }
 
-	int GetComponentType()
+	hpx::future<int> GetComponentType()
 	{
 		/* Resource identification
 		1 - Domain
@@ -237,17 +240,17 @@ public:
 		8 - Mutex
 		9 - RWMutex
 		*/
-		return 6;
+		return hpx::make_ready_future(6);
 	}
 
-	void Migrate(hpx::id_type dest)
+	hpx::future<void> Migrate(hpx::id_type dest)
 	{
-		hpx::components::migrate<Data<T>>(this->get_id(), dest).get();
+		hpx::components::migrate<Data<T>>(this->get_id(), dest);
 	}
 
 	// For compilation purposes only, it is never used here!
-	hpx::id_type GetMailboxGid() {
-		return hpx::find_here();
+	hpx::future<hpx::id_type> GetMailboxGid() {
+		return hpx::make_ready_future(hpx::find_here());
 	}
 	
 private:
