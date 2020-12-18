@@ -106,7 +106,7 @@ public:
 
     hpx::future<idp_t> IdpGlobal_here()
     {
-		Migrate(hpx::find_here());
+		Migrate(hpx::find_here()).get();
 		typedef ResourceMigrable::Idp_action_ResourceMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id());
     }
@@ -120,7 +120,7 @@ public:
 	
 	hpx::future<hpx::id_type> GetLocalityGID_here()
 	{
-		Migrate(hpx::find_here());
+		Migrate(hpx::find_here()).get();
 		typedef ResourceMigrable::GetLocalityGID_action_ResourceMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
@@ -134,7 +134,7 @@ public:
 
 	hpx::future<unsigned int> GetLocalityID_here()
 	{
-		Migrate(hpx::find_here());
+		Migrate(hpx::find_here()).get();
 		typedef ResourceMigrable::GetLocalityID_action_ResourceMigrable action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
@@ -278,7 +278,7 @@ private:
 		if(hpx::find_here() != hpx::get_colocation_id(hpx::launch::sync, this->get_id())) {
 
 			std::cout << "É preciso migrar" << std::endl;
-			Migrate(hpx::find_here());
+			Migrate(hpx::find_here()).get();
 			std::cout << "Componente migrado" << std::endl;
 			ptr = hpx::get_ptr<Data<T>>(hpx::launch::sync, this->get_id());
 		}
