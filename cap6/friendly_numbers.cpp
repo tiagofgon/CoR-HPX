@@ -24,42 +24,43 @@ static int *the_num, *num,  *den;
 
 std::shared_ptr<cor::Operon_Client> operon;
 
-struct MapStatic_object {
+struct MapDynamic_object {
     void operator()() {
     
-    //   auto rank = GetRank<cor::Group>();
-    //   auto comm_size = GetSize<cor::Group>();
-    //    size_t start=initial,end=final; 
-    //   AgentRange<cor::Group>(start, end);
-    //   // std::cout << " MAP" << start << "  " << end << std::endl;	      
-    //    #pragma omp parallel
-    //  {	int i, j, factor, ii, sum, done, n;
-    // 	// -- MAP --
-    
-    // 	#pragma omp for schedule (dynamic, 16)
-    // 	for (i = start; i <= end; i++) {
-    // 		ii = i - initial;
-    // 		sum = 1 + i;
-    // 		the_num[ii] = i;
-    // 		done = i;
-    // 		factor = 2;
-    // 		while (factor < done) {
-    // 			if ((i % factor) == 0) {
-    //  				sum += (factor + (i/factor));
-    // 				if ((done = i/factor) == factor) sum -= factor;
-    // 			}
-    // 			factor++;
-    // 		}
-    // 		num[ii] = sum; den[ii] = i;
-    // 		n = gcd(num[ii], den[ii]);
-    // 		num[ii] /= n;
-    // 		den[ii] /= n;
-    // 	} // end for
-    //  }
+        auto rank = operon->GetRank();
+        int beg, end;
+        beg = initial;                    // initialize [beg, end) to global range      
+
+        while(beg<final+1) {
+            std::pair<int, int> par = operon->ScheduleDynamic(initial, final+1, 500).get();
+            beg=par.first;
+            end=par.second;
+            int i, j, factor, ii, sum, done, n;
+
+            for (i = beg; i < end; i++) {
+                ii = i - initial;
+                sum = 1 + i;
+                the_num[ii] = i;
+                done = i;
+                factor = 2;
+                while (factor < done) {
+                    if ((i % factor) == 0) {
+                        sum += (factor + (i/factor));
+                        if ((done = i/factor) == factor) sum -= factor;
+                    }
+                    factor++;
+                }
+                num[ii] = sum; den[ii] = i;
+                n = gcd(num[ii], den[ii]);
+                num[ii] /= n;
+                den[ii] /= n;
+                //std::cout << ii << ": " << num[ii] << "/" << den[ii] << std::endl;
+            } // end for
+        }
     }
 };
-MapStatic_object _MapStatic;
-hpx::function<void()> MapStatic(_MapStatic);
+MapDynamic_object _MapDynamic;
+hpx::function<void()> MapDynamic(_MapDynamic);
  
 
 struct Map_object {
@@ -138,7 +139,8 @@ void FriendlyNumbers ()
 
   TRM.Start();
   TRT.Start();
-  auto fut1 = operon->Dispatch(Map);                                 //Activate Map 
+    auto fut1 = operon->Dispatch(Map); //Activate MapStatic
+  //auto fut1 = operon->Dispatch(MapDynamic); //Activate MapDynamic
   fut1.get();
     
   //funcReport();
