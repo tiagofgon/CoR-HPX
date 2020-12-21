@@ -208,10 +208,29 @@ target_include_directories(
 #         $<INSTALL_INTERFACE:include>
 # )
 
+# friendly_numbers
+add_library(friendly_numbers SHARED friendly_numbers.cpp)
+target_compile_features(friendly_numbers PUBLIC cxx_std_17)
+set_target_properties(friendly_numbers PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(friendly_numbers PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(friendly_numbers PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(friendly_numbers PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    friendly_numbers
+    PRIVATE
+        libcor
+        # pool
+        # Spread
+        # SSRCSpread
+        # Cereal
+	HPX::hpx
+)
+
 install(
     TARGETS
         mcpi
         mcpi_for_loop
+        friendly_numbers
         # read_files_par
         # read_files_dist_v1
         # read_files_dist_v2

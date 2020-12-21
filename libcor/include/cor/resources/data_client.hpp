@@ -243,9 +243,9 @@ public:
 		return hpx::make_ready_future(6);
 	}
 
-	hpx::future<void> Migrate(hpx::id_type dest)
+	hpx::future<hpx::id_type> Migrate(hpx::id_type dest)
 	{
-		hpx::components::migrate<Data<T>>(this->get_id(), dest);
+		return hpx::components::migrate<Data<T>>(this->get_id(), dest);
 	}
 
 	// For compilation purposes only, it is never used here!

@@ -62,6 +62,12 @@ void DynamicOrganizer::Join(idp_t idp, std::string const& name)
 
     // release write
     _mtx.unlock();
+
+    // {
+    //     std::lock_guard<mutex_type> l(mtx_);
+
+    //     tuples_.insert(tp);
+    // }
 }
 
 void DynamicOrganizer::Leave(idp_t idp)
