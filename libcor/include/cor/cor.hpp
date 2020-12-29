@@ -38,6 +38,7 @@ REGISTER_AGENT(void, char);
 REGISTER_AGENT(void, arg);
 REGISTER_AGENT(void, int, arg);
 REGISTER_AGENT(void, tipo4);
+REGISTER_AGENT(void, size_t, size_t, size_t, size_t);
 
 REGISTER_PROTOAGENT(idp_t, idp_t);
 REGISTER_PROTOAGENT(void, int);
@@ -47,6 +48,7 @@ REGISTER_PROTOAGENT(void, tipo1);
 REGISTER_PROTOAGENT(void, tipo2);
 REGISTER_PROTOAGENT(void, tipo3);
 REGISTER_PROTOAGENT(void);
+REGISTER_PROTOAGENT(void, size_t, size_t, size_t, size_t);
 
 REGISTER_DATA(int);
 REGISTER_DATA(idp_t);
