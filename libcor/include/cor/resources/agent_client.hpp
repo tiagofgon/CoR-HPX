@@ -60,6 +60,18 @@ public:
 	{}
 
 	/// Standard constructor with parameters
+	Agent_Client(idp_t idp, hpx::function<R(P...)> const& f) :
+		base_type(create_server(idp, f)),
+		_idp(idp)
+	{
+		// std::cout << "Criado um componente \"Agent_Client\", com idp: " << idp << std::endl;
+	}
+
+	Agent_Client(idp_t idp, hpx::id_type locality, hpx::function<R(P...)> const& f) :
+		base_type(create_server_remote(idp, locality, f)),
+		_idp(idp)
+	{}
+
 	Agent_Client(idp_t idp, std::string const& module, std::string const& function) :
 		base_type(create_server(idp, module, function)),
 		_idp(idp)
@@ -99,6 +111,13 @@ public:
 	hpx::future<void> Run(Args&&... args)
 	{
 		typedef typename cor::Agent<R(P...)>::template Run_action_Agent<Args...> action_type;
+		return hpx::async<action_type>(this->get_id(), std::forward<Args>(args)... );
+	}
+
+	template <typename ... Args>
+	hpx::future<R> RunNow(Args&&... args)
+	{
+		typedef typename cor::Agent<R(P...)>::template RunNow_action_Agent<Args...> action_type;
 		return hpx::async<action_type>(this->get_id(), std::forward<Args>(args)... );
 	}
 
@@ -225,6 +244,15 @@ public:
 
 
 private:
+	hpx::future<hpx::id_type> create_server(idp_t idp, hpx::function<R(P...)> const& f) {
+		return hpx::local_new<Agent<R(P...)>>(idp, f);
+	}
+
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, hpx::function<R(P...)> const& f) {
+		auto res = hpx::new_<Agent<R(P...)>>(locality, idp, f);
+		return res;
+	}
+
 	hpx::future<hpx::id_type> create_server(idp_t idp, std::string const& module, std::string const& function) {
 		return hpx::local_new<Agent<R(P...)>>(idp, module, function);
 	}

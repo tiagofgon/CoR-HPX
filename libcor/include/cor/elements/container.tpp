@@ -24,6 +24,7 @@ std::unique_ptr<T> Container::GetLocalResource(idp_t idp)
 template <typename T, typename ... Args>
 std::unique_ptr<T> Container::CreateLocal(idp_t ctx, std::string const& name, Args&& ... args)
 {
+    // std::cout << "Container::CreateLocal" << std::endl;
     return global::pod->CreateLocal<T, Args...>(ctx, name, std::forward<Args>(args)...);
 }
 
@@ -32,11 +33,11 @@ idp_t Container::Create(idp_t ctx, std::string const& name, Args&& ... args)
 {
     // If the ctx resource belongs to the _predecessors list, the resource is created in this pod, if it does not create remotely
     if (global::pod->ContainsResource(ctx)) {
-        // std::cout << "Create - local" << std::endl;
+        std::cout << "Create - local" << std::endl;
         return global::pod->Create<T, Args...>(ctx, name, std::forward<Args>(args)...);
     }
     else {
-        // std::cout << "Create - remoto" << std::endl;
+        std::cout << "Create - remoto" << std::endl;
         return CreateRemote<T, Args...>(ctx, name, std::forward<Args>(args)...);
     }
 }

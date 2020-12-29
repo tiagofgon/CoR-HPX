@@ -11,6 +11,5 @@ void Main(int input) {
     cor::GetDomain().then(hpx::util::unwrapping([](auto domain){ 
         std::cout << domain->GetActiveResourceIdp().get() << "\n"; 
     })).get();
-    
 
 }

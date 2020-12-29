@@ -10,13 +10,13 @@ template <typename R, typename ... P>
 Executor<R(P...)>::~Executor() = default;
 
 template <typename R, typename ... P>
-Executor<R(P...)>::Executor(idp_t idp, std::function<R(P...)> const& f) :
+Executor<R(P...)>::Executor(idp_t idp, hpx::function<R(P...)> const& f) :
     _idp{idp},
     _module_name{},
     _function{},
     _f{f}
 {
-    //std::cout << "Criado um objeto da classe \"Executor\", com idp: " << _idp << std::endl;
+    std::cout << "Criado um objeto da classe \"Executor\", com idp: " << _idp << std::endl;
 }
 
 template <typename R, typename ... P>
@@ -41,12 +41,15 @@ template <typename R, typename ... P>
 template <typename ... Args>
 void Executor<R(P...)>::Run(Args&&... args)
 {
-    // std::cout << "Run" << std::endl;
+    std::cout << "Run" << std::endl;
     // (std::cout << ... << args) << '\n';
 
     if (!_function.empty()) {
         _module = dll::DynamicLoader::LoadDynamicLibrary(_module_name);
         _f = _module->LoadFunction<R(P...)>(_function);
+    }
+    else {
+        std::cout << "OLA" << std::endl;
     }
 
     // create task and get future
@@ -82,6 +85,54 @@ void Executor<R(P...)>::Run(Args&&... args)
     }   
 
 }
+
+
+template <typename R, typename ... P>
+template <typename ... Args>
+R Executor<R(P...)>::RunNow(Args&&... args)
+{
+    // std::cout << "RunNow" << std::endl;
+    // (std::cout << ... << args) << '\n';
+
+    if (!_function.empty()) {
+        _module = dll::DynamicLoader::LoadDynamicLibrary(_module_name);
+        _f = _module->LoadFunction<R(P...)>(_function);
+    }
+
+    // create task and get future
+    if constexpr (std::is_void<R>{}) {
+        
+        // size_t thread_hash = std::hash<std::thread::id>()(std::this_thread::get_id());
+        auto id = hpx::threads::get_self_id();
+        uint64_t* ptr=(uint64_t*) &id;
+        auto id_hpx_thread = (*ptr);
+        tid = id_hpx_thread;
+        // std::cout << "Thread HPX - Run: " << id_hpx_thread << std::endl;
+        // std::cout << "IDP HPX - Run: " << _idp << std::endl;
+
+        global::pod->InsertActiveResource(id_hpx_thread, _idp);
+        _f(std::forward<Args>(args)...);
+        global::pod->RemoveActiveResource(id_hpx_thread);
+        return;
+    } else {
+        
+        // size_t thread_hash = std::hash<std::thread::id>()(std::this_thread::get_id());
+        auto id = hpx::threads::get_self_id();
+        uint64_t* ptr=(uint64_t*) &id;
+        auto id_hpx_thread = (*ptr);
+        tid = id_hpx_thread;
+        // std::cout << "Thread HPX - Run: " << id_hpx_thread << std::endl;
+        // std::cout << "IDP HPX - Run: " << _idp << std::endl;
+
+        global::pod->InsertActiveResource(id_hpx_thread, _idp);
+        auto ret = _f(std::forward<Args>(args)...);
+        global::pod->RemoveActiveResource(id_hpx_thread);
+        return ret;
+        
+    }   
+
+}
+
 
 template <typename R, typename ... P>
 void Executor<R(P...)>::Wait()

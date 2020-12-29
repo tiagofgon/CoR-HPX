@@ -27,7 +27,7 @@ typedef Agent type_holder;
 typedef Resource base_type_holder;
 
 protected:
-    Agent(idp_t idp, std::function<R(P...)> const& f);
+    Agent(idp_t idp, hpx::function<R(P...)> const& f);
     Agent(idp_t idp, std::string const& module, std::string const& function);
 
 public:
@@ -38,6 +38,9 @@ public:
     /* Executor's interface */
     template <typename ... Args>
     void Run(Args&&... args);
+
+    template <typename ... Args>
+    R RunNow(Args&&... args);
 
     void Wait();
     R Get();
@@ -66,6 +69,13 @@ public:
     >::type
     {};
 
+    template <typename ... Args>
+    struct RunNow_action_Agent
+    : hpx::actions::make_action<
+        decltype(&Agent::RunNow<Args...>),
+        &Agent::RunNow<Args...>
+    >::type
+    {};
 
     /* Mailbox's interface */
     void Send1(idp_t dest, Message const& msg);                          // Unicast

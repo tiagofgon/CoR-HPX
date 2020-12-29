@@ -186,7 +186,7 @@ public:
     {
         auto active_rsc_idp = agent_idp;
         auto sorg = GetLocalResource<cor::Closure_Client>(comm); // vou buscar a clausura identificada por comm
-        auto rank = sorg->GetIdm(active_rsc_idp); // vou buscar o idm do agente atual, idm que pertence à clausura
+        auto rank = sorg->GetIdm(active_rsc_idp).get(); // vou buscar o idm do agente atual, idm que pertence à clausura
 
         typedef cor::Pod::CreateCollective2_action_pod<T, Args...> action_type;
         return hpx::async<action_type>(this->get_id(), rank, comm, ctx, name, std::forward<Args>(args)...).get();

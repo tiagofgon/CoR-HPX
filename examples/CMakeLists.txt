@@ -263,6 +263,24 @@ target_link_libraries(
 	HPX::hpx
 )
 
+# module_2
+add_library(module_2 SHARED module_2.cpp)
+target_compile_features(module_2 PUBLIC cxx_std_17)
+set_target_properties(module_2 PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(module_2 PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(module_2 PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(module_2 PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    module_2
+    PRIVATE
+        libcor
+        # pool
+        # Spread
+        # SSRCSpread
+        # Cereal
+	HPX::hpx
+)
+
 
 install(
     TARGETS
@@ -276,6 +294,7 @@ install(
         spawn
         inter_closure
         teste_pool
+        module_2
         # spawn_hpx
         # client
         # server

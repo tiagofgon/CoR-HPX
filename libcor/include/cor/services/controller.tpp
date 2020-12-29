@@ -22,7 +22,7 @@ std::unique_ptr<T> Controller::CreateLocal_agent(idp_t ctx, std::string const& n
 template <typename T, typename ... Args>
 std::unique_ptr<T> Controller::CreateLocal(idp_t ctx, std::string const& name, Args&& ... args)
 {
-    // std::cout << "idp_t_createLocal_Controller: "<< ctx << std::endl;
+    // std::cout << "Controller::CreateLocal" << std::endl;
     return _rsc_mgr->CreateLocal<T, Args...>(ctx, name, GetName(), std::forward<Args>(args)...);
 }
 
@@ -36,7 +36,7 @@ idp_t Controller::Create(idp_t ctx, std::string const& name, Args&& ... args)
 template <typename T, typename ... Args>
 idp_t Controller::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
 {
-    //std::cout << "Controller::CreateRemote" << std::endl;
+    std::cout << "Controller::CreateRemote" << std::endl;
     // std::cout << "idp_t_createRemote_Controller: "<< ctx << std::endl;
     return _rsc_mgr->CreateRemote<T, Args...>(ctx, name, ctrl, std::forward<Args>(args)...);
 }

@@ -11,7 +11,7 @@
 
 namespace cor {
 
-class Barrier_Client : hpx::components::client_base<Barrier_Client, Barrier>
+class Barrier_Client : public hpx::components::client_base<Barrier_Client, Barrier>
 {
 
 public:

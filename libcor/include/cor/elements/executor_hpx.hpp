@@ -28,7 +28,7 @@ public:
 
 // protected:
     Executor() = delete;
-    Executor(idp_t idp, std::function<R(P...)> const& f);
+    Executor(idp_t idp, hpx::function<R(P...)> const& f);
     Executor(idp_t idp, std::string const& module, std::string const& function);
 
     // Executor(const Executor&) = delete;
@@ -39,6 +39,9 @@ public:
     
     template <typename ... Args>
     void Run(Args&&... args);
+
+    template <typename ... Args>
+    R RunNow(Args&&... args);
 
     void Wait();
     R Get();

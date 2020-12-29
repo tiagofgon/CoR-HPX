@@ -29,6 +29,7 @@ std::unique_ptr<T> Pod::CreateLocal_agent(idp_t ctx, std::string const& name, hp
 template <typename T, typename ... Args>
 std::unique_ptr<T> Pod::CreateLocal(idp_t ctx, std::string const& name, Args&& ... args)
 {
+    // std::cout << "Pod::CreateLocal" << std::endl;
     return _ctrl->CreateLocal<T, Args...>(ctx, name, std::forward<Args>(args)...);
 }
 
@@ -61,7 +62,7 @@ idp_t Pod::Create(idp_t ctx, std::string const& name, Args&& ... args)
 template <typename T, typename ... Args>
 idp_t Pod::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
 {
-    // std::cout << "CreateRemote no Pod para adicionar ao ascendente recurso "<< ctx << std::endl;
+    std::cout << "CreateRemote no Pod para adicionar ao ascendente recurso "<< ctx << std::endl;
     return _ctrl->CreateRemote<T, Args...>(ctx, name, ctrl, std::forward<Args>(args)...);
 }
 

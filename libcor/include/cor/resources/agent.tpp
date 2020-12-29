@@ -7,7 +7,7 @@ template <typename R, typename ... P>
 Agent<R(P...)>::~Agent() = default;
 
 template <typename R, typename ... P>
-Agent<R(P...)>::Agent(idp_t idp, std::function<R(P...)> const& f) :
+Agent<R(P...)>::Agent(idp_t idp, hpx::function<R(P...)> const& f) :
     Resource{idp},
     _executor{idp, f},
     _mailBox{idp}
@@ -31,6 +31,13 @@ template <typename ... Args>
 void Agent<R(P...)>::Run(Args&&... args)
 {
     return _executor.Run(std::forward<Args>(args)... );
+}
+
+template <typename R, typename ... P>
+template <typename ... Args>
+R Agent<R(P...)>::RunNow(Args&&... args)
+{
+    return _executor.RunNow(std::forward<Args>(args)... );
 }
 
 template <typename R, typename ... P>

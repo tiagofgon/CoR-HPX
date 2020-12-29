@@ -31,9 +31,10 @@ template <typename T, typename ... Args>
 std::unique_ptr<T> ResourceManager::CreateLocal(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
 {
     auto idp = GenerateIdp();
-
+    // std::cout << "ResourceManager::CreateLocal" << std::endl;
     // (std::cout << ... << args); std::cout << std::endl;
     std::unique_ptr<T> rsc = std::make_unique<T>(idp, std::forward<Args>(args)...);
+    // std::cout << "ResourceManager::CreateLocal2" << std::endl;
     rsc = AllocateResource(idp, ctx, name, std::move(rsc), ctrl);
     // InsertIdp(idp, rsc->GetGid()); // insert association between gids and idps
     // InsertPredecessorIdp(idp, ctx); // insert association between idps and predecessors
@@ -62,6 +63,7 @@ idp_t ResourceManager::Create(idp_t ctx, std::string const& name, std::string co
 template <typename T, typename ... Args>
 idp_t ResourceManager::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
 {
+    std::cout << "ResourceManager::CreateRemote" << std::endl;
     auto idp = GenerateIdp();
     {
         // lock to access resource manager variables
@@ -72,16 +74,21 @@ idp_t ResourceManager::CreateRemote(idp_t ctx, std::string const& name, std::str
             std::cout << "erro" << std::endl;
             throw std::runtime_error("Resource " + std::to_string(ctx) + " does not exist in global component!(CreateRemote)");
         } else {
+            std::cout << "---aqui 1" << std::endl;
             // Ir buscar o gid do ctx remoto
             auto ctx_gid = GetGidFromIdp(ctx);
             // retornar a localidade do ctx remoto e adicionar ao seu elemento organizador o idp criado
+            std::cout << "---aqui 2" << std::endl;
             auto ctx_locality = AttachResourceRemote(ctx_gid, idp, name);
             // std::cout << "Localidade do dominio remoto: " << ctx_locality << std::endl;
             // Criar o recurso na localidade do remote Domain
+            std::cout << "---aqui 3" << std::endl;
             std::unique_ptr<T> rsc_remote = std::make_unique<T>(idp, ctx_locality, std::forward<Args>(args)...);
             // insert association between gids and idps
+            std::cout << "---aqui 4" << std::endl;
             InsertIdp(idp, rsc_remote->GetGid().get()); // Informar o componente global da associação idp-gid
 
+            std::cout << "---aqui 5" << std::endl;
             // _predecessors.emplace(idp, ctx);
             InsertPredecessorIdp(idp, ctx);
         }
