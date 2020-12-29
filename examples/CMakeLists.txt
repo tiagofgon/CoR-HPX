@@ -281,6 +281,24 @@ target_link_libraries(
 	HPX::hpx
 )
 
+# create_remote
+add_library(create_remote SHARED create_remote.cpp)
+target_compile_features(create_remote PUBLIC cxx_std_17)
+set_target_properties(create_remote PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(create_remote PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(create_remote PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(create_remote PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    create_remote
+    PRIVATE
+        libcor
+        # pool
+        # Spread
+        # SSRCSpread
+        # Cereal
+	HPX::hpx
+)
+
 
 install(
     TARGETS
@@ -295,6 +313,7 @@ install(
         inter_closure
         teste_pool
         module_2
+        create_remote
         # spawn_hpx
         # client
         # server

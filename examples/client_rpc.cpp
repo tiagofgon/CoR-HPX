@@ -44,7 +44,6 @@ void Main(int argc)
 
         idp_t const& rsc_idpp = rsc_idp;
         idp_t const& domain_idpp = domain_idp;
-        std::cout << "domain_idp_c: " << domain_idp << "\n";
         domain->Run<cor::Agent_Client<idp_t(idp_t)>>(rsc_idp, domain_idpp).get();
         domain->Wait<cor::Agent_Client<idp_t(idp_t)>>(rsc_idpp).get();
         auto res = domain->Get<cor::Agent_Client<idp_t(idp_t)>>(rsc_idpp).get();

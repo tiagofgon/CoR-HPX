@@ -85,7 +85,7 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
 
         if(total_members > 1) 
         {
-            //std::cout << "dentro da barreira-0" << std::endl;
+            std::cout << "dentro da barreira-0" << std::endl;
             hpx::lcos::barrier barrier(barrier_name, total_members, pos); // rank == 0, a barreira tem de ter obrigatoriamente o rank 0
             //std::cout << "fora da barreira-0" << std::endl;
             barrier.wait();

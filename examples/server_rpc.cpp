@@ -13,17 +13,13 @@ idp_t ServerFunction(idp_t domain_idp)
     auto domain = cor::GetDomain().get();
     std::string const& module = "libclient_rpc.so";
     std::string const& function = "ClientFunction";
-    std::cout << "domain_idp_s: " << domain_idp << std::endl;
     auto rsc_idp = domain->Create<cor::Agent_Client<void(idp_t)>>(domain_idp, "", module, function).get();
-    // std::cout << "HELLO - 2" << std::endl;
-    // idp_t const& rsc_idpp = rsc_idp;
-    // domain->Run<cor::Agent_Client<void(idp_t)>>(rsc_idpp, rsc_idpp).get();
-    // std::cout << "HELLO - 3" << std::endl;
-    // domain->Wait<cor::Agent_Client<void(idp_t)>>(rsc_idpp).get();
-    // std::cout << "HELLO - 4" << std::endl;
-    //domain->Get<cor::Agent_Client<void(idp_t)>>(rsc_idpp).get();
-    // return rsc_idp;
-    return 99;
+    idp_t const& rsc_idpp = rsc_idp;
+    domain->Run<cor::Agent_Client<void(idp_t)>>(rsc_idpp, rsc_idpp).get();
+    domain->Wait<cor::Agent_Client<void(idp_t)>>(rsc_idpp).get();
+    domain->Get<cor::Agent_Client<void(idp_t)>>(rsc_idpp).get();
+    return rsc_idp;
+    //return 99;
 }
 
 void Main(int argc)

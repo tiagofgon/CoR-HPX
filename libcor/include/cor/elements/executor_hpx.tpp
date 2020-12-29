@@ -41,15 +41,12 @@ template <typename R, typename ... P>
 template <typename ... Args>
 void Executor<R(P...)>::Run(Args&&... args)
 {
-    std::cout << "Run" << std::endl;
+    //std::cout << "Run" << std::endl;
     // (std::cout << ... << args) << '\n';
 
     if (!_function.empty()) {
         _module = dll::DynamicLoader::LoadDynamicLibrary(_module_name);
         _f = _module->LoadFunction<R(P...)>(_function);
-    }
-    else {
-        std::cout << "OLA" << std::endl;
     }
 
     // create task and get future
