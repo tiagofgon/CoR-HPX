@@ -48,20 +48,32 @@ export PATH=$PATH:$INSTALATION_DIR/bin
 ```
 
 ### module
-`corhpx app ctx 1 0 libmodule.so`
+~~~ 
+corhpx app ctx 1 0 libmodule.so
+~~~
 
 ### basicOperations
-`corhpx app ctx 1 0 libbasicOperations.so`
+~~~ 
+corhpx app ctx 1 0 libbasicOperations.so
+~~~ 
 
 ### parallel
 console 1:<br />
-`corhpx app ctx 2 0 ../examples/libparallel.so --hpx:hpx=localhost:1337 --hpx:ini=hpx.component_paths=..../examples`
+~~~ 
+corhpx app ctx 2 0 ../examples/libparallel.so --hpx:hpx=localhost:1337 --hpx:ini=hpx.component_paths=..../examples
+~~~ 
 
 console 2:<br />
-`corhpx app ctx 2 0 ../examples/libparallel.so --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:worker --hpx:ini=hpx.component_paths=/placor-hpx_installation_dir/examples`
+~~~ 
+corhpx app ctx 2 0 ../examples/libparallel.so --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:worker --hpx:ini=hpx.component_paths=/placor-hpx_installation_dir/examples
+~~~ 
 
 using mpi:<br />
-`mpirun -np N ./corhpx apps ctx N 0 /placor-hpx_installation_dir/examples/libparallel.so`
+~~~ 
+mpirun -np N ./corhpx apps ctx N 0 /placor-hpx_installation_dir/examples/libparallel.so
+~~~ 
 
 ### spawn
-`corhpx app ctx 1 0 libspawn.so`
+~~~ 
+corhpx app ctx 1 0 libspawn.so
+~~~ 
