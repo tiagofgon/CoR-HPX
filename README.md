@@ -30,6 +30,7 @@ summary:
 
 
     cd placor-hpx
+<br />
   mkdir build
   cd build
   cmake -DCMAKE_PREFIX_PATH=$HPX_LOCATION -DLibSSH_ROOT=$Libssh_LOCATION -DCMAKE_INSTALL_PREFIX=$INSTALATION_DIR ..
