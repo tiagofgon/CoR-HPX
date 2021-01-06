@@ -35,18 +35,23 @@ cd build
 cmake -DCMAKE_PREFIX_PATH=$HPX_LOCATION -DLibSSH_ROOT=$Libssh_LOCATION -DCMAKE_INSTALL_PREFIX=$INSTALATION_DIR ..
 ~~~
 
-## Building and Testing
+## Building
+~~~
 make -jN <br />
+~~~
+~~~
 make install <br />
+~~~
 
-```
 To use all features without defining paths  (recommended): <br />
+~~~
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALATION_DIR/lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALATION_DIR/examples
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALATION_DIR/cap6
 export PATH=$PATH:$INSTALATION_DIR/bin
-```
+~~~
 
+## Running tests
 ### module
 Print active resource idp (thread/agent identifier)
 ~~~ 
