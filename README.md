@@ -51,7 +51,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALATION_DIR/cap6
 export PATH=$PATH:$INSTALATION_DIR/bin
 ~~~
 
-## Running tests
+## Running some examples
 ### module
 Print active resource idp (thread/agent identifier)
 ~~~ 
