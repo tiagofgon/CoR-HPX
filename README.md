@@ -37,13 +37,13 @@ cmake -DCMAKE_PREFIX_PATH=$HPX_LOCATION -DLibSSH_ROOT=$Libssh_LOCATION -DCMAKE_I
 
 ## Building
 ~~~
-make -jN <br />
+make -jN
 ~~~
 ~~~
-make install <br />
+make install
 ~~~
 
-To use all features without defining paths  (recommended): <br />
+To use all features without defining paths  (**recommended**): <br />
 ~~~
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALATION_DIR/lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALATION_DIR/examples
@@ -68,11 +68,11 @@ $ corhpx app ctx 1 0 libbasicOperations.so
 Launching a program with multiple domains(processes): using two consoles or using mpi
 
 ~~~ 
-$ corhpx app ctx 2 0 ../examples/libparallel.so --hpx:hpx=localhost:1337 --hpx:ini=hpx.component_paths=..../examples
-$ corhpx app ctx 2 0 ../examples/libparallel.so --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:worker --hpx:ini=hpx.component_paths=/placor-hpx_installation_dir/examples
+$ corhpx app ctx 2 0 ../examples/libparallel.so --hpx:hpx=localhost:1337
+$ corhpx app ctx 2 0 ../examples/libparallel.so --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:worker
 ~~~ 
 
-using mpi:<br />
+using mpi: (N == number of domains(processes))<br />
 ~~~ 
 $ mpirun -np N ./corhpx apps ctx N 0 /placor-hpx_installation_dir/examples/libparallel.so
 ~~~ 
