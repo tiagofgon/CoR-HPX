@@ -28,12 +28,12 @@ summary:
 - $Libssh_LOCATION -> Libssh library location
 - $INSTALATION_DIR -> PlaCoRHPX target installation
 
-```
-cd placor-hpx
-mkdir build
-cd build
-cmake -DCMAKE_PREFIX_PATH=$HPX_LOCATION -DLibSSH_ROOT=$Libssh_LOCATION -DCMAKE_INSTALL_PREFIX=$INSTALATION_DIR ..
-```
+
+  cd placor-hpx
+  mkdir build
+  cd build
+  cmake -DCMAKE_PREFIX_PATH=$HPX_LOCATION -DLibSSH_ROOT=$Libssh_LOCATION -DCMAKE_INSTALL_PREFIX=$INSTALATION_DIR ..
+
 
 ## Building and Testing
 make -jN <br />
