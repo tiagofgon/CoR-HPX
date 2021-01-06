@@ -29,17 +29,25 @@ namespace cor
 
         void Dispatch(hpx::function<void()> func);
 
+        template < typename Func, typename ... Args >
+        void Dispatch(Func&& func, Args&&... args);
+        
+        template < typename Func>
+        void Dispatch(Func&& func);
+
     private:
         idp_t _idp;
         std::size_t _num_hpx_threads;
 
         std::vector<hpx::future<void>> _futures;
-        std::vector<hpx::thread::id> th_ids;
+        //std::vector<hpx::thread::id> th_ids;
+        std::map<hpx::thread::id, int> th_ids; // map that hold the ranks
 
         // index for sheduling
         hpx::mutex _mtx;
         std::atomic<int> _index;
-
+        std::atomic<int> th_ids_index; // for rank distribution
+        hpx::lcos::local::spinlock _mtx2;
     };
 }
 

@@ -63,17 +63,27 @@ void Finalize_hpx()
     // global::pod->Finalize();
 }
 
-hpx::future<std::shared_ptr<Domain_Client>> GetDomain()
+hpx::future<std::shared_ptr<Domain_Client>> GetDomain(hpx::launch::async_policy)
 {
-    // idp_t domain_idp = global::pod->GetDomainIdp();
+    return hpx::async([](){
+        idp_t domain_idp = global::pod->GetDomainIdp();
+        // std::cout << "domain_idp: " << domain_idp << std::endl;
+        auto dom = global::pod->GetLocalResource<Domain_Client>(domain_idp);
+        std::shared_ptr<Domain_Client> dom_shared = std::move(dom);
+        dom_shared->GetActiveResourceIdp(hpx::launch::async).get();
+        return dom_shared;
+    });
+}
 
+std::shared_ptr<Domain_Client> GetDomain()
+{
     idp_t domain_idp = global::pod->GetDomainIdp();
     // std::cout << "domain_idp: " << domain_idp << std::endl;
     auto dom = global::pod->GetLocalResource<Domain_Client>(domain_idp);
     std::shared_ptr<Domain_Client> dom_shared = std::move(dom);
-    dom_shared->GetActiveResourceIdp().get();
+    dom_shared->GetActiveResourceIdp();
 
-    return hpx::make_ready_future(dom_shared);
+    return dom_shared;
 
 
 }

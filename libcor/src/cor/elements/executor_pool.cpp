@@ -12,9 +12,11 @@ namespace cor
       _idp{idp},
       _num_hpx_threads{num_hpx_threads},
       _index{0},
-      _mtx{}
+      _mtx{},
+      th_ids_index{0},
+      _mtx2{}
    {
-      std::cout << "Criado um componente \"ExecutorPool\", com idp: " << idp << ", com threads: " << _num_hpx_threads << std::endl;
+      // std::cout << "Criado um componente \"ExecutorPool\", com idp: " << idp << ", com threads: " << _num_hpx_threads << std::endl;
    }
 
    ExecutorPool::~ExecutorPool() = default;
@@ -32,15 +34,17 @@ namespace cor
       int n, my_rank;
 
       my_id = hpx::this_thread::get_id(); // determine who am
-      
-      n = 0;
-      do
-      {
-      n++;
-      } while(my_id != th_ids[n] && n<_num_hpx_threads); 
+      my_rank = th_ids[my_id] + 1;
+      // std::cout << "my_id: " << my_id << std::endl;
+      // n = 0;
+      // do
+      // {
+      // n++;
+      // } while(my_id != th_ids[n] && n<_num_hpx_threads); 
 
-      if(n<=_num_hpx_threads) my_rank = n;    // OK, return rank
-      else my_rank = 0;     // else, return error
+      // if(n<=_num_hpx_threads) my_rank = n;    // OK, return rank
+      // else my_rank = 0;     // else, return error
+      // std::cout << "myy_rank: " << my_rank << std::endl;
       return my_rank;
    }
 
@@ -149,14 +153,18 @@ void ExecutorPool::Dispatch(hpx::function<void()> func)
     auto f = func;
 
     _futures.reserve(_num_hpx_threads);
-    th_ids.reserve(_num_hpx_threads);
+    //th_ids.reserve(_num_hpx_threads);
 
     std::vector<hpx::future<void>> vec(_num_hpx_threads);
 
     for(int i=0; i<_num_hpx_threads; i++) {
 
         auto func_aux = [&, this](){
-            th_ids.push_back(hpx::this_thread::get_id());
+            //th_ids.push_back(hpx::this_thread::get_id());
+            int rank = th_ids_index.fetch_add(1);
+            _mtx.lock();
+            th_ids[hpx::this_thread::get_id()] = rank;
+            _mtx.unlock();
             f();
         };
         vec.push_back(hpx::async(func_aux));

@@ -139,32 +139,33 @@ public:
         return hpx::async<action_type>(this->get_id(), idp).get(); 
     }
 
-    template <typename T>
-    std::unique_ptr<T> CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func)
+    template <typename T, typename ... Args>
+    std::unique_ptr<T> CreateLocal_test(idp_t ctx, std::string const& name, Args ... args)
     {
-        typedef cor::Pod::CreateLocal_agent_action_pod<T> action_type;
-        return hpx::async<action_type>(this->get_id(), ctx, name, func).get();
+        typedef cor::Pod::CreateLocal_test_action_pod<T, Args...> action_type;
+        return hpx::async<action_type>(this->get_id(), ctx, name, args...).get();
     }
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args&& ... args)
+    std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args ... args)
     {
-        typedef cor::Pod::CreateLocal_action_pod<T, Args...> action_type;
-        return hpx::async<action_type>(this->get_id(), ctx, name, std::forward<Args>(args)...).get();
+		std::shared_ptr<Pod> ptr = hpx::get_ptr<Pod>(hpx::launch::sync, this->get_id());
+		std::unique_ptr<T> res = ptr->CreateLocal<T, Args...>(ctx, name, args...);
+        return res;
     }
 
     template <typename T, typename ... Args>
-    idp_t Create(idp_t ctx, std::string const& name, Args&& ... args)
+    idp_t Create(idp_t ctx, std::string const& name, Args ... args)
     {
         typedef cor::Pod::Create_action_pod<T, Args...> action_type;
-        return hpx::async<action_type>(this->get_id(), ctx, name, std::forward<Args>(args)...).get();
+        return hpx::async<action_type>(this->get_id(), ctx, name, args...).get();
     }
 
     template <typename T, typename ... Args>
-    idp_t CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
+    idp_t CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args)
     {
         typedef cor::Pod::CreateRemote_action_pod<T, Args...> action_type;
-        return hpx::async<action_type>(this->get_id(), ctx, name, ctrl, std::forward<Args>(args)...).get();
+        return hpx::async<action_type>(this->get_id(), ctx, name, ctrl, args...).get();
     }
 
     template <typename T>
@@ -175,21 +176,21 @@ public:
 	}
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateCollective(idp_t ctx, std::string const& name, unsigned int total_members, Args&& ... args)
+    std::unique_ptr<T> CreateCollective(idp_t ctx, std::string const& name, unsigned int total_members, Args ... args)
     {
         typedef cor::Pod::CreateCollective1_action_pod<T, Args...> action_type;
-        return hpx::async<action_type>(this->get_id(), ctx, name, total_members, std::forward<Args>(args)...).get();
+        return hpx::async<action_type>(this->get_id(), ctx, name, total_members, args...).get();
     }
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateCollective(idp_t agent_idp, idp_t comm, idp_t ctx, std::string const& name, Args&& ... args)
+    std::unique_ptr<T> CreateCollective(idp_t agent_idp, idp_t comm, idp_t ctx, std::string const& name, Args ... args)
     {
         auto active_rsc_idp = agent_idp;
         auto sorg = GetLocalResource<cor::Closure_Client>(comm); // vou buscar a clausura identificada por comm
-        auto rank = sorg->GetIdm(active_rsc_idp).get(); // vou buscar o idm do agente atual, idm que pertence à clausura
+        auto rank = sorg->GetIdm(active_rsc_idp); // vou buscar o idm do agente atual, idm que pertence à clausura
 
         typedef cor::Pod::CreateCollective2_action_pod<T, Args...> action_type;
-        return hpx::async<action_type>(this->get_id(), rank, comm, ctx, name, std::forward<Args>(args)...).get();
+        return hpx::async<action_type>(this->get_id(), rank, comm, ctx, name, args...).get();
     }
     
 

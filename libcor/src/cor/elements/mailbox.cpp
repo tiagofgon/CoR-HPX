@@ -121,21 +121,21 @@ Message Mailbox::Receive2(idp_t source)
 void Mailbox::Broadcast(idp_t clos, Message const& msg)
 {
     auto sorg = global::pod->GetLocalResource<cor::Closure_Client>(clos);
-    auto dests = sorg->GetMemberList().get();
+    auto dests = sorg->GetMemberList();
     Send2(dests, msg);
 }
 
 void Mailbox::Send3(idm_t rank, idp_t clos, Message const& msg)
 {
     auto sorg = global::pod->GetLocalResource<cor::Closure_Client>(clos);
-    auto dest = sorg->GetIdp(rank).get();
+    auto dest = sorg->GetIdp(rank);
     Send1(dest, msg);
 }
 
 Message Mailbox::Receive3(idm_t rank, idp_t clos)
 {
     auto sorg = global::pod->GetLocalResource<cor::Closure_Client>(clos);
-    auto source = sorg->GetIdp(rank).get();
+    auto source = sorg->GetIdp(rank);
     return Receive2(source);
 }
 

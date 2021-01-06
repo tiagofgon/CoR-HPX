@@ -30,17 +30,17 @@ public:
 	// Agent instance with the given GID
 	Agent_Client(hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal().get())
+		_idp(IdpGlobal())
 	{}
 
 	Agent_Client(hpx::shared_future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal().get())
+		_idp(IdpGlobal())
 	{}
 
 	Agent_Client(hpx::id_type && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal().get())
+		_idp(IdpGlobal())
 	{}
 
 	// Constructor for replicas
@@ -59,8 +59,8 @@ public:
 		_idp(idp)
 	{}
 
-	/// Standard constructor with parameters
-	Agent_Client(idp_t idp, hpx::function<R(P...)> const& f) :
+	// /// Standard constructor with parameters
+	Agent_Client(idp_t idp, std::function<R(P...)> const& f) :
 		base_type(create_server(idp, f)),
 		_idp(idp)
 	{
@@ -85,148 +85,240 @@ public:
 
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource
-	hpx::future<idp_t> IdpGlobal()
+	hpx::future<idp_t> IdpGlobal(hpx::launch::async_policy)
 	{
 		typedef Resource::Idp_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
 
+	idp_t IdpGlobal()
+	{
+		typedef Resource::Idp_action_Resource action_type;
+		return action_type()(base_type::get_id());
+	}
+
 	// method that returns the GID(hpx::id_type) of this resource locality
-	hpx::future<hpx::id_type> GetLocalityGID()
+	hpx::future<hpx::id_type> GetLocalityGID(hpx::launch::async_policy)
 	{
 		typedef Resource::GetLocalityGID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
 
+	hpx::id_type GetLocalityGID()
+	{
+		typedef Resource::GetLocalityGID_action_Resource action_type;
+		return action_type()(base_type::get_id());
+	}
+
 	// method that returns the number of this resource locality
-	hpx::future<unsigned int> GetLocalityID()
+	hpx::future<unsigned int> GetLocalityID(hpx::launch::async_policy)
 	{
 		typedef Resource::GetLocalityID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
 
+	unsigned int GetLocalityID()
+	{
+		typedef Resource::GetLocalityID_action_Resource action_type;
+		return action_type()(base_type::get_id());	
+	}
+
 
 	/** Executor's interface **/
 	template <typename ... Args>
-	hpx::future<void> Run(Args&&... args)
+	hpx::future<hpx::future<R>> Run(hpx::launch::async_policy, Args... args)
 	{
-		typedef typename cor::Agent<R(P...)>::template Run_action_Agent<Args...> action_type;
-		return hpx::async<action_type>(this->get_id(), std::forward<Args>(args)... );
+		typedef typename cor::Agent<R(P...)>::template Run1_action_Agent<Args...> action_type;
+		return hpx::async<action_type>(this->get_id(), args...);
 	}
 
+	// chamada de funcao sem ser açao, para passar os argumentos sem serem const&
 	template <typename ... Args>
-	hpx::future<R> RunNow(Args&&... args)
+	hpx::future<R> Run(Args&&... args)
 	{
-		typedef typename cor::Agent<R(P...)>::template RunNow_action_Agent<Args...> action_type;
-		return hpx::async<action_type>(this->get_id(), std::forward<Args>(args)... );
+		std::shared_ptr<Agent<R(P...)>> ptr = hpx::get_ptr<Agent<R(P...)>>(hpx::launch::sync, this->get_id());
+		return ptr->Run2(std::forward<Args>(args)...);
 	}
 
-	hpx::future<void> Wait()
-	{
-		typedef typename cor::Agent<R(P...)>::Wait_action_Agent action_type;
-		return hpx::async<action_type>(this->get_id());
-	}
-
-	hpx::future<R> Get()
-	{
-		typedef typename cor::Agent<R(P...)>::Get_action_Agent action_type;
-		return hpx::async<action_type>(this->get_id());
-	}
-
-	hpx::future<void> ChangeIdp(idp_t idp)
+	hpx::future<void> ChangeIdp(hpx::launch::async_policy, idp_t idp)
 	{
 		typedef typename cor::Agent<R(P...)>::ChangeIdp_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id(), idp);
 	}
 
-	hpx::future<void> ResumeIdp()
+	void ChangeIdp(idp_t idp)
+	{
+		typedef typename cor::Agent<R(P...)>::ChangeIdp_action_Agent action_type;
+		return action_type()(this->get_id(), idp);
+	}
+
+	hpx::future<void> ResumeIdp(hpx::launch::async_policy)
 	{
 		typedef typename cor::Agent<R(P...)>::ResumeIdp_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
-	hpx::future<idp_t> CurrentIdp()
+	void ResumeIdp()
+	{
+		typedef typename cor::Agent<R(P...)>::ResumeIdp_action_Agent action_type;
+		return action_type()(this->get_id());
+	}
+
+	hpx::future<idp_t> CurrentIdp(hpx::launch::async_policy)
 	{
 		typedef typename cor::Agent<R(P...)>::CurrentIdp_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
-	hpx::future<idp_t> OriginalIdp()
+	idp_t CurrentIdp()
+	{
+		typedef typename cor::Agent<R(P...)>::CurrentIdp_action_Agent action_type;
+		return action_type()(this->get_id());
+	}
+
+	hpx::future<idp_t> OriginalIdp(hpx::launch::async_policy)
 	{
 		typedef typename cor::Agent<R(P...)>::OriginalIdp_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
-	hpx::future<idp_t> GetExecutorIdp()
+	idp_t OriginalIdp()
+	{
+		typedef typename cor::Agent<R(P...)>::OriginalIdp_action_Agent action_type;
+		return action_type()(this->get_id());
+	}
+
+	hpx::future<idp_t> GetExecutorIdp(hpx::launch::async_policy)
 	{
 		typedef typename cor::Agent<R(P...)>::GetExecutorIdp_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
+	idp_t GetExecutorIdp()
+	{
+		typedef typename cor::Agent<R(P...)>::GetExecutorIdp_action_Agent action_type;
+		return action_type()(this->get_id());
+	}
+
 
     /* Mailbox's interface */
-    hpx::future<void> Send(idp_t dest, Message const& msg)
+    hpx::future<void> Send(hpx::launch::async_policy, idp_t dest, Message const& msg)
 	{
 		typedef typename cor::Agent<R(P...)>::Send1_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id(), dest, msg);
 	}
 
-    hpx::future<void> Send(std::vector<idp_t> const& dests, Message const& msg)
+    void Send(idp_t dest, Message const& msg)
+	{
+		typedef typename cor::Agent<R(P...)>::Send1_action_Agent action_type;
+		return action_type()(this->get_id(), dest, msg);	
+	}
+
+    hpx::future<void> Send(hpx::launch::async_policy, std::vector<idp_t> const& dests, Message const& msg)
 	{
 		typedef typename cor::Agent<R(P...)>::Send2_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id(), dests, msg);
 	}
 
-    hpx::future<Message> Receive()
+    void Send(std::vector<idp_t> const& dests, Message const& msg)
+	{
+		typedef typename cor::Agent<R(P...)>::Send2_action_Agent action_type;
+		return action_type()(this->get_id(), dests, msg);
+	}
+
+    hpx::future<Message> Receive(hpx::launch::async_policy)
 	{
 		typedef typename cor::Agent<R(P...)>::Receive1_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
-    hpx::future<Message> Receive(idp_t source)
+    Message Receive()
+	{
+		typedef typename cor::Agent<R(P...)>::Receive1_action_Agent action_type;
+		return action_type()(this->get_id());
+	}
+
+    hpx::future<Message> Receive(hpx::launch::async_policy, idp_t source)
 	{
 		typedef typename cor::Agent<R(P...)>::Receive2_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id(), source);
 	}
 
-    hpx::future<void> Broadcast(idp_t clos, Message const& msg)
+    Message Receive(idp_t source)
+	{
+		typedef typename cor::Agent<R(P...)>::Receive2_action_Agent action_type;
+		return action_type()(this->get_id(), source);	
+	}
+
+    hpx::future<void> Broadcast(hpx::launch::async_policy, idp_t clos, Message const& msg)
 	{
 		typedef typename cor::Agent<R(P...)>::Broadcast_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id(), clos, msg);
 	}
 
-    hpx::future<void> Send(idm_t rank, idp_t clos, Message const& msg)
+    void Broadcast(idp_t clos, Message const& msg)
+	{
+		typedef typename cor::Agent<R(P...)>::Broadcast_action_Agent action_type;
+		return action_type()(this->get_id(), clos, msg);
+	}
+
+    hpx::future<void> Send(hpx::launch::async_policy, idm_t rank, idp_t clos, Message const& msg)
 	{
 		typedef typename cor::Agent<R(P...)>::Send3_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id(), rank, clos, msg);
 	}
 
-    hpx::future<Message> Receive(idm_t rank, idp_t clos)
+    void Send(idm_t rank, idp_t clos, Message const& msg)
+	{
+		typedef typename cor::Agent<R(P...)>::Send3_action_Agent action_type;
+		return action_type()(this->get_id(), rank, clos, msg);	
+	}
+
+    hpx::future<Message> Receive(hpx::launch::async_policy, idm_t rank, idp_t clos)
 	{
 		typedef typename cor::Agent<R(P...)>::Receive3_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id(), rank, clos);
 	}
 
+    Message Receive(idm_t rank, idp_t clos)
+	{
+		typedef typename cor::Agent<R(P...)>::Receive3_action_Agent action_type;
+		return action_type()(this->get_id(), rank, clos);	
+	}
+
 
 	// Returns mailbox's GID
-	hpx::future<hpx::id_type> GetMailboxGid() {
+	hpx::future<hpx::id_type> GetMailboxGid(hpx::launch::async_policy) {
 		typedef typename cor::Agent<R(P...)>::GetMailboxGid_action_Agent action_type;
 		return hpx::async<action_type>(this->get_id());
+	}
+
+	hpx::id_type GetMailboxGid() {
+		typedef typename cor::Agent<R(P...)>::GetMailboxGid_action_Agent action_type;
+		return action_type()(this->get_id());
 	}
 
 
 	/** Local Client's interface **/
 	// local idp of this resource
-	hpx::future<idp_t> Idp() {
+	hpx::future<idp_t> Idp(hpx::launch::async_policy) {
 		return hpx::make_ready_future(_idp);
 	}
 
+	idp_t Idp() {
+		return _idp;
+	}
+
 	// Returns component's GID
-	hpx::future<hpx::id_type> GetGid() {
+	hpx::future<hpx::id_type> GetGid(hpx::launch::async_policy) {
 	  return hpx::make_ready_future(this->get_id());
 	}
 
-	hpx::future<int> GetComponentType()
+	hpx::id_type GetGid() {
+	  return this->get_id();
+	}
+
+	hpx::future<int> GetComponentType(hpx::launch::async_policy)
 	{
 		/* Resource identification
 		1 - Domain
@@ -242,24 +334,24 @@ public:
 		return hpx::make_ready_future(5);
 	}
 
+	hpx::future<int> GetComponentType()
+	{
+		return 5;
+	}
+
 
 private:
-	hpx::future<hpx::id_type> create_server(idp_t idp, hpx::function<R(P...)> const& f) {
+	hpx::future<hpx::id_type> create_server(idp_t idp, std::function<R(P...)> const& f) {
 		return hpx::local_new<Agent<R(P...)>>(idp, f);
 	}
-
 	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, hpx::function<R(P...)> const& f) {
-		auto res = hpx::new_<Agent<R(P...)>>(locality, idp, f);
-		return res;
+		return hpx::new_<Agent<R(P...)>>(locality, idp, f);
 	}
-
 	hpx::future<hpx::id_type> create_server(idp_t idp, std::string const& module, std::string const& function) {
 		return hpx::local_new<Agent<R(P...)>>(idp, module, function);
 	}
-
 	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, std::string const& module, std::string const& function) {
-		auto res = hpx::new_<Agent<R(P...)>>(locality, idp, module, function);
-		return res;
+		return hpx::new_<Agent<R(P...)>>(locality, idp, module, function);
 	}
 
 	template <typename Archive>

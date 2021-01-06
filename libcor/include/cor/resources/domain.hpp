@@ -67,35 +67,29 @@ public:
     template <typename T>
     std::unique_ptr<T> GetLocalResource(idp_t idp);
 
-    template <typename T>
-    std::unique_ptr<T> CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func);
+    template <typename T, typename ... Args>
+    std::unique_ptr<T> CreateLocal_agent(idp_t ctx, std::string const& name, Args ... args);
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args&& ... args);
+    std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args ... args);
 
     template <typename T, typename ... Args>
-    idp_t Create(idp_t ctx, std::string const& name, Args&& ... args);
+    idp_t Create(idp_t ctx, std::string const& name, Args ... args);
 
     template <typename T, typename ... Args>
-    idp_t CreateRemote(idp_t ctx, std::string const& name, Args&& ... args);
+    idp_t CreateRemote(idp_t ctx, std::string const& name, Args ... args);
 
     template <typename T>
     std::unique_ptr<T> CreateReference(idp_t idp, idp_t ctx, std::string const& name);
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateCollective1(idp_t ctx, std::string const& name, unsigned int total_members, Args&& ... args);
+    std::unique_ptr<T> CreateCollective1(idp_t ctx, std::string const& name, unsigned int total_members, Args ... args);
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateCollective2(idp_t active_rsc_idp, idp_t clos, idp_t ctx, std::string const& name, Args&& ... args);
+    std::unique_ptr<T> CreateCollective2(idp_t active_rsc_idp, idp_t clos, idp_t ctx, std::string const& name, Args ... args);
 
     template <typename T, typename ... Args>
-    void Run(idp_t idp, Args&&... args);
-
-    template <typename T>
-    void Wait(idp_t idp);
-
-    template <typename T>
-    auto Get(idp_t idp);
+    auto Run(idp_t idp, Args... args);
 
     idp_t Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
 
@@ -121,11 +115,11 @@ public:
     >::type
     {};
 
-    template <typename T>
+    template <typename T, typename ... Args>
     struct CreateLocal_agent_action_Domain
     : hpx::actions::make_action<
-        decltype(&Domain::CreateLocal_agent<T>),
-        &Domain::CreateLocal_agent<T>
+        decltype(&Domain::CreateLocal_agent<T, Args...>),
+        &Domain::CreateLocal_agent<T, Args...>
     >::type
     {};
 
@@ -182,22 +176,6 @@ public:
     : hpx::actions::make_action<
         decltype(&Domain::Run<T, Args...>),
         &Domain::Run<T, Args...>
-    >::type
-    {};
-
-    template <typename T>
-    struct Wait_action_Domain
-    : hpx::actions::make_action<
-        decltype(&Domain::Wait<T>),
-        &Domain::Wait<T>
-    >::type
-    {};
-
-    template <typename T>
-    struct Get_action_Domain
-    : hpx::actions::make_action<
-        decltype(&Domain::Get<T>),
-        &Domain::Get<T>
     >::type
     {};
 

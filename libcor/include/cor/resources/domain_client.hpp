@@ -29,19 +29,19 @@ public:
 	// Closure instance with the given GID
 	Domain_Client(hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal().get()),
+		_idp(IdpGlobal()),
 		_idp_agent(0)
 	{}
 
 	Domain_Client(hpx::shared_future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal().get()),
+		_idp(IdpGlobal()),
 		_idp_agent(0)
 	{}
 
 	Domain_Client(hpx::id_type && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal().get()),
+		_idp(IdpGlobal()),
 		_idp_agent(0)
 	{}
 
@@ -85,115 +85,235 @@ public:
 
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource
-	hpx::future<idp_t> IdpGlobal()
+	hpx::future<idp_t> IdpGlobal(hpx::launch::async_policy)
 	{
 		typedef Resource::Idp_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
 
+	idp_t IdpGlobal()
+	{
+		typedef Resource::Idp_action_Resource action_type;
+		return action_type()(base_type::get_id());
+	}
+
 	// method that returns the GID(hpx::id_type) of this resource locality
-	hpx::future<hpx::id_type> GetLocalityGID()
+	hpx::future<hpx::id_type> GetLocalityGID(hpx::launch::async_policy)
 	{
 		typedef Resource::GetLocalityGID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
 
+	hpx::id_type GetLocalityGID()
+	{
+		typedef Resource::GetLocalityGID_action_Resource action_type;
+		return action_type()(base_type::get_id());
+	}
+
 	// method that returns the number of this resource locality
-	hpx::future<unsigned int> GetLocalityID()
+	hpx::future<unsigned int> GetLocalityID(hpx::launch::async_policy)
 	{
 		typedef Resource::GetLocalityID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
 
+	unsigned int GetLocalityID()
+	{
+		typedef Resource::GetLocalityID_action_Resource action_type;
+		return action_type()(base_type::get_id());	
+	}
+
 
 	/** Dynamic organizer's interface **/
-	hpx::future<void> Join(idp_t idp, std::string const& name)
+	hpx::future<void> Join(hpx::launch::async_policy, idp_t idp, std::string const& name)
 	{
 		typedef Domain::Join_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id(), idp, name);
 	}
 
-	hpx::future<void> Leave(idp_t idp)
+	void Join(idp_t idp, std::string const& name)
+	{
+		typedef Domain::Join_action_Domain action_type;
+		return action_type()(this->get_id(), idp, name);	
+	}
+
+	hpx::future<void> Leave(hpx::launch::async_policy, idp_t idp)
 	{
 		typedef Domain::Leave_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id(), idp);
 	}
 
-	hpx::future<std::string> GetModuleName()
+	void Leave(idp_t idp)
+	{
+		typedef Domain::Leave_action_Domain action_type;
+		return action_type()(this->get_id(), idp);
+	}
+
+	hpx::future<std::string> GetModuleName(hpx::launch::async_policy)
 	{
 		typedef Domain::GetModuleName_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
-	hpx::future<std::size_t> GetTotalMembers()
+	std::string GetModuleName()
+	{
+		typedef Domain::GetModuleName_action_Domain action_type;
+		return action_type()(this->get_id());
+	}
+
+	hpx::future<std::size_t> GetTotalMembers(hpx::launch::async_policy)
 	{
 		typedef Domain::GetTotalMembers_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
-	hpx::future<std::vector<idp_t>> GetMemberList()
+	std::size_t GetTotalMembers()
+	{
+		typedef Domain::GetTotalMembers_action_Domain action_type;
+		return action_type()(this->get_id());
+	}
+
+	hpx::future<std::vector<idp_t>> GetMemberList(hpx::launch::async_policy)
 	{
 		typedef Domain::GetMemberList_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
-    hpx::future<idp_t> GetIdp(idm_t idm)
+	std::vector<idp_t> GetMemberList()
+	{
+		typedef Domain::GetMemberList_action_Domain action_type;
+		return action_type()(this->get_id());
+	}
+
+    hpx::future<idp_t> GetIdp(hpx::launch::async_policy, idm_t idm)
 	{
 		typedef Domain::GetIdp1_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id(), idm);
 	}
 
-    hpx::future<idp_t> GetIdp(std::string const& name)
+    idp_t GetIdp(idm_t idm)
+	{
+		typedef Domain::GetIdp1_action_Domain action_type;
+		return action_type()(this->get_id(), idm);
+	}
+
+    hpx::future<idp_t> GetIdp(hpx::launch::async_policy, std::string const& name)
 	{
 		typedef Domain::GetIdp2_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id(), name);
 	}
 
-    hpx::future<idm_t> GetIdm(idp_t idp)
+    idp_t GetIdp(std::string const& name)
+	{
+		typedef Domain::GetIdp2_action_Domain action_type;
+		return action_type()(this->get_id(), name);	
+	}
+
+    hpx::future<idm_t> GetIdm(hpx::launch::async_policy, idp_t idp)
 	{
 	  	typedef Domain::GetIdm1_action_Domain action_type;
 	  	return hpx::async<action_type>(this->get_id(), idp);
 	}
 
-    hpx::future<idm_t> GetIdm(std::string const& name)
+    idm_t GetIdm(idp_t idp)
+	{
+	  	typedef Domain::GetIdm1_action_Domain action_type;
+	  	return action_type()(this->get_id(), idp);
+	}
+
+    hpx::future<idm_t> GetIdm(hpx::launch::async_policy, std::string const& name)
 	{
 		typedef Domain::GetIdm2_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id(), name);
 	}
 
-    hpx::future<idm_t> GetDynamicOrganizerIdp()
+    idm_t GetIdm(std::string const& name)
+	{
+		typedef Domain::GetIdm2_action_Domain action_type;
+		return action_type()(this->get_id(), name);
+	}
+
+    hpx::future<idm_t> GetDynamicOrganizerIdp(hpx::launch::async_policy)
 	{
 		typedef Domain::GetDynamicOrganizerIdp_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
+    idm_t GetDynamicOrganizerIdp()
+	{
+		typedef Domain::GetDynamicOrganizerIdp_action_Domain action_type;
+		return action_type()(this->get_id());
+	}
 
 	/** Container's interface **/
-    hpx::future<std::string> GetGlobalContext()
+    hpx::future<std::string> GetGlobalContext(hpx::launch::async_policy)
 	{
 		typedef Domain::GetGlobalContext_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
-    hpx::future<std::string> GetLocalContext()
+    std::string GetGlobalContext()
+	{
+		typedef Domain::GetGlobalContext_action_Domain action_type;
+		return action_type()(this->get_id());
+	}
+
+    hpx::future<std::string> GetLocalContext(hpx::launch::async_policy)
 	{
 		typedef Domain::GetLocalContext_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
+	
+    std::string GetLocalContext()
+	{
+		typedef Domain::GetLocalContext_action_Domain action_type;
+		return action_type()(this->get_id());
+	}
 
-    hpx::future<unsigned int> GetTotalPods()
+    hpx::future<unsigned int> GetTotalPods(hpx::launch::async_policy, hpx::launch::async_policy)
 	{
 		typedef Domain::GetTotalPods_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
+	
+    unsigned int GetTotalPods()
+	{
+		typedef Domain::GetTotalPods_action_Domain action_type;
+		return action_type()(this->get_id());
+	}
 
-    hpx::future<unsigned int> GetTotalDomains()
+    hpx::future<unsigned int> GetTotalDomains(hpx::launch::async_policy)
 	{
 		typedef Domain::GetTotalDomains_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
-	hpx::future<idp_t> GetActiveResourceIdp()
+    unsigned int GetTotalDomains()
+	{
+		typedef Domain::GetTotalDomains_action_Domain action_type;
+		return action_type()(this->get_id());
+	}
+
+	hpx::future<idp_t> GetActiveResourceIdp(hpx::launch::async_policy)
+	{
+		// primeira chamada desta funcao, dentro do cor GetDomain()
+		if(_idp_agent == 0) {
+			auto id = hpx::threads::get_self_id();
+			uint64_t* ptr=(uint64_t*) &id;
+			auto ptr2 = (*ptr);
+			// std::cout << "Thread HPX - GetActiveResourceIdp: " << ptr2 << std::endl;
+			return hpx::async([&](){
+				typedef cor::Domain::GetActiveResourceIdp_action_Domain action_type;
+				auto res = hpx::async<action_type>(this->get_id(), ptr2).get(); 
+				_idp_agent = res;
+				return _idp_agent;
+			});
+
+		}
+		return hpx::make_ready_future(_idp_agent);
+	}
+
+	idp_t GetActiveResourceIdp()
 	{
 		// primeira chamada desta funcao, dentro do cor GetDomain()
 		if(_idp_agent == 0) {
@@ -205,117 +325,187 @@ public:
 			typedef cor::Domain::GetActiveResourceIdp_action_Domain action_type;
 			auto res = hpx::async<action_type>(this->get_id(), ptr2).get(); 
 			_idp_agent = res;
-			return hpx::make_ready_future(_idp_agent);
+			return _idp_agent;
+
 		}
-		return hpx::make_ready_future(_idp_agent);
+		return _idp_agent;
 	}
 
-	hpx::future<idp_t> GetPredecessorIdp(idp_t idp)
+	hpx::future<idp_t> GetPredecessorIdp(hpx::launch::async_policy, idp_t idp)
 	{
 		typedef cor::Domain::GetPredecessorIdp_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id(), idp); 
 	}
 
+	idp_t GetPredecessorIdp(idp_t idp)
+	{
+		typedef cor::Domain::GetPredecessorIdp_action_Domain action_type;
+		return action_type()(this->get_id(), idp); 	
+	}
+
 	template <typename T>
-	hpx::future<std::unique_ptr<T>> GetLocalResource(idp_t idp)
+	hpx::future<std::unique_ptr<T>> GetLocalResource(hpx::launch::async_policy, idp_t idp)
 	{
 		typedef cor::Domain::GetLocalResource_action_Domain<T> action_type;
 		return hpx::async<action_type>(this->get_id(), idp); 
 	}
 
 	template <typename T>
-	hpx::future<std::unique_ptr<T>> CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func)
+	std::unique_ptr<T> GetLocalResource(idp_t idp)
 	{
-		std::cout << "aquiii" << std::endl;
-		typedef cor::Domain::CreateLocal_agent_action_Domain<T> action_type;
-		return hpx::async<action_type>(this->get_id(), ctx, name, func);
+		typedef cor::Domain::GetLocalResource_action_Domain<T> action_type;
+		return action_type()(this->get_id(), idp); 
+	}
+
+	// Funcao para apagar
+	template <typename T, typename ... Args>
+	hpx::future<std::unique_ptr<T>> CreateLocal_agent(hpx::launch::async_policy, idp_t ctx, std::string const& name, Args ... args)
+	{
+		typedef cor::Domain::CreateLocal_agent_action_Domain<T, Args...> action_type;
+		return hpx::async<action_type>(this->get_id(), ctx, name, args...);
 	}
 
 	template <typename T, typename ... Args>
-	hpx::future<std::unique_ptr<T>> CreateLocal(idp_t ctx, std::string const& name, Args&& ... args)
+	hpx::future<std::unique_ptr<T>> CreateLocal(hpx::launch::async_policy, idp_t ctx, std::string const& name, Args ... args)
 	{
 		typedef cor::Domain::CreateLocal_action_Domain<T, Args...> action_type;
-		return hpx::async<action_type>(this->get_id(), ctx, name, std::forward<Args>(args)...);
+		return hpx::async<action_type>(this->get_id(), ctx, name, args...);
 	}
 
 	template <typename T, typename ... Args>
-	hpx::future<idp_t> Create(idp_t ctx, std::string const& name, Args&& ... args)
+	std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args ... args)
+	{
+		std::shared_ptr<Domain> ptr = hpx::get_ptr<Domain>(hpx::launch::sync, this->get_id());
+		return ptr->CreateLocal<T, Args...>(ctx, name, args...);
+	}
+
+	template <typename T, typename ... Args>
+	hpx::future<idp_t> Create(hpx::launch::async_policy, idp_t ctx, std::string const& name, Args ... args)
 	{
 		typedef cor::Domain::Create_action_Domain<T, Args...> action_type;
-		return hpx::async<action_type>(this->get_id(), ctx, name, std::forward<Args>(args)...);
+		return hpx::async<action_type>(this->get_id(), ctx, name, args...);
+	}
+
+	template <typename T, typename ... Args>
+	idp_t Create(idp_t ctx, std::string const& name, Args ... args)
+	{
+		std::shared_ptr<Domain> ptr = hpx::get_ptr<Domain>(hpx::launch::sync, this->get_id());
+		idp_t res = ptr->Create<T, Args...>(ctx, name, args...);
+		return res;
 	}
 
     template <typename T, typename ... Args>
-    hpx::future<idp_t> CreateRemote(idp_t ctx, std::string const& name, Args&& ... args)
+    hpx::future<idp_t> CreateRemote(hpx::launch::async_policy, idp_t ctx, std::string const& name, Args ... args)
 	{
 		typedef cor::Domain::CreateRemote_action_Domain<T, Args...> action_type;
-		return hpx::async<action_type>(this->get_id(), ctx, name, std::forward<Args>(args)...);
+		return hpx::async<action_type>(this->get_id(), ctx, name, args...);
+	}
+
+    template <typename T, typename ... Args>
+    idp_t CreateRemote(idp_t ctx, std::string const& name, Args ... args)
+	{
+		std::shared_ptr<Domain> ptr = hpx::get_ptr<Domain>(hpx::launch::sync, this->get_id());
+		return ptr->CreateRemote<T, Args...>(ctx, name, args...);
 	}
 
     template <typename T>
-    hpx::future<std::unique_ptr<T>> CreateReference(idp_t idp, idp_t ctx, std::string const& name)
+    hpx::future<std::unique_ptr<T>> CreateReference(hpx::launch::async_policy, idp_t idp, idp_t ctx, std::string const& name)
 	{
 		typedef cor::Domain::CreateReference_action_Domain<T> action_type;
 		return hpx::async<action_type>(this->get_id(), idp, ctx, name);
 	}
 
+    template <typename T>
+    std::unique_ptr<T> CreateReference(idp_t idp, idp_t ctx, std::string const& name)
+	{
+		typedef cor::Domain::CreateReference_action_Domain<T> action_type;
+		return action_type()(this->get_id(), idp, ctx, name);
+	}
+
 	template <typename T, typename ... Args>
-	hpx::future<std::unique_ptr<T>> CreateCollective(idp_t ctx, std::string const& name, unsigned int total_members, Args&& ... args)
+	hpx::future<std::unique_ptr<T>> CreateCollective(hpx::launch::async_policy, idp_t ctx, std::string const& name, unsigned int total_members, Args ... args)
 	{
 		typedef cor::Domain::CreateCollective1_action_Domain<T, Args...> action_type;
-		return hpx::async<action_type>(this->get_id(), ctx, name, total_members, std::forward<Args>(args)...);
+		return hpx::async<action_type>(this->get_id(), ctx, name, total_members, args...);
 	}
 
-    template <typename T, typename ... Args>
-    hpx::future<std::unique_ptr<T>> CreateCollective(idp_t clos, idp_t ctx, std::string const& name, Args&& ... args)
+	template <typename T, typename ... Args>
+	std::unique_ptr<T> CreateCollective(idp_t ctx, std::string const& name, unsigned int total_members, Args ... args)
 	{
-		auto active_rsc_idp = GetActiveResourceIdp().get(); // I'll get the idp of the current agent that will be needed in the Pod
-		typedef cor::Domain::CreateCollective2_action_Domain<T, Args...> action_type;
-		return hpx::async<action_type>(this->get_id(), active_rsc_idp, clos, ctx, name, std::forward<Args>(args)...);
+		//return CreateCollective_action<T, Args...>(ctx, name, total_members, std::forward<Args>(args)...);
+		std::shared_ptr<Domain> ptr = hpx::get_ptr<Domain>(hpx::launch::sync, this->get_id());
+		return ptr->CreateCollective1<T, Args...>(ctx, name, total_members, args...);
 	}
 
     template <typename T, typename ... Args>
-    hpx::future<void> Run(idp_t idp, Args&&... args)
+    hpx::future<std::unique_ptr<T>> CreateCollective(hpx::launch::async_policy, idp_t clos, idp_t ctx, std::string const& name, Args ... args)
+	{
+		auto active_rsc_idp = GetActiveResourceIdp(hpx::launch::async).get(); // I'll get the idp of the current agent that will be needed in the Pod
+		typedef cor::Domain::CreateCollective2_action_Domain<T, Args...> action_type;
+		return hpx::async<action_type>(this->get_id(), active_rsc_idp, clos, ctx, name, args...);
+	}
+
+    template <typename T, typename ... Args>
+    std::unique_ptr<T> CreateCollective(idp_t clos, idp_t ctx, std::string const& name, Args ... args)
+	{
+		//return CreateCollective_action<T, Args...>(clos, ctx, name, std::forward<Args>(args)...);
+		auto active_rsc_idp = GetActiveResourceIdp(); // I'll get the idp of the current agent that will be needed in the Pod
+		std::shared_ptr<Domain> ptr = hpx::get_ptr<Domain>(hpx::launch::sync, this->get_id());
+		return ptr->CreateCollective2<T, Args...>(active_rsc_idp, clos, ctx, name, args...);
+	}
+
+	// return a future, the funcion Run from executor return allways a future. 
+	// in this case, we do .get(), but this get stands for async's future, not Run'future
+    template <typename T, typename ... Args>
+    auto Run(hpx::launch::async_policy, idp_t idp, Args... args)
 	{
 		typedef cor::Domain::Run_action_Domain<T, Args...> action_type;
-		return hpx::async<action_type>(this->get_id(), idp, std::forward<Args>(args)...);
+		return hpx::async<action_type>(this->get_id(), idp, args...).get();
 	}
 
-    template <typename T>
-    hpx::future<void> Wait(idp_t idp)
+	// return a future
+    template <typename T, typename ... Args>
+    auto Run(idp_t idp, Args... args)
 	{
-		typedef cor::Domain::Wait_action_Domain<T> action_type;
-		return hpx::async<action_type>(this->get_id(), idp); 
+		typedef cor::Domain::Run_action_Domain<T, Args...> action_type;
+		return action_type()(this->get_id(), idp, args...);
 	}
 
-	// FUTURIZAR ESTA FUNCAO
-    template <typename T>
-    auto Get(idp_t idp)
+	hpx::future<idp_t> Spawn(hpx::launch::async_policy, std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 	{
-		typedef cor::Domain::Get_action_Domain<T> action_type;
-		return hpx::async<action_type>(this->get_id(), idp).get(); 
-	}
-
-	hpx::future<idp_t> Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
-	{
-		auto parent = GetActiveResourceIdp().get();
+		auto parent = GetActiveResourceIdp(hpx::launch::async).get();
 		typedef cor::Domain::Spawn_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id(), context, npods, parent, module, args, hosts); 
+	}
+
+	idp_t Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+	{
+		auto parent = GetActiveResourceIdp();
+		typedef cor::Domain::Spawn_action_Domain action_type;
+		return action_type()(this->get_id(), context, npods, parent, module, args, hosts); 
 	}
 
 
 	/** Local Client's interface **/
 	// local idp of this resource
-	hpx::future<idp_t> Idp() {
+	hpx::future<idp_t> Idp(hpx::launch::async_policy) {
 		return hpx::make_ready_future(_idp);
 	}
 
-	// Returns component's GID
-	hpx::future<hpx::id_type> GetGid() {
-		return hpx::make_ready_future(this->get_id());
+	idp_t Idp() {
+		return _idp;
 	}
 
-	hpx::future<int> GetComponentType()
+	// Returns component's GID
+	hpx::future<hpx::id_type> GetGid(hpx::launch::async_policy) {
+	  	return hpx::make_ready_future(this->get_id());
+	}
+
+	hpx::id_type GetGid() {
+	  	return this->get_id();
+	}
+
+	hpx::future<int> GetComponentType(hpx::launch::async_policy)
 	{
 		/* Resource identification
 		1 - Domain
@@ -331,9 +521,18 @@ public:
 		return hpx::make_ready_future(1);
 	}
 
+	int GetComponentType()
+	{
+		return 1;
+	}
+
 	// For compilation purposes only, it is never used here!
-	hpx::future<hpx::id_type> GetMailboxGid() {
+	hpx::future<hpx::id_type> GetMailboxGid(hpx::launch::async_policy) {
 		return hpx::make_ready_future(hpx::find_here());
+	}
+
+	hpx::id_type GetMailboxGid() {
+		return hpx::find_here();
 	}
 	
 

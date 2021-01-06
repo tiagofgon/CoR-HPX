@@ -12,33 +12,34 @@ std::unique_ptr<T> Controller::GetLocalResource(idp_t idp)
     return _rsc_mgr->GetLocalResource<T>(idp);
 }
 
-template <typename T>
-std::unique_ptr<T> Controller::CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func)
+template <typename T, typename ... Args>
+std::unique_ptr<T> Controller::CreateLocal_test(idp_t ctx, std::string const& name, Args ... args)
 {
-    // std::cout << "idp_t_createLocal_Controller: "<< ctx << std::endl;
-    return _rsc_mgr->CreateLocal_agent<T>(ctx, name, GetName(), func);
+    std::cout << "Controller::CreateLocal_test" << std::endl;
+    return _rsc_mgr->CreateLocal_test<T, Args...>(ctx, name, GetName(), args...);
+    //return nullptr;
 }
 
 template <typename T, typename ... Args>
-std::unique_ptr<T> Controller::CreateLocal(idp_t ctx, std::string const& name, Args&& ... args)
+std::unique_ptr<T> Controller::CreateLocal(idp_t ctx, std::string const& name, Args ... args)
 {
     // std::cout << "Controller::CreateLocal" << std::endl;
-    return _rsc_mgr->CreateLocal<T, Args...>(ctx, name, GetName(), std::forward<Args>(args)...);
+    return _rsc_mgr->CreateLocal<T, Args...>(ctx, name, GetName(), args...);
 }
 
 template <typename T, typename ... Args>
-idp_t Controller::Create(idp_t ctx, std::string const& name, Args&& ... args)
+idp_t Controller::Create(idp_t ctx, std::string const& name, Args ... args)
 {
     // std::cout << "idp_t_createLocal_Controller: "<< ctx << std::endl;
-    return _rsc_mgr->Create<T, Args...>(ctx, name, GetName(), std::forward<Args>(args)...);
+    return _rsc_mgr->Create<T, Args...>(ctx, name, GetName(), args...);
 }
 
 template <typename T, typename ... Args>
-idp_t Controller::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
+idp_t Controller::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args)
 {
-    std::cout << "Controller::CreateRemote" << std::endl;
+    //std::cout << "Controller::CreateRemote" << std::endl;
     // std::cout << "idp_t_createRemote_Controller: "<< ctx << std::endl;
-    return _rsc_mgr->CreateRemote<T, Args...>(ctx, name, ctrl, std::forward<Args>(args)...);
+    return _rsc_mgr->CreateRemote<T, Args...>(ctx, name, ctrl, args...);
 }
 
 template <typename T>
@@ -48,7 +49,7 @@ std::unique_ptr<T> Controller::CreateReference(idp_t idp, idp_t ctx, std::string
 }
 
 template <typename T, typename ... Args>
-std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& name, unsigned int total_members, Args&& ... args)
+std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& name, unsigned int total_members, Args ... args)
 {
     std::unique_ptr<T> rsc_ptr;
     std::string barrier_name = _context + "barrier";
@@ -61,11 +62,11 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
     //std::cout << "aqui3, na localidade: " << first << std::endl;
     if(pos==0) { // Primeira localidade, cria o recurso e regista-o no agas
         //std::cout << "registou" << std::endl;
-        rsc_ptr = CreateLocal<T>(ctx, name, std::forward<Args>(args)...);
+        rsc_ptr = CreateLocal<T>(ctx, name, args...);
         hpx::register_with_basename(basename, rsc_ptr->GetGid(), 0);
 
-        auto parent = rsc_ptr->GetParent().get();
-        auto clos_idp = rsc_ptr->Idp().get();
+        auto parent = rsc_ptr->GetParent();
+        auto clos_idp = rsc_ptr->Idp();
         // enviar ao agente que fez o spawn, o idp da clausura
         if(parent != 0) {
             cor::Message msg;
@@ -85,7 +86,7 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
 
         if(total_members > 1) 
         {
-            std::cout << "dentro da barreira-0" << std::endl;
+            //std::cout << "dentro da barreira-0" << std::endl;
             hpx::lcos::barrier barrier(barrier_name, total_members, pos); // rank == 0, a barreira tem de ter obrigatoriamente o rank 0
             //std::cout << "fora da barreira-0" << std::endl;
             barrier.wait();
@@ -121,7 +122,7 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
 
 
     // if(first==0) { // Primeira localidade, cria o recurso e regista-o no agas
-    //     rsc_ptr = CreateLocal<T>(ctx, name, std::forward<Args>(args)...);
+    //     rsc_ptr = CreateLocal<T>(ctx, name, args...);
     //     hpx::register_with_basename(basename, rsc_ptr->GetGid());
     // }
 
@@ -152,9 +153,9 @@ std::unique_ptr<T> Controller::CreateCollective(idp_t ctx, std::string const& na
 }
 
 template <typename T, typename ... Args>
-std::unique_ptr<T> Controller::CreateCollective(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, Args&& ... args)
+std::unique_ptr<T> Controller::CreateCollective(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, Args ... args)
 {
-    return _rsc_mgr->CreateCollective<T>(rank, comm, ctx, name, GetName(), std::forward<Args>(args)...);
+    return _rsc_mgr->CreateCollective<T>(rank, comm, ctx, name, GetName(), args...);
 }
 
 

@@ -28,7 +28,7 @@ public:
 
 // protected:
     Executor() = delete;
-    Executor(idp_t idp, hpx::function<R(P...)> const& f);
+    Executor(idp_t idp, std::function<R(P...)> const& f);
     Executor(idp_t idp, std::string const& module, std::string const& function);
 
     // Executor(const Executor&) = delete;
@@ -36,15 +36,12 @@ public:
 
     // Executor(Executor&&) noexcept;
     // Executor& operator=(Executor&&) noexcept;
-    
-    template <typename ... Args>
-    void Run(Args&&... args);
+
+    // template <typename ... Args>
+    // hpx::future<R> Run(Args... args);
 
     template <typename ... Args>
-    R RunNow(Args&&... args);
-
-    void Wait();
-    R Get();
+    hpx::future<R> Run(Args&&... args);
 
     void ChangeIdp(idp_t idp);
     void ResumeIdp();
@@ -63,7 +60,6 @@ private:
 
     dll::DynamicLibrary* _module;
 
-    hpx::future<R> _future_hpx;
     std::uint64_t tid;
 
 };

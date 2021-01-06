@@ -11,7 +11,7 @@ ProtoAgent<R(P...)>::ProtoAgent(idp_t idp, std::function<R(P...)> const& f) :
     Resource{idp},
     _executor{idp, f}
 {
-    std::cout << "Criado um componente \"ProtoAgent\", com idp: " << idp << std::endl;
+    //std::cout << "Criado um componente \"ProtoAgent\", com idp: " << idp << std::endl;
 }
 
 template <typename R, typename ... P>
@@ -19,28 +19,23 @@ ProtoAgent<R(P...)>::ProtoAgent(idp_t idp, std::string const& module, std::strin
     Resource{idp},
     _executor{idp, module, function}
 {
-    std::cout << "Criado um componente \"ProtoAgent\", com idp: " << idp << std::endl;
+    //std::cout << "Criado um componente \"ProtoAgent\", com idp: " << idp << std::endl;
 }
 
 
 /* Executor's interface */
 template <typename R, typename ... P>
 template <typename ... Args>
-void ProtoAgent<R(P...)>::Run(Args&&... args)
+hpx::future<R> ProtoAgent<R(P...)>::Run1(Args... args)
 {
-    return _executor.Run(std::forward<Args>(args)... );
+    return _executor.Run(args...);
 }
 
 template <typename R, typename ... P>
-void ProtoAgent<R(P...)>::Wait()
+template <typename ... Args>
+hpx::future<R> ProtoAgent<R(P...)>::Run2(Args&&... args)
 {
-    return _executor.Wait();
-}
-
-template <typename R, typename ... P>
-R ProtoAgent<R(P...)>::Get()
-{
-    return _executor.Get();
+    return _executor.Run(std::forward<Args>(args)...);
 }
 
 template <typename R, typename ... P>

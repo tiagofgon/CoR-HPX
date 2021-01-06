@@ -39,6 +39,13 @@ public:
 
     void Dispatch_void(hpx::function<void()> func);
 
+    template < typename Func, typename ... Args >
+    void Dispatch(Func&& func, Args&&... args);
+
+    template < typename Func>
+    void Dispatch(Func&& func);
+
+    HPX_DEFINE_COMPONENT_ACTION(Operon, GetRank, GetRank_action_Operon); 
     HPX_DEFINE_COMPONENT_ACTION(Operon, GetNumThreads, GetNumThreads_action_Operon);  
     HPX_DEFINE_COMPONENT_ACTION(Operon, Dispatch_void, Dispatch_void_action_Operon);
 
@@ -90,7 +97,7 @@ typedef cor::Operon::Dispatch_void_action_Operon Dispatch_void_action_Operon;
 HPX_REGISTER_ACTION_DECLARATION(Dispatch_void_action_Operon);
 
 
-
+typedef cor::Operon::GetRank_action_Operon GetRank_action_Operon;
 typedef cor::Operon::Send1_action_Operon Send1_action_Operon;
 typedef cor::Operon::Send2_action_Operon Send2_action_Operon;
 typedef cor::Operon::Receive1_action_Operon Receive1_action_Operon;
@@ -100,6 +107,7 @@ typedef cor::Operon::Send3_action_Operon Send3_action_Operon;
 typedef cor::Operon::Receive3_action_Operon Receive3_action_Operon;
 typedef cor::Operon::GetMailboxGid_action_Operon GetMailboxGid_action_Operon;
 
+HPX_REGISTER_ACTION_DECLARATION(GetRank_action_Operon);
 HPX_REGISTER_ACTION_DECLARATION(Send1_action_Operon);
 HPX_REGISTER_ACTION_DECLARATION(Send2_action_Operon);
 HPX_REGISTER_ACTION_DECLARATION(Receive1_action_Operon);

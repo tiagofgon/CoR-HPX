@@ -1,19 +1,30 @@
+/* ---------- 
+-- Tiago Gonçalves - University of Minho, 2021 --
+
+For execution in two separated consoles (two processes):
+    $ ./corhpx apps ctx 2 0 ../examples/parallel.so --hpx:hpx=localhost:1337 --hpx:expect-connecting-localities
+    $ ./corhpx apps ctx 2 0 ../examples/parallel.so --hpx:hpx=localhost:1338 --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:expect-connecting-localities --hpx:worker
+or using mpi:
+    $ mpirun -np 2 ./corhpx apps ctx 2 0 ../examples/parallel.so
+
+---------- */
+
 #include "cor/cor.hpp"
 
 extern "C"
 {
-    void Main(int rsc_idp);
+    void Main(int argc, char *argv[]);
 }
 
-void Main(int rsc_idp)
+void Main(int argc, char *argv[])
 {
-    auto domain = cor::GetDomain().get();
-    auto agent_idp = domain->GetActiveResourceIdp().get();
-    auto clos_idp = domain->GetPredecessorIdp(agent_idp).get();
-    auto clos = domain->GetLocalResource<cor::Closure_Client>(clos_idp).get();
-    auto clos_size = clos->GetTotalMembers().get();
-    auto rank = clos->GetIdm(agent_idp).get();
-    auto parent_idp = clos->GetParent().get();
+    auto domain = cor::GetDomain();
+    auto agent_idp = domain->GetActiveResourceIdp();
+    auto clos_idp = domain->GetPredecessorIdp(agent_idp);
+    auto clos = domain->GetLocalResource<cor::Closure_Client>(clos_idp);
+    auto clos_size = clos->GetTotalMembers(hpx::launch::async);
+    auto rank = clos->GetIdm(hpx::launch::async, agent_idp);
+    auto parent_idp = clos->GetParent(hpx::launch::async);
 
-    std::cout << agent_idp << "\t" << rank << "\t" << clos_idp << "\t" << clos_size << "\t" << parent_idp << "          hpx::locality= " << hpx::get_locality_id() << "\n";
+    std::cout << agent_idp << "\t" << rank.get() << "\t" << clos_idp << "\t" << clos_size.get() << "\t" << parent_idp.get() << "\tlocality " << hpx::get_locality_id() << std::endl;
 }

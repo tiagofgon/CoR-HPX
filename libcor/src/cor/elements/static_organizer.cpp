@@ -11,7 +11,8 @@ StaticOrganizer::StaticOrganizer(idp_t idp, unsigned int total_members, idp_t pa
     _total_members{total_members},
     _parent{parent},
     _members{},
-    _next_idm{0}
+    _next_idm{0},
+    _mtx{}
 {
     //std::cout << "Criado um objeto da classe \"StaticOrganizer\", com idp: " << _idp << std::endl;
 }
@@ -23,11 +24,12 @@ StaticOrganizer::StaticOrganizer(idp_t idp, unsigned int total_members, idp_t pa
 
 void StaticOrganizer::Join(idp_t idp, std::string const& name)
 {
-    // std::cout << "Join STATIC ORGANIZER ---------------------------------------------" << std::endl;
+    //std::cout << "Join STATIC ORGANIZER ---------------------------------------------" << std::endl;
     
     // acquire write
-    _mtx.lock();
-
+    // _mtx.lock();
+    std::unique_lock<hpx::lcos::local::shared_mutex> ul(_mtx);
+    //std::cout << "Join 0" << std::endl;
     // verify if the resource has already been attached
     if (_members.find(idp) != _members.end())
         throw std::logic_error("Resource " + std::to_string(idp) + " already joined!");
@@ -37,7 +39,7 @@ void StaticOrganizer::Join(idp_t idp, std::string const& name)
         if (p.second.second == name)
             throw std::logic_error("Resource name <" + name + "> is not unique in the context of the ancestor!");
     }
-
+    //std::cout << "Join 1" << std::endl;
     // C++ 17
     // for (const auto& [key, value] : _members) {
     //     auto&& [my_idm, my_name] = value;
@@ -54,9 +56,9 @@ void StaticOrganizer::Join(idp_t idp, std::string const& name)
         _members.emplace(idp, std::make_pair(idm, std::to_string(idp)));
     else
         _members.emplace(idp, std::make_pair(idm, name));
-
+    //std::cout << "Join 2" << std::endl;
     // release write
-    _mtx.unlock();
+    //_mtx.unlock();
 }
 
 void StaticOrganizer::Leave(idp_t idp)

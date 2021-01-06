@@ -27,7 +27,7 @@ typedef Agent type_holder;
 typedef Resource base_type_holder;
 
 protected:
-    Agent(idp_t idp, hpx::function<R(P...)> const& f);
+    Agent(idp_t idp, std::function<R(P...)> const& f);
     Agent(idp_t idp, std::string const& module, std::string const& function);
 
 public:
@@ -37,13 +37,10 @@ public:
 
     /* Executor's interface */
     template <typename ... Args>
-    void Run(Args&&... args);
+    hpx::future<R> Run1(Args... args);
 
     template <typename ... Args>
-    R RunNow(Args&&... args);
-
-    void Wait();
-    R Get();
+    hpx::future<R> Run2(Args&&... args);
 
     void ChangeIdp(idp_t idp);
     void ResumeIdp();
@@ -53,8 +50,6 @@ public:
 
     idp_t GetExecutorIdp();
 
-    HPX_DEFINE_COMPONENT_ACTION(Agent, Wait, Wait_action_Agent);
-    HPX_DEFINE_COMPONENT_ACTION(Agent, Get, Get_action_Agent) ;
     HPX_DEFINE_COMPONENT_ACTION(Agent, ChangeIdp, ChangeIdp_action_Agent);
     HPX_DEFINE_COMPONENT_ACTION(Agent, ResumeIdp, ResumeIdp_action_Agent);
     HPX_DEFINE_COMPONENT_ACTION(Agent, CurrentIdp, CurrentIdp_action_Agent);
@@ -62,18 +57,18 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(Agent, GetExecutorIdp, GetExecutorIdp_action_Agent);
 
     template <typename ... Args>
-    struct Run_action_Agent
+    struct Run1_action_Agent
     : hpx::actions::make_action<
-        decltype(&Agent::Run<Args...>),
-        &Agent::Run<Args...>
+        decltype(&Agent::Run1<Args...>),
+        &Agent::Run1<Args...>
     >::type
     {};
 
     template <typename ... Args>
-    struct RunNow_action_Agent
+    struct Run2_action_Agent
     : hpx::actions::make_action<
-        decltype(&Agent::RunNow<Args...>),
-        &Agent::RunNow<Args...>
+        decltype(&Agent::Run2<Args...>),
+        &Agent::Run2<Args...>
     >::type
     {};
 
@@ -119,12 +114,6 @@ private:
 
 #define REGISTER_AGENT_DECLARATION(res, ...)                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                      \
-        cor::Agent<res(__VA_ARGS__)>::Wait_action_Agent,                                                  \
-        HPX_PP_CAT(__Agent_Wait_action_Agent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));               \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                      \
-        cor::Agent<res(__VA_ARGS__)>::Get_action_Agent,                                                   \
-        HPX_PP_CAT(__Agent_Get_action_Agent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));                \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                      \
         cor::Agent<res(__VA_ARGS__)>::ChangeIdp_action_Agent,                                             \
         HPX_PP_CAT(__Agent_ChangeIdp_action_Agent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));          \
     HPX_REGISTER_ACTION_DECLARATION(                                                                      \
@@ -166,12 +155,6 @@ private:
 
 
 #define REGISTER_AGENT(res, ...)                                                                          \
-    HPX_REGISTER_ACTION(                                                                                  \
-        cor::Agent<res(__VA_ARGS__)>::Wait_action_Agent,                                                  \
-        HPX_PP_CAT(__Agent_Wait_action_Agent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));               \
-    HPX_REGISTER_ACTION(                                                                                  \
-        cor::Agent<res(__VA_ARGS__)>::Get_action_Agent,                                                   \
-        HPX_PP_CAT(__Agent_Get_action_Agent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));                \
     HPX_REGISTER_ACTION(                                                                                  \
         cor::Agent<res(__VA_ARGS__)>::ChangeIdp_action_Agent,                                             \
         HPX_PP_CAT(__Agent_ChangeIdp_action_Agent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));          \

@@ -35,23 +35,23 @@ public:
     void CreateMetaDomain(std::string const& ctrl);
     void FindMetaDomain(std::string const& ctrl);
     
-    template <typename T>
-    std::unique_ptr<T> CreateLocal_agent(idp_t ctx, std::string const& name, std::string const& ctrl, hpx::function<void(int)> const& func);
+    template <typename T, typename ... Args>
+    std::unique_ptr<T> CreateLocal_test(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args);
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args);
+    std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args);
 
     template <typename T, typename ... Args>
-    idp_t Create(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args);
+    idp_t Create(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args);
 
     template <typename T, typename ... Args>
-    idp_t CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args);
+    idp_t CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args);
 
     template <typename T>
     std::unique_ptr<T> CreateReference(idp_t idp, idp_t ctx, std::string const& name, std::string const& ctrl);
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateCollective(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args);
+    std::unique_ptr<T> CreateCollective(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args);
 
     bool ContainsResource(idp_t idp);
 

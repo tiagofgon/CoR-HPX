@@ -56,15 +56,15 @@ void ResourceManager::CreateMetaDomain(std::string const& ctrl)
     std::unique_ptr<Domain_Client> rsc = std::make_unique<Domain_Client>(cor::MetaDomain, "");
 
     // insert association between idp and gid on gids map
-    InsertIdp(cor::MetaDomain, rsc->GetGid().get()); // Inform the global component of the idp-gid association, as well as the local association
+    InsertIdp(cor::MetaDomain, rsc->GetGid()); // Inform the global component of the idp-gid association, as well as the local association
     
     // insert relationship of ancestry
     InsertPredecessorIdp(cor::MetaDomain, cor::MetaDomain);
 
-    auto future = hpx::register_with_basename("MetaDomain", rsc->GetGid().get());
+    auto future = hpx::register_with_basename("MetaDomain", rsc->GetGid());
 
     // self join of meta-domain resource
-    rsc->Join(cor::MetaDomain, "MetaDomain").get();
+    rsc->Join(cor::MetaDomain, "MetaDomain");
 
     // std::cout << "-- Criado o Meta-Dominio -- " << cor::MetaDomain << std::endl;
 }
@@ -132,7 +132,7 @@ unsigned int ResourceManager::GetTotalDomains()
 {
     auto gid = GetGidFromIdp(cor::MetaDomain);
     std::unique_ptr<Domain_Client> meta_domain = std::make_unique<Domain_Client>(std::move(gid));
-    auto total_members = meta_domain->GetTotalMembers().get();
+    auto total_members = meta_domain->GetTotalMembers();
 
     return total_members;
 }
@@ -264,11 +264,11 @@ void ResourceManager::DeallocateResource(idp_t idp)
         
         if(FindDynamicOrganizer_idps(idp) == true) {
             std::unique_ptr<Domain_Client> rsc = std::make_unique<Domain_Client>(std::move(ctx_gid));
-            rsc->Leave(idp).get();
+            rsc->Leave(idp);
         } else {
             if(FindStaticOrganizer_idps(idp) == true) {
                 std::unique_ptr<Closure_Client> rsc = std::make_unique<Closure_Client>(std::move(ctx_gid));
-                rsc->Leave(idp).get();
+                rsc->Leave(idp);
             }
         }
     }
@@ -423,10 +423,15 @@ void ResourceManager::AttachResource(idp_t ctx, hpx::id_type ctx_gid, idp_t idp,
     // Add to ctx resource organizer element
     if(FindDynamicOrganizer_idps(ctx) == true) {
         std::unique_ptr<Domain_Client> rsc = std::make_unique<Domain_Client>(std::move(ctx_gid));
-        rsc->Join(idp, name).get();
+        rsc->Join(idp, name);
     } else if(FindStaticOrganizer_idps(ctx) == true) {
+        //std::cout << "ResourceManager::AttachResource 1" << std::endl;
         std::unique_ptr<Closure_Client> rsc = std::make_unique<Closure_Client>(std::move(ctx_gid));
-        rsc->Join(idp, name).get();
+        //std::cout << "ResourceManager::AttachResource 2" << std::endl;
+        auto IdpGlobal = rsc->IdpGlobal();
+        //std::cout << "IdpGlobal: " << IdpGlobal << std::endl;
+        rsc->Join(idp, name);
+        //std::cout << "ResourceManager::AttachResource 3" << std::endl;
     } else {
         throw std::runtime_error("Resource " + std::to_string(ctx) + " does not have an organizer!(AttachResource)");
     }
@@ -439,9 +444,9 @@ hpx::id_type ResourceManager::AttachResourceRemote(hpx::id_type ctx_gid, idp_t i
     std::unique_ptr<Domain_Client> rsc_remote = std::make_unique<Domain_Client>(std::move(ctx_gid));
 
     // Retornar a localidade de onde o Domain está
-    auto locality = rsc_remote->GetLocalityGID().get();
+    auto locality = rsc_remote->GetLocalityGID();
     // attach resource to the context (remote domain)
-    rsc_remote->Join(idp, name).get();
+    rsc_remote->Join(idp, name);
 
     return locality;
 }

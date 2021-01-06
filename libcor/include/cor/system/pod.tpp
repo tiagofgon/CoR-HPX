@@ -20,21 +20,23 @@ std::unique_ptr<T> Pod::GetLocalResource(idp_t idp)
     return _ctrl->GetLocalResource<T>(idp);
 }
 
-template <typename T>
-std::unique_ptr<T> Pod::CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func)
+template <typename T, typename ... Args>
+std::unique_ptr<T> Pod::CreateLocal_test(idp_t ctx, std::string const& name, Args ... args)
 {
-    return _ctrl->CreateLocal_agent<T>(ctx, name, func);
+    std::cout << "Pod::CreateLocal_test" << std::endl;
+    return _ctrl->CreateLocal_test<T, Args...>(ctx, name, args...);
+    //return nullptr;
 }
 
 template <typename T, typename ... Args>
-std::unique_ptr<T> Pod::CreateLocal(idp_t ctx, std::string const& name, Args&& ... args)
+std::unique_ptr<T> Pod::CreateLocal(idp_t ctx, std::string const& name, Args ... args)
 {
     // std::cout << "Pod::CreateLocal" << std::endl;
-    return _ctrl->CreateLocal<T, Args...>(ctx, name, std::forward<Args>(args)...);
+    return _ctrl->CreateLocal<T, Args...>(ctx, name, args...);
 }
 
 template <typename T, typename ... Args>
-idp_t Pod::Create(idp_t ctx, std::string const& name, Args&& ... args)
+idp_t Pod::Create(idp_t ctx, std::string const& name, Args ... args)
 {
     // if(hpx::get_locality_id()==0) {
     //     std::vector<hpx::id_type> localities = hpx::find_remote_localities();
@@ -56,14 +58,14 @@ idp_t Pod::Create(idp_t ctx, std::string const& name, Args&& ... args)
 
     // std::cout << "idp_t: " << ctx << std::endl;
     // std::cout << "CreateLocal no Pod para adicionar ao ascendente recurso "<< ctx << std::endl;
-    return _ctrl->Create<T, Args...>(ctx, name, std::forward<Args>(args)...);
+    return _ctrl->Create<T, Args...>(ctx, name, args...);
 }
 
 template <typename T, typename ... Args>
-idp_t Pod::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
+idp_t Pod::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args)
 {
-    std::cout << "CreateRemote no Pod para adicionar ao ascendente recurso "<< ctx << std::endl;
-    return _ctrl->CreateRemote<T, Args...>(ctx, name, ctrl, std::forward<Args>(args)...);
+    //std::cout << "CreateRemote no Pod para adicionar ao ascendente recurso "<< ctx << std::endl;
+    return _ctrl->CreateRemote<T, Args...>(ctx, name, ctrl, args...);
 }
 
 template <typename T>
@@ -73,13 +75,13 @@ std::unique_ptr<T> Pod::CreateReference(idp_t idp, idp_t ctx, std::string const&
 }
 
 template <typename T, typename ... Args>
-std::unique_ptr<T> Pod::CreateCollective1(idp_t ctx, std::string const& name, unsigned int total_members, Args&& ... args)
+std::unique_ptr<T> Pod::CreateCollective1(idp_t ctx, std::string const& name, unsigned int total_members, Args ... args)
 {
-    return _ctrl->CreateCollective<T, Args...>(ctx, name, total_members, std::forward<Args>(args)...);
+    return _ctrl->CreateCollective<T, Args...>(ctx, name, total_members, args...);
 }
 
 template <typename T, typename ... Args>
-std::unique_ptr<T> Pod::CreateCollective2(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, Args&& ... args)
+std::unique_ptr<T> Pod::CreateCollective2(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, Args ... args)
 {
 
     // if(hpx::get_locality_id()==0) {
@@ -101,7 +103,7 @@ std::unique_ptr<T> Pod::CreateCollective2(idm_t rank, idp_t comm, idp_t ctx, std
     // }
 
 
-    return _ctrl->CreateCollective<T, Args...>(rank, comm, ctx, name, std::forward<Args>(args)...); 
+    return _ctrl->CreateCollective<T, Args...>(rank, comm, ctx, name, args...); 
 }
 
 

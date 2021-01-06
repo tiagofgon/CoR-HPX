@@ -28,17 +28,17 @@ public:
 	// Closure_Component instance with the given GID
 	Group_Client(hpx::future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal().get())
+		_idp(IdpGlobal())
 	{}
 
 	Group_Client(hpx::shared_future<hpx::id_type> && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal().get())
+		_idp(IdpGlobal())
 	{}
 
 	Group_Client(hpx::id_type && id) :
 		base_type(std::move(id)),
-		_idp(IdpGlobal().get())
+		_idp(IdpGlobal())
 	{}
 
 	// Constructor for replicas
@@ -71,101 +71,187 @@ public:
 
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource
-	hpx::future<idp_t> IdpGlobal()
+	hpx::future<idp_t> IdpGlobal(hpx::launch::async_policy)
 	{
 		typedef Resource::Idp_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
 
+	idp_t IdpGlobal()
+	{
+		typedef Resource::Idp_action_Resource action_type;
+		return action_type()(base_type::get_id());
+	}
+
 	// method that returns the GID(hpx::id_type) of this resource locality
-	hpx::future<hpx::id_type> GetLocalityGID()
+	hpx::future<hpx::id_type> GetLocalityGID(hpx::launch::async_policy)
 	{
 		typedef Resource::GetLocalityGID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
-	
+
+	hpx::id_type GetLocalityGID()
+	{
+		typedef Resource::GetLocalityGID_action_Resource action_type;
+		return action_type()(base_type::get_id());
+	}
+
 	// method that returns the number of this resource locality
-	hpx::future<unsigned int> GetLocalityID()
+	hpx::future<unsigned int> GetLocalityID(hpx::launch::async_policy)
 	{
 		typedef Resource::GetLocalityID_action_Resource action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
+
+	unsigned int GetLocalityID()
+	{
+		typedef Resource::GetLocalityID_action_Resource action_type;
+		return action_type()(base_type::get_id());	
+	}
 	
 
 	/** Dynamic organizer's interface **/
-	hpx::future<void> Join(idp_t idp, std::string const& name)
+	hpx::future<void> Join(hpx::launch::async_policy, idp_t idp, std::string const& name)
 	{
 		typedef Group::Join_action_Group action_type;
 		return hpx::async<action_type>(this->get_id(), idp, name);
 	}
 
-	hpx::future<void> Leave(idp_t idp)
+	void Join(idp_t idp, std::string const& name)
+	{
+		typedef Group::Join_action_Group action_type;
+		return action_type()(this->get_id(), idp, name);
+	}
+
+	hpx::future<void> Leave(hpx::launch::async_policy, idp_t idp)
 	{
 		typedef Group::Leave_action_Group action_type;
 		return hpx::async<action_type>(this->get_id(), idp);
 	}
 
-	hpx::future<std::string> GetModuleName()
+	void Leave(idp_t idp)
+	{
+		typedef Group::Leave_action_Group action_type;
+		return action_type()(this->get_id(), idp);
+	}
+
+	hpx::future<std::string> GetModuleName(hpx::launch::async_policy)
 	{
 		typedef Group::GetModuleName_action_Group action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
+	
+	std::string GetModuleName()
+	{
+		typedef Group::GetModuleName_action_Group action_type;
+		return action_type()(base_type::get_id());
+	}
 
-	hpx::future<std::size_t> GetTotalMembers()
+	hpx::future<std::size_t> GetTotalMembers(hpx::launch::async_policy)
 	{
 		typedef Group::GetTotalMembers_action_Group action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
 
-	hpx::future<std::vector<idp_t>> GetMemberList()
+	std::size_t GetTotalMembers()
+	{
+		typedef Group::GetTotalMembers_action_Group action_type;
+		return action_type()(base_type::get_id());
+	}
+
+	hpx::future<std::vector<idp_t>> GetMemberList(hpx::launch::async_policy)
 	{
 		typedef Group::GetMemberList_action_Group action_type;
 		return hpx::async<action_type>(base_type::get_id());
 	}
 
-    hpx::future<idp_t> GetIdp(idm_t idm)
+	std::vector<idp_t> GetMemberList()
+	{
+		typedef Group::GetMemberList_action_Group action_type;
+		return action_type()(base_type::get_id());
+	}
+
+    hpx::future<idp_t> GetIdp(hpx::launch::async_policy, idm_t idm)
 	{
 		typedef Group::GetIdp1_action_Group action_type;
 		return hpx::async<action_type>(this->get_id(), idm);
 	}
 
-    hpx::future<idp_t> GetIdp(std::string const& name)
+    idp_t GetIdp(idm_t idm)
+	{
+		typedef Group::GetIdp1_action_Group action_type;
+		return action_type()(this->get_id(), idm);
+	}
+
+    hpx::future<idp_t> GetIdp(hpx::launch::async_policy, std::string const& name)
 	{
 		typedef Group::GetIdp2_action_Group action_type;
 		return hpx::async<action_type>(this->get_id(), name);
 	}
 
-    hpx::future<idm_t> GetIdm(idp_t idp)
+    idp_t GetIdp(std::string const& name)
+	{
+		typedef Group::GetIdp2_action_Group action_type;
+		return action_type()(this->get_id(), name);
+	}
+
+    hpx::future<idm_t> GetIdm(hpx::launch::async_policy, idp_t idp)
 	{
 		typedef Group::GetIdm1_action_Group action_type;
 		return hpx::async<action_type>(this->get_id(), idp);
 	}
 
-    hpx::future<idm_t> GetIdm(std::string const& name)
+    idm_t GetIdm(idp_t idp)
+	{
+		typedef Group::GetIdm1_action_Group action_type;
+		return action_type()(this->get_id(), idp);
+	}
+
+    hpx::future<idm_t> GetIdm(hpx::launch::async_policy, std::string const& name)
 	{
 		typedef Group::GetIdm2_action_Group action_type;
 		return hpx::async<action_type>(this->get_id(), name);
 	}
 
-    hpx::future<idm_t> GetDynamicOrganizerIdp()
+    idm_t GetIdm(std::string const& name)
+	{
+		typedef Group::GetIdm2_action_Group action_type;
+		return action_type()(this->get_id(), name);
+	}
+
+    hpx::future<idm_t> GetDynamicOrganizerIdp(hpx::launch::async_policy)
 	{
 		typedef Group::GetDynamicOrganizerIdp_action_Group action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
+    idm_t GetDynamicOrganizerIdp()
+	{
+		typedef Group::GetDynamicOrganizerIdp_action_Group action_type;
+		return action_type()(this->get_id());
+	}
+
 
 	/** Local Client's interface **/
 	// local idp of this resource
-	hpx::future<idp_t> Idp() {
+	hpx::future<idp_t> Idp(hpx::launch::async_policy) {
 		return hpx::make_ready_future(_idp);
 	}
 
-	// Returns component's GID
-	hpx::future<hpx::id_type> GetGid() {
-	  return hpx::make_ready_future(this->get_id());
+	idp_t Idp() {
+		return _idp;
 	}
 
-	hpx::future<int> GetComponentType()
+	// Returns component's GID
+	hpx::future<hpx::id_type> GetGid(hpx::launch::async_policy) {
+	  	return hpx::make_ready_future(this->get_id());
+	}
+
+	hpx::id_type GetGid() {
+	  	return this->get_id();
+	}
+
+	hpx::future<int> GetComponentType(hpx::launch::async_policy)
 	{
 		/* Resource identification
 		1 - Domain
@@ -181,9 +267,18 @@ public:
 		return hpx::make_ready_future(2);
 	}
 
+	int GetComponentType()
+	{
+		return 2;
+	}
+
 	// For compilation purposes only, it is never used here!
-	hpx::future<hpx::id_type> GetMailboxGid() {
+	hpx::future<hpx::id_type> GetMailboxGid(hpx::launch::async_policy) {
 		return hpx::make_ready_future(hpx::find_here());
+	}
+
+	hpx::id_type GetMailboxGid() {
+		return hpx::find_here();
 	}
 	
 

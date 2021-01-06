@@ -59,26 +59,26 @@ public:
     template <typename T>
     std::unique_ptr<T> GetLocalResource(idp_t idp);
 
-    template <typename T>
-    std::unique_ptr<T> CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func);
+    template <typename T, typename ... Args>
+    std::unique_ptr<T> CreateLocal_test(idp_t ctx, std::string const& name, Args ... args);
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args&& ... args);
+    std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args ... args);
 
     template <typename T, typename ... Args>
-    idp_t Create(idp_t ctx, std::string const& name, Args&& ... args);
+    idp_t Create(idp_t ctx, std::string const& name, Args ... args);
 
     template <typename T, typename ... Args>
-    idp_t CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args);
+    idp_t CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args);
 
     template <typename T>
     std::unique_ptr<T> CreateReference(idp_t idp, idp_t ctx, std::string const& name);
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateCollective1(idp_t ctx, std::string const& name, unsigned int total_members, Args&& ... args);
+    std::unique_ptr<T> CreateCollective1(idp_t ctx, std::string const& name, unsigned int total_members, Args ... args);
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateCollective2(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, Args&& ... args);
+    std::unique_ptr<T> CreateCollective2(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, Args ... args);
 
     idp_t Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
 
@@ -115,11 +115,11 @@ public:
     >::type
     {};
 
-    template <typename T>
-    struct CreateLocal_agent_action_pod 
+    template <typename T, typename ... Args>
+    struct CreateLocal_test_action_pod 
     : hpx::actions::make_action<
-        decltype(&Pod::CreateLocal_agent<T>),
-        &Pod::CreateLocal_agent<T>
+        decltype(&Pod::CreateLocal_test<T, Args...>),
+        &Pod::CreateLocal_test<T, Args...>
     >::type
     {};
 

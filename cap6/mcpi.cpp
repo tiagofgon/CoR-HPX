@@ -1,3 +1,9 @@
+/* ---------- 
+-- Tiago Gonçalves - University of Minho, 2021 --
+
+To run: ./corhpx apps ctx 1 0 ../cap6/libmcpi.so «number of hpx threads» «number of samples»
+---------- */
+
 #include "cor/cor.hpp"
 
 #include "external/CpuTimer.h"
@@ -18,94 +24,79 @@ std::shared_ptr<cor::Operon_Client> operon;
 
 extern "C"
 {
-    void Main(int argc);
+    void Main(int argc, char *argv[]);
 }
 
+void McPi_static() {
+//std::cout << "McPi_static " << std::endl;
+    unsigned long ct;
+    double x, y;
+    ct = 0;
+    auto [beg, end] = operon->ScheduleStatic(0, nsamples);
+    for (auto n = beg; n < end; ++n) {
+        x = R.draw();
+        y = R.draw();
+        if ((x*x+y*y) <= 1.0)
+            ++ct;
+    }
+    sum_static.fetch_add(ct);
+}
 
-struct piCalc_static {
-    void operator()() {
-    //std::cout << "McPi_static " << std::endl;
-        unsigned long ct;
-        double x, y;
-        ct = 0;
-        auto [beg, end] = operon->ScheduleStatic(0, nsamples).get();
+void McPi_static_chunk() {
+    //std::cout << "McPi_static_chunk " << std::endl;
+    unsigned long ct;
+    double x, y;
+    ct = 0;
+    auto vec = operon->ScheduleStatic(0, nsamples, 500);
+    for(int i=0; i<vec.size(); i++){
+        auto [beg, end] = vec[i];
         for (auto n = beg; n < end; ++n) {
             x = R.draw();
             y = R.draw();
             if ((x*x+y*y) <= 1.0)
                 ++ct;
         }
-        sum_static.fetch_add(ct);
     }
-};
-piCalc_static _piCalc_static;
-hpx::function<void()> McPi_static(_piCalc_static);
 
+    sum_static.fetch_add(ct);
+}
 
+void McPi_dynamic() {
+    //std::cout << "McPi_static_chunk " << std::endl;
+    unsigned long ct;
+    double x, y;
+    ct = 0;
+    int beg, end;
+    beg = 0;                    // initialize [beg, end) to global range
+    end = nsamples;
 
-
-struct piCalc_static_chunk {
-    void operator()() {
-        //std::cout << "McPi_static_chunk " << std::endl;
-        unsigned long ct;
-        double x, y;
-        ct = 0;
-        auto vec = operon->ScheduleStatic(0, nsamples, 500).get();
-        for(int i=0; i<vec.size(); i++){
-            auto [beg, end] = vec[i];
-            for (auto n = beg; n < end; ++n) {
-                x = R.draw();
-                y = R.draw();
-                if ((x*x+y*y) <= 1.0)
-                    ++ct;
-            }
+    while(beg<nsamples) {
+        std::pair<int, int> par = operon->ScheduleDynamic(0, nsamples, 500);
+        beg=par.first;
+        end=par.second;
+        for(auto n = beg; n < end; ++n) {
+            x = R.draw();
+            y = R.draw();
+            if ((x*x+y*y) <= 1.0)
+                ++ct;
         }
-
-        sum_static.fetch_add(ct);
     }
-};
-piCalc_static_chunk _piCalc_static_chunk;
-hpx::function<void()> McPi_static_chunk(_piCalc_static_chunk);
+
+    sum_static.fetch_add(ct);
+}
 
 
-
-struct piCalc_dynamic {
-    void operator()() {
-        //std::cout << "McPi_static_chunk " << std::endl;
-        unsigned long ct;
-        double x, y;
-        ct = 0;
-        int beg, end;
-        beg = 0;                    // initialize [beg, end) to global range
-        end = nsamples;
-
-        while(beg<nsamples) {
-            std::pair<int, int> par = operon->ScheduleDynamic(0, nsamples, 500).get();
-            beg=par.first;
-            end=par.second;
-            for(auto n = beg; n < end; ++n) {
-                x = R.draw();
-                y = R.draw();
-                if ((x*x+y*y) <= 1.0)
-                    ++ct;
-            }
-        }
-
-        sum_static.fetch_add(ct);
-    }
-};
-piCalc_dynamic _piCalc_dynamic;
-hpx::function<void()> McPi_dynamic(_piCalc_dynamic);
-
-
-void Main(int argc)
+void Main(int argc, char *argv[])
 {
-    auto domain = cor::GetDomain().get();
+    auto domain = cor::GetDomain();
     CpuTimer T;
     double pi, result = 0;
-    std::size_t const& pool_size = 4;
+    std::size_t pool_size = 4;
 
-    operon = domain->CreateLocal<cor::Operon_Client>(domain->Idp().get(),  "", pool_size).get();
+    if (argc >= 1) pool_size = std::atoi(argv[0]);
+    if (argc == 2) nsamples = atoi(argv[1]);
+
+    operon = domain->CreateLocal<cor::Operon_Client>(domain->Idp(),  "", pool_size);
 
     /* -------------- */
 
@@ -120,7 +111,6 @@ void Main(int argc)
 
 
     /* -------------- */
-
 
     T.Start();
     sum_static = 0;

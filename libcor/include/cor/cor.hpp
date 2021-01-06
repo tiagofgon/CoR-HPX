@@ -59,7 +59,8 @@ namespace cor {
     std::unique_ptr<Domain_Client> Initialize_hpx(std::string const& app_group, std::string const& context, unsigned int npods, std::string const& module);
     void Finalize_hpx();
 
-    hpx::future<std::shared_ptr<Domain_Client>> GetDomain();
+    hpx::future<std::shared_ptr<Domain_Client>> GetDomain(hpx::launch::async_policy);
+    std::shared_ptr<Domain_Client> GetDomain();
 
 }
 

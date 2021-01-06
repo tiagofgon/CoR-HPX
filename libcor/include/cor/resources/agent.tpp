@@ -7,7 +7,7 @@ template <typename R, typename ... P>
 Agent<R(P...)>::~Agent() = default;
 
 template <typename R, typename ... P>
-Agent<R(P...)>::Agent(idp_t idp, hpx::function<R(P...)> const& f) :
+Agent<R(P...)>::Agent(idp_t idp, std::function<R(P...)> const& f) :
     Resource{idp},
     _executor{idp, f},
     _mailBox{idp}
@@ -28,28 +28,16 @@ Agent<R(P...)>::Agent(idp_t idp, std::string const& module, std::string const& f
 /* Executor's interface */
 template <typename R, typename ... P>
 template <typename ... Args>
-void Agent<R(P...)>::Run(Args&&... args)
+hpx::future<R> Agent<R(P...)>::Run1(Args... args)
 {
-    return _executor.Run(std::forward<Args>(args)... );
+    return _executor.Run(args... );
 }
 
 template <typename R, typename ... P>
 template <typename ... Args>
-R Agent<R(P...)>::RunNow(Args&&... args)
+hpx::future<R> Agent<R(P...)>::Run2(Args&&... args)
 {
-    return _executor.RunNow(std::forward<Args>(args)... );
-}
-
-template <typename R, typename ... P>
-void Agent<R(P...)>::Wait()
-{
-    return _executor.Wait();
-}
-
-template <typename R, typename ... P>
-R Agent<R(P...)>::Get()
-{
-    return _executor.Get();
+    return _executor.Run(std::forward<Args>(args)...);
 }
 
 template <typename R, typename ... P>

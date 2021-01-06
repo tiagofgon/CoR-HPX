@@ -46,26 +46,29 @@ public:
     // std::unique_ptr<T> CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func);
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args&& ... args);
+    std::unique_ptr<T> CreateLocal(idp_t ctx, std::string const& name, Args ... args);
 
     template <typename T, typename ... Args>
-    idp_t Create(idp_t ctx, std::string const& name, Args&& ... args);
+    std::unique_ptr<T> CreateLocal_test(idp_t ctx, std::string const& name, Args ... args);
 
     template <typename T, typename ... Args>
-    idp_t CreateRemote(idp_t ctx, std::string const& name, Args&& ... args);
+    idp_t Create(idp_t ctx, std::string const& name, Args ... args);
+
+    template <typename T, typename ... Args>
+    idp_t CreateRemote(idp_t ctx, std::string const& name, Args ... args);
 
     template <typename T>
     std::unique_ptr<T> CreateReference(idp_t idp, idp_t ctx, std::string const& name);
 
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateCollective(idp_t ctx, std::string const& name, unsigned int total_members, Args&& ... args);
+    std::unique_ptr<T> CreateCollective(idp_t ctx, std::string const& name, unsigned int total_members, Args ... args);
 
     // now receives the active_rsc_idp parameter to propagate the idp of the active thread from those who invoked this function in the module, which will be necessary in the pod
     template <typename T, typename ... Args>
-    std::unique_ptr<T> CreateCollective(idp_t active_rsc_idp, idp_t clos, idp_t ctx, std::string const& name, Args&& ... args);
+    std::unique_ptr<T> CreateCollective(idp_t active_rsc_idp, idp_t clos, idp_t ctx, std::string const& name, Args ... args);
 
     template <typename T, typename ... Args>
-    void Run(idp_t idp, Args&&... args);
+    auto Run(idp_t idp, Args... args);
 
     template <typename T>
     void Wait(idp_t idp);

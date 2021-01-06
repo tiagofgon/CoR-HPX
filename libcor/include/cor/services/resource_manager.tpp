@@ -11,59 +11,54 @@ namespace cor {
 //class Mailbox;
 
 // CreateLocal que retorna o cliente object do recurso criado
-template <typename T>
-std::unique_ptr<T> ResourceManager::CreateLocal_agent(idp_t ctx, std::string const& name, std::string const& ctrl, hpx::function<void(int)> const& func)
+template <typename T, typename ... Args>
+std::unique_ptr<T> ResourceManager::CreateLocal_test(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args)
 {
-    auto idp = GenerateIdp();
-
+    // auto idp = GenerateIdp();
+    // std::cout << "ResourceManager::CreateLocal_test" << std::endl;
     // // (std::cout << ... << args); std::cout << std::endl;
-    std::unique_ptr<T> rsc = std::make_unique<T>(idp, func);
-    rsc = AllocateResource(idp, ctx, name, std::move(rsc), ctrl);
-    // InsertIdp(idp, rsc->GetGid()); // insert association between gids and idps
-    // InsertPredecessorIdp(idp, ctx); // insert association between idps and predecessors
-    
-    return GetLocalResource<T>(idp);
-    //return nullptr;
+    // std::unique_ptr<T> rsc = std::make_unique<T>(idp, args...);
+    // //std::cout << "ResourceManager::CreateLocal2" << std::endl;
+    // rsc = AllocateResource(idp, ctx, name, std::move(rsc), ctrl);
+    // // InsertIdp(idp, rsc->GetGid()); // insert association between gids and idps
+    // // InsertPredecessorIdp(idp, ctx); // insert association between idps and predecessors
+    // // std::cout << "ResourceManager::CreateLocal3" << std::endl;
+    // return GetLocalResource<T>(idp);
+    return nullptr;
 }
 
 // CreateLocal que retorna o cliente object do recurso criado
 template <typename T, typename ... Args>
-std::unique_ptr<T> ResourceManager::CreateLocal(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
+std::unique_ptr<T> ResourceManager::CreateLocal(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args)
 {
     auto idp = GenerateIdp();
-    // std::cout << "ResourceManager::CreateLocal" << std::endl;
+    //std::cout << "ResourceManager::CreateLocal" << std::endl;
     // (std::cout << ... << args); std::cout << std::endl;
-    std::unique_ptr<T> rsc = std::make_unique<T>(idp, std::forward<Args>(args)...);
-    // std::cout << "ResourceManager::CreateLocal2" << std::endl;
+    std::unique_ptr<T> rsc = std::make_unique<T>(idp, args...);
+    //std::cout << "ResourceManager::CreateLocal2" << std::endl;
     rsc = AllocateResource(idp, ctx, name, std::move(rsc), ctrl);
-    // InsertIdp(idp, rsc->GetGid()); // insert association between gids and idps
-    // InsertPredecessorIdp(idp, ctx); // insert association between idps and predecessors
-    
+    // std::cout << "ResourceManager::CreateLocal3" << std::endl;
     return GetLocalResource<T>(idp);
 }
 
 // CreateLocal que retorna o cliente object do recurso criado
 template <typename T, typename ... Args>
-idp_t ResourceManager::Create(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
+idp_t ResourceManager::Create(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args)
 {
     // std::cout << "ResourceManager:: 1" << std::endl;
     auto idp = GenerateIdp();
-    std::unique_ptr<T> rsc = std::make_unique<T>(idp, std::forward<Args>(args)...);
+    std::unique_ptr<T> rsc = std::make_unique<T>(idp, args...);
     // std::cout << "ResourceManager:: 2" << std::endl;
     rsc = AllocateResource(idp, ctx, name, std::move(rsc), ctrl);
-    // // std::cout << "ResourceManager:: 3" << std::endl;
-    // InsertIdp(idp, rsc->GetGid()); // insert association between gids and idps
-    // // std::cout << "ResourceManager:: 4" << std::endl;
-    // InsertPredecessorIdp(idp, ctx);
     // std::cout << "ResourceManager:: 5" << std::endl;
     
     return idp;
 }
 
 template <typename T, typename ... Args>
-idp_t ResourceManager::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
+idp_t ResourceManager::CreateRemote(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args)
 {
-    std::cout << "ResourceManager::CreateRemote" << std::endl;
+    // std::cout << "ResourceManager::CreateRemote" << std::endl;
     auto idp = GenerateIdp();
     {
         // lock to access resource manager variables
@@ -74,23 +69,24 @@ idp_t ResourceManager::CreateRemote(idp_t ctx, std::string const& name, std::str
             std::cout << "erro" << std::endl;
             throw std::runtime_error("Resource " + std::to_string(ctx) + " does not exist in global component!(CreateRemote)");
         } else {
-            std::cout << "---aqui 1" << std::endl;
+            // std::cout << "---aqui 1" << std::endl;
             // Ir buscar o gid do ctx remoto
             auto ctx_gid = GetGidFromIdp(ctx);
             // retornar a localidade do ctx remoto e adicionar ao seu elemento organizador o idp criado
-            std::cout << "---aqui 2" << std::endl;
+            // std::cout << "---aqui 2" << std::endl;
             auto ctx_locality = AttachResourceRemote(ctx_gid, idp, name);
             // std::cout << "Localidade do dominio remoto: " << ctx_locality << std::endl;
             // Criar o recurso na localidade do remote Domain
-            std::cout << "---aqui 3" << std::endl;
-            std::unique_ptr<T> rsc_remote = std::make_unique<T>(idp, ctx_locality, std::forward<Args>(args)...);
+            // std::cout << "---aqui 3" << std::endl;
+            std::unique_ptr<T> rsc_remote = std::make_unique<T>(idp, ctx_locality, args...);
             // insert association between gids and idps
-            std::cout << "---aqui 4" << std::endl;
-            InsertIdp(idp, rsc_remote->GetGid().get()); // Informar o componente global da associação idp-gid
+            // std::cout << "---aqui 4" << std::endl;
+            InsertIdp(idp, rsc_remote->GetGid()); // Informar o componente global da associação idp-gid
 
-            std::cout << "---aqui 5" << std::endl;
+            // std::cout << "---aqui 5" << std::endl;
             // _predecessors.emplace(idp, ctx);
             InsertPredecessorIdp(idp, ctx);
+            // std::cout << "---aqui 6" << std::endl;
         }
 
     }
@@ -102,7 +98,7 @@ template <typename T>
 std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::string const& name, std::unique_ptr<T> rsc, std::string const& ctrl)
 {
     idp_t ori_ctx;
-    // std::cout << "ResourceManager::AllocateResource 1" << std::endl;
+    //std::cout << "ResourceManager::AllocateResource 1" << std::endl;
     // lock to access resource manager variables
     _mtx2.lock();
     // pick up the original ctx idp, it can be local or not
@@ -114,7 +110,7 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
     }
     _mtx2.unlock();
     
-    // std::cout << "ResourceManager::AllocateResource 2" << std::endl;
+    //std::cout << "ResourceManager::AllocateResource 2" << std::endl;
     // ori_ctx must exist in the global component, to fetch their gid
     if (FindIdp(ori_ctx) == false) {
         throw std::runtime_error("Resource " + std::to_string(ori_ctx) + " does not exist!(AllocateResource)");
@@ -123,12 +119,12 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
     
     
 
-    InsertIdp(idp, rsc->GetGid().get()); // insert association between gids and idps
+    InsertIdp(idp, rsc->GetGid()); // insert association between gids and idps
     InsertPredecessorIdp(idp, ctx); // insert association between idps and predecessors
 
     
     
-    // std::cout << "ResourceManager::AllocateResource 3" << std::endl;
+    //std::cout << "ResourceManager::AllocateResource 3" << std::endl;
 
     typedef typename T::organizer element;
     if(typeid(element) == typeid(StaticOrganizer))
@@ -143,15 +139,16 @@ std::unique_ptr<T> ResourceManager::AllocateResource(idp_t idp, idp_t ctx, std::
     }
     else if(typeid(element) == typeid(Mailbox))
     {
-            InsertAgentMailbox(idp, rsc->GetMailboxGid().get());
+            InsertAgentMailbox(idp, rsc->GetMailboxGid());
             //std::cout << "adicionado ao _agents_mailbox " << idp << std::endl;
     }
-    // std::cout << "ResourceManager::AllocateResource 4" << std::endl;
+    //std::cout << "ResourceManager::AllocateResource 4" << std::endl;
 
     // Creates a client component object that is associated with the gid that corresponds to the ctx
     auto gid = GetGidFromIdp(ori_ctx);
+    //std::cout << "ResourceManager::AllocateResource 5" << std::endl;
     AttachResource(ctx, gid, idp, name); // attach resource to the context
-
+    //std::cout << "ResourceManager::AllocateResource 6" << std::endl;
     return rsc;
 }
 
@@ -188,7 +185,7 @@ std::unique_ptr<T> ResourceManager::CreateReference(idp_t idp, idp_t ctx, std::s
 }
 
 template <typename T, typename ... Args>
-std::unique_ptr<T> ResourceManager::CreateCollective(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, std::string const& ctrl, Args&& ... args)
+std::unique_ptr<T> ResourceManager::CreateCollective(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args)
 {
 
     std::unique_ptr<T> rsc_ptr;
@@ -198,7 +195,7 @@ std::unique_ptr<T> ResourceManager::CreateCollective(idm_t rank, idp_t comm, idp
 
     if (rank == 0) {
         // std::cout << "dentro do rank 0 em resource_manager - CreateCollective" << std::endl;
-        rsc_ptr = CreateLocal<T>(ctx, name, ctrl, std::forward<Args>(args)...);
+        rsc_ptr = CreateLocal<T>(ctx, name, ctrl, args...);
         auto future = hpx::register_with_basename(basename, rsc_ptr->GetGid(), 0);
     } else {
 		auto gid = hpx::find_from_basename(basename, 0).get();
@@ -217,7 +214,6 @@ std::unique_ptr<T> ResourceManager::GetLocalResource(idp_t idp)
 {
     auto alias_it = _alias.find(idp);
     auto ori_idp = (alias_it == _alias.end()) ? idp : alias_it->second;
-
     if ( FindIdp(ori_idp) == false ) {
         throw std::runtime_error("Resource " + std::to_string(ori_idp) + " does not exist!(GetLocalResource)");
     } else { // creates a client component object that is associated with gid
