@@ -40,10 +40,10 @@ make -jN <br />
 make install <br />
 
 To use all features without defining paths  (recommended): <br />
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/placor-hpx_installation_dir/lib
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/placor-hpx_installation_dir/examples
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/placor-hpx_installation_dir/cap6
-export PATH=$PATH:/placor-hpx_installation_dir/bin
+`export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALATION_DIR/lib`
+`export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALATION_DIR/examples`
+`export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALATION_DIR/cap6`
+`export PATH=$PATH:$INSTALATION_DIR/bin`
 
 ### module
 `corhpx app ctx 1 0 libmodule.so`
