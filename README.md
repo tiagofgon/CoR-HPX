@@ -20,7 +20,9 @@ summary:
 - Cmake (>= 3.0)
 
 ## Getting the Source
-`git clone https://github.com/tiagofgon/placor-hpx`
+~~~
+git clone https://github.com/tiagofgon/placor-hpx
+~~~
 
 ## Running the Setup
 
@@ -38,8 +40,6 @@ cmake -DCMAKE_PREFIX_PATH=$HPX_LOCATION -DLibSSH_ROOT=$Libssh_LOCATION -DCMAKE_I
 ## Building
 ~~~
 make -jN
-~~~
-~~~
 make install
 ~~~
 
