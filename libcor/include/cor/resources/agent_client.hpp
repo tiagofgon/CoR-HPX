@@ -334,7 +334,7 @@ public:
 		return hpx::make_ready_future(5);
 	}
 
-	hpx::future<int> GetComponentType()
+	int GetComponentType()
 	{
 		return 5;
 	}
