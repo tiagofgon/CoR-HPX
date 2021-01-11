@@ -62,7 +62,7 @@ void McPi_static_chunk() {
 }
 
 void McPi_dynamic() {
-    //std::cout << "McPi_static_chunk " << std::endl;
+    //std::cout << "McPi_dynamic " << std::endl;
     unsigned long ct;
     double x, y;
     ct = 0;
