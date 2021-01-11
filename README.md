@@ -1,12 +1,12 @@
-# PlaCoRHPX
+# PlaCoR-HPX
 Resource oriented Computing Platform
 
 # Installation
 
 ## Requirements
-The PlaCoRHPX library requires C++17 features, if you use GCC you need GCC >= 7 (GCC 7.4.0 are used for development and testing). CMake 3.0 (or later) is required for the build and testing process of the Runtime. Libssh 0.8 (or later) is also required to spawning processes dynamicly. 
+The PlaCoRHPX library requires C++17 features, if you use GCC you need GCC >= 7 (GCC 7.4.0 are used for development and testing). CMake 3.12 (or later) is required for the build and testing process of the Runtime. Libssh 0.8 (or later) is also required to spawning processes dynamicly. 
 
-The PlaCoRHPX library is built on HPX. In order to build HPX as the necessary requirement, please refer to either:
+The PlaCoR-HPX library is built on HPX. In order to build HPX as the necessary requirement, please refer to either:
 <br />
 **HPX Wiki:** [https://github.com/STEllAR-GROUP/hpx/wiki/HPX-Resource-Guide](https://github.com/STEllAR-GROUP/hpx/wiki/HPX-Resource-Guide)
 <br />
@@ -17,7 +17,7 @@ summary:
 - GCC (>= 7.0.0)
 - HPX (>= 1.5.0)
 - Libssh (>= 0.8)
-- Cmake (>= 3.0)
+- Cmake (>= 3.12)
 
 ## Getting the Source
 ~~~
@@ -28,7 +28,7 @@ git clone https://github.com/tiagofgon/placor-hpx
 
 - $HPX_LOCATION -> hpx library location
 - $Libssh_LOCATION -> Libssh library location
-- $INSTALATION_DIR -> PlaCoRHPX target installation
+- $INSTALATION_DIR -> PlaCoR-HPX target installation
 
 ~~~
 cd placor-hpx
@@ -68,13 +68,13 @@ $ corhpx app ctx 1 0 libbasicOperations.so
 Launching a program with multiple domains(processes): using two consoles or using mpi
 
 ~~~ 
-$ corhpx app ctx 2 0 ../examples/libparallel.so --hpx:hpx=localhost:1337
-$ corhpx app ctx 2 0 ../examples/libparallel.so --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:worker
+$ corhpx app ctx 2 0 /placor-hpx_installation_dir/examples/libparallel.so --hpx:hpx=localhost:1337
+$ corhpx app ctx 2 0 /placor-hpx_installation_dir/examples/libparallel.so --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:worker
 ~~~ 
 
 using mpi: (N == number of domains(processes))<br />
 ~~~ 
-$ mpirun -np N ./corhpx apps ctx N 0 /placor-hpx_installation_dir/examples/libparallel.so
+$ mpirun -np N corhpx apps ctx N 0 /placor-hpx_installation_dir/examples/libparallel.so
 ~~~ 
 
 ### spawn
