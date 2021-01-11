@@ -1,5 +1,5 @@
 # PlaCoR-HPX
-Resource oriented Computing Platform
+Resource Oriented Computing Platform
 
 # Installation
 
