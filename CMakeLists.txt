@@ -1,9 +1,6 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.0)
 
 project(PlaCoR LANGUAGES CXX VERSION 1.0)
-
-#set(CMAKE_BUILD_TYPE Debug)
-#set(HPX_IGNORE_CMAKE_BUILD_TYPE_COMPATIBILITY ON)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/libcor/include/cor/PlaCoRConfig.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/libcor/include/cor/PlaCoRConfig.h" )
 
@@ -17,19 +14,19 @@ if(APPLE)
 endif()
 
 #set(LibSSH_ROOT /share/apps/libssh-0.8.6)
+#set(LibSSH_ROOT /share/apps/root_v6.16)
 
 # find dependencies
 find_package(HPX REQUIRED)
 find_package(LibSSH REQUIRED)
 
 # find root and set up environment
-#find_package(ROOT CONFIG REQUIRED)
-#target_include_directories(ROOT::Core INTERFACE "${ROOT_INCLUDE_DIRS}")
+# find_package(ROOT CONFIG REQUIRED)
+# target_include_directories(ROOT::Core INTERFACE "${ROOT_INCLUDE_DIRS}")
 
 # check subdirectories
 add_subdirectory(libcor)
 add_subdirectory(tools)
-#add_subdirectory(units)
 add_subdirectory(examples)
 add_subdirectory(tests)
 add_subdirectory(cap6)
@@ -59,13 +56,11 @@ install(
 
 
 
-
 set(DEF_INSTALL_CMAKE_DIR CMake)
 set(DEF_INSTALL_CMAKE_DIR lib/CMake/PlaCor)
 
 set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH
   "Installation directory for CMake files")
-
 
 # Make relative paths absolute (needed later on)
 foreach(p LIB BIN INCLUDE CMAKE)

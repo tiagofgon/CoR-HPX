@@ -10,7 +10,7 @@ target_link_libraries(
     module
     PRIVATE
         libcor
-	HPX::hpx
+	    HPX::hpx
 )
 
 # basicOperations
@@ -24,7 +24,7 @@ target_link_libraries(
     basicOperations
     PRIVATE
         libcor
-	HPX::hpx
+	    HPX::hpx
 )
 
 # callableModule
@@ -38,7 +38,7 @@ target_link_libraries(
     callableModule
     PRIVATE
         libcor
-	HPX::hpx
+	    HPX::hpx
 )
 
 
@@ -53,7 +53,7 @@ target_link_libraries(
     parallel
     PRIVATE
         libcor
-	HPX::hpx
+	    HPX::hpx
 )
 
 
@@ -68,7 +68,6 @@ target_link_libraries(
     send_an_object
     PRIVATE
         libcor
-    PUBLIC
         HPX::hpx
 )
 
@@ -84,7 +83,6 @@ target_link_libraries(
     message_broadcast
     PRIVATE
         libcor
-    PUBLIC
         HPX::hpx
 )
 
@@ -99,7 +97,7 @@ target_link_libraries(
     spawn
     PRIVATE
         libcor
-	HPX::hpx
+	    HPX::hpx
 )
 
 # inter_closure
@@ -113,7 +111,7 @@ target_link_libraries(
     inter_closure
     PRIVATE
         libcor
-	HPX::hpx
+	    HPX::hpx
 )
 
 
@@ -128,7 +126,7 @@ target_link_libraries(
     server_rpc
     PRIVATE
         libcor
-	HPX::hpx
+	    HPX::hpx
 )
 
 # client_rpc
@@ -142,7 +140,7 @@ target_link_libraries(
     client_rpc
     PRIVATE
         libcor
-	HPX::hpx
+	    HPX::hpx
 )
 
 # teste_pool
@@ -156,8 +154,7 @@ target_link_libraries(
     teste_pool
     PRIVATE
         libcor
-        # pool
-	HPX::hpx
+	    HPX::hpx
 )
 
 # create_remote
@@ -171,8 +168,7 @@ target_link_libraries(
     create_remote
     PRIVATE
         libcor
-        # pool
-	HPX::hpx
+	    HPX::hpx
 )
 
 

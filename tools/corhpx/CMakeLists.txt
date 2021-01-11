@@ -1,15 +1,7 @@
-#add_executable(corhpx corhpx.cpp)
-
 add_hpx_executable(corhpx 
 	SOURCES corhpx.cpp
 	DEPENDENCIES 
 		libcor
-		# parallel_hpx
-		# module_hpx
-		# Spread
-		# SSRCSpread
-		# LibEvent
-		# Cereal
 		LibSSH
 		-ldl
 		-lpthread

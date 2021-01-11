@@ -37,31 +37,4 @@ std::size_t GetSize()
     return GetSize<T>(organizer_idp);
 }
 
-template <typename T>
-void AgentRange(std::size_t& begin, std::size_t& end)
-{
-    std::size_t l_begin, l_end;
-    std::size_t size, d, r;
-
-    auto rank = GetRank<T>() + 1;
-    auto num_agents = GetSize<T>();
-
-    size = end - begin;
-    d = size / num_agents;
-    r = size % num_agents;
-
-    l_end = begin;
-    for (std::size_t i = 1; i <= rank; ++i) {
-        l_begin = l_end;
-        l_end = l_begin + d;
-        if (r) {
-            l_end++;
-            r--;
-        }
-    }
-
-    begin = l_begin;
-    end = l_end;
-}
-
 #endif

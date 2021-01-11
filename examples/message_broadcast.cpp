@@ -1,6 +1,8 @@
 /* ---------- 
 -- Tiago Gonçalves - University of Minho, 2021 --
 
+Program that sends an integer from process with rank 0 
+
 For execution in two separated consoles (two processes):
     $ ./corhpx apps ctx 2 0 ../examples/libmessage_broadcast.so --hpx:hpx=localhost:1337 --hpx:expect-connecting-localities
     $ ./corhpx apps ctx 2 0 ../examples/libmessage_broadcast.so --hpx:hpx=localhost:1338 --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:expect-connecting-localities --hpx:worker

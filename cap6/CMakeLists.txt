@@ -21,6 +21,7 @@ target_include_directories(
         $<INSTALL_INTERFACE:include>
 )
 
+# mcpi_for_loop
 add_library(mcpi_for_loop SHARED mcpi_for_loop.cpp)
 target_compile_features(mcpi_for_loop PUBLIC cxx_std_17)
 set_target_properties(mcpi_for_loop PROPERTIES CXX_EXTENSIONS OFF)
@@ -39,6 +40,20 @@ target_include_directories(
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
         $<INSTALL_INTERFACE:include>
+)
+
+# friendly_numbers
+add_library(friendly_numbers SHARED friendly_numbers.cpp)
+target_compile_features(friendly_numbers PUBLIC cxx_std_17)
+set_target_properties(friendly_numbers PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(friendly_numbers PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(friendly_numbers PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(friendly_numbers PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    friendly_numbers
+    PRIVATE
+        libcor
+	    HPX::hpx
 )
 
 # # read_files_par
@@ -75,10 +90,6 @@ target_include_directories(
 # 	    ROOT::Core
 #         ${ROOT_LIBRARIES}
 #         libcor
-#         pool
-#         Spread
-#         SSRCSpread
-#         Cereal
 # )
 # target_include_directories(
 #     read_files_dist_v1
@@ -100,10 +111,6 @@ target_include_directories(
 # 	    ROOT::Core
 #         ${ROOT_LIBRARIES}
 #         libcor
-#         pool
-#         Spread
-#         SSRCSpread
-#         Cereal
 # )
 # target_include_directories(
 #     read_files_dist_v2
@@ -125,10 +132,6 @@ target_include_directories(
 # 	    ROOT::Core
 #         ${ROOT_LIBRARIES}
 #         libcor
-#         pool
-#         Spread
-#         SSRCSpread
-#         Cereal
 # )
 # target_include_directories(
 #     read_files_dist_v3
@@ -137,94 +140,7 @@ target_include_directories(
 #         $<INSTALL_INTERFACE:include>
 # )
 
-# # inter_closure
-# add_library(inter_closure SHARED inter_closure.cpp)
-# target_compile_features(inter_closure PUBLIC cxx_std_17)
-# set_target_properties(inter_closure PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(inter_closure PROPERTIES POSITION_INDEPENDENT_CODE ON) 
-# set_target_properties(inter_closure PROPERTIES COMPILE_FLAGS -O2) 
-# set_target_properties(inter_closure PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-# 	inter_closure
-#     PRIVATE
-# 	    ROOT::Core
-#         ${ROOT_LIBRARIES}
-#         libcor
-#         pool
-#         Spread
-#         SSRCSpread
-#         Cereal
-# )
-# target_include_directories(
-#     inter_closure
-#     PUBLIC
-#         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
-#         $<INSTALL_INTERFACE:include>
-# )
 
-# # client_rpc
-# add_library(client_rpc SHARED client_rpc.cpp)
-# target_compile_features(client_rpc PUBLIC cxx_std_17)
-# set_target_properties(client_rpc PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(client_rpc PROPERTIES POSITION_INDEPENDENT_CODE ON) 
-# set_target_properties(client_rpc PROPERTIES COMPILE_FLAGS -O2) 
-# set_target_properties(client_rpc PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-# 	client_rpc
-#     PRIVATE
-#         libcor
-#         pool
-#         Spread
-#         SSRCSpread
-#         Cereal
-# )
-# target_include_directories(
-#     client_rpc
-#     PUBLIC
-#         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
-#         $<INSTALL_INTERFACE:include>
-# )
-
-# # server_rpc
-# add_library(server_rpc SHARED server_rpc.cpp)
-# target_compile_features(server_rpc PUBLIC cxx_std_17)
-# set_target_properties(server_rpc PROPERTIES CXX_EXTENSIONS OFF)
-# set_target_properties(server_rpc PROPERTIES POSITION_INDEPENDENT_CODE ON) 
-# set_target_properties(server_rpc PROPERTIES COMPILE_FLAGS -O2) 
-# set_target_properties(server_rpc PROPERTIES PREFIX "lib" SUFFIX ".so")
-# target_link_libraries(
-# 	server_rpc
-#     PRIVATE
-#         libcor
-#         pool
-#         Spread
-#         SSRCSpread
-#         Cereal
-# )
-# target_include_directories(
-#     server_rpc
-#     PUBLIC
-#         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
-#         $<INSTALL_INTERFACE:include>
-# )
-
-# friendly_numbers
-add_library(friendly_numbers SHARED friendly_numbers.cpp)
-target_compile_features(friendly_numbers PUBLIC cxx_std_17)
-set_target_properties(friendly_numbers PROPERTIES CXX_EXTENSIONS OFF)
-set_target_properties(friendly_numbers PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(friendly_numbers PROPERTIES COMPILE_FLAGS -O2)
-set_target_properties(friendly_numbers PROPERTIES PREFIX "lib" SUFFIX ".so")
-target_link_libraries(
-    friendly_numbers
-    PRIVATE
-        libcor
-        # pool
-        # Spread
-        # SSRCSpread
-        # Cereal
-	HPX::hpx
-)
 
 install(
     TARGETS
@@ -235,9 +151,6 @@ install(
         # read_files_dist_v1
         # read_files_dist_v2
         # read_files_dist_v3
-        # inter_closure
-        # client_rpc
-        # server_rpc
     LIBRARY
         DESTINATION cap6
 )

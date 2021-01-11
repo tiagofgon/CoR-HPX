@@ -14,7 +14,7 @@ extern "C"
 void Main(int argc, char *argv[]) {
 
     auto domain = cor::GetDomain();
-    std::cout << domain->GetActiveResourceIdp() << " -> sync" << std::endl; 
-    std::cout << domain->GetActiveResourceIdp(hpx::launch::async).get() << " -> async" << std::endl; 
+    std::cout << domain->GetActiveResourceIdp() << " (sync mode)" << std::endl; 
+    std::cout << domain->GetActiveResourceIdp(hpx::launch::async).get() << " (async mode)" << std::endl; 
 
 }
