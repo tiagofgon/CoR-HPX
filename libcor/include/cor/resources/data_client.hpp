@@ -137,6 +137,8 @@ public:
 	}
 
 
+
+
 	/** Data's interface **/
 	hpx::future<void> AcquireRead(hpx::launch::async_policy)
 	{
@@ -181,7 +183,7 @@ public:
 	{
 		//std::cout << "AcquireWrite()" << std::endl;
 		mutex->AcquireWrite();
-		ensure_ptr();;
+		ensure_ptr();
 	}
 
 	hpx::future<void> ReleaseWrite(hpx::launch::async_policy)
@@ -222,6 +224,18 @@ public:
 	{
 		return ptr->Get();
 	}
+
+
+    template <typename F, typename ... Args>
+    auto Run(hpx::function<F> func, Args... args)
+	{
+		AcquireWrite();
+		typedef typename Data<T>::template Run_action_Data<F, Args...> action_type;
+		auto res = hpx::async<action_type>(base_type::get_id(), func, args...);
+		ReleaseWrite();
+		return res;
+	}
+
 
 	T const &operator*() const {
 		// std::cout << "AQUI_11" << std::endl;

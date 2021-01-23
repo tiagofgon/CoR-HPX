@@ -2,7 +2,7 @@
 -- Tiago Gonçalves - University of Minho, 2021 --
 
     Programme to be run in parallel with two processes, only. Each process will remotely create an agent in the location of the other process.
-    Compile with: --hpx:ini=hpx.component_paths=
+    Compile with: --hpx:ini=hpx.component_paths= "location of the example"
 
 Console 1: ./corhpx apps ctx 2 0 ../examples/libcreate_remote.so --hpx:hpx=localhost:1337 --hpx:expect-connecting-localities --hpx:ini=hpx.component_paths=../examples
 Console 2: ./corhpx apps ctx 2 0 ../examples/libcreate_remote.so --hpx:hpx=localhost:1338 --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:expect-connecting-localities --hpx:worker --hpx:ini=hpx.component_paths=../examples

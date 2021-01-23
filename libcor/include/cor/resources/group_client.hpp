@@ -110,6 +110,8 @@ public:
 	}
 	
 
+
+	
 	/** Dynamic organizer's interface **/
 	hpx::future<void> Join(hpx::launch::async_policy, idp_t idp, std::string const& name)
 	{

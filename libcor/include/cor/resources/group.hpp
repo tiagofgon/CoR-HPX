@@ -3,9 +3,8 @@
 
 #include "cor/resources/resource.hpp"
 #include "cor/elements/dynamic_organizer.hpp"
-
+#include "cor/external/dll/dll.hpp"
 #include <hpx/hpx.hpp>
-
 
 namespace cor {
 struct Group: public Resource, public hpx::components::component_base<Group>

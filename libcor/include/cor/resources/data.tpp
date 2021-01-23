@@ -32,6 +32,13 @@ T* Data<T>::Get()
     return _value.Get();
 }
 
+template <typename T>
+template <typename F, typename ... Args>
+auto Data<T>::Run(hpx::function<F> func, Args... args)
+{
+    return func(Get(), args...);
+}
+
 
 }
 

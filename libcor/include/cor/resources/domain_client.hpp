@@ -245,6 +245,9 @@ public:
 		return action_type()(this->get_id());
 	}
 
+
+
+
 	/** Container's interface **/
     hpx::future<std::string> GetGlobalContext(hpx::launch::async_policy)
 	{

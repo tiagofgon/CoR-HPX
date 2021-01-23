@@ -1,8 +1,10 @@
-/* ---------- 
--- Tiago Gonçalves - University of Minho, 2021 --
+/*|────────────────────────────────────────────────────────|*/
+/*|   Tiago Gonçalves - University of Minho - LIP, 2021    |*/
+/*|────────────────────────────────────────────────────────|*/
 
-To run: ./corhpx apps ctx 1 0 ../examples/libbasicOperations.so
----------- */
+/*
+    To run: ./corhpx apps ctx 1 0 ../examples/libbasicOperations.so
+*/
 
 #include "cor/cor.hpp"
 

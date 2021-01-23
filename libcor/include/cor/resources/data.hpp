@@ -73,8 +73,18 @@ public:
     T Fetch();
     T* Get();
 
+    template <typename F, typename ... Args>
+    auto Run(hpx::function<F> func, Args... args);
+
     HPX_DEFINE_COMPONENT_ACTION(Data, Fetch, Fetch_action_Data);
 
+    template <typename F, typename ... Args>
+    struct Run_action_Data
+    : hpx::actions::make_action<
+        decltype(&Data::Run<F, Args...>),
+        &Data::Run<F, Args...>
+    >::type
+    {};
 
     template <typename Archive>
     void serialize(Archive& ar, unsigned version)

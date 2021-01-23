@@ -171,6 +171,20 @@ target_link_libraries(
 	    HPX::hpx
 )
 
+# data_with_user_object
+add_library(data_with_user_object SHARED data_with_user_object.cpp)
+target_compile_features(data_with_user_object PUBLIC cxx_std_17)
+set_target_properties(data_with_user_object PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(data_with_user_object PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(data_with_user_object PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(data_with_user_object PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    data_with_user_object
+    PRIVATE
+        libcor
+	    HPX::hpx
+)
+
 
 install(
     TARGETS
@@ -186,6 +200,7 @@ install(
         create_remote
         server_rpc
         client_rpc
+        data_with_user_object
     LIBRARY
         DESTINATION examples
 )
