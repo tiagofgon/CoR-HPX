@@ -68,14 +68,24 @@ std::string Domain::GetLocalContext()
     return _container.GetLocalContext();
 }
 
-unsigned int Domain::GetTotalPods()
+unsigned int Domain::GetNumPods()
 {
-    return _container.GetTotalPods();
+    return _container.GetNumPods();
 }
 
-unsigned int Domain::GetTotalDomains()
+unsigned int Domain::GetNumDomains()
 {
-    return _container.GetTotalDomains();
+    return _container.GetNumDomains();
+}
+
+std::vector<idp_t> Domain::GetPods()
+{
+    return _container.GetPods();
+}
+
+std::vector<idp_t> Domain::GetDomains()
+{
+    return _container.GetDomains();
 }
 
 idp_t Domain::GetActiveResourceIdp(size_t id)
@@ -135,8 +145,10 @@ HPX_REGISTER_ACTION(GetDynamicOrganizerIdp_action_Domain);
 /* Action registration to interact with Container */
 typedef cor::Domain::GetGlobalContext_action_Domain GetGlobalContext_action_Domain;
 typedef cor::Domain::GetLocalContext_action_Domain GetLocalContext_action_Domain;
-typedef cor::Domain::GetTotalPods_action_Domain GetTotalPods_action_Domain;
-typedef cor::Domain::GetTotalDomains_action_Domain GetTotalDomains_action_Domain;
+typedef cor::Domain::GetNumPods_action_Domain GetNumPods_action_Domain;
+typedef cor::Domain::GetNumDomains_action_Domain GetNumDomains_action_Domain;
+typedef cor::Domain::GetPods_action_Domain GetPods_action_Domain;
+typedef cor::Domain::GetDomains_action_Domain GetDomains_action_Domain;
 typedef cor::Domain::GetActiveResourceIdp_action_Domain GetActiveResourceIdp_action_Domain;
 typedef cor::Domain::GetPredecessorIdp_action_Domain GetPredecessorIdp_action_Domain;
 typedef cor::Domain::Spawn_action_Domain Spawn_action_Domain;
@@ -144,8 +156,10 @@ typedef cor::Domain::GetContainerIdp_action_Domain GetContainerIdp_action_Domain
 
 HPX_REGISTER_ACTION(GetGlobalContext_action_Domain);
 HPX_REGISTER_ACTION(GetLocalContext_action_Domain);
-HPX_REGISTER_ACTION(GetTotalPods_action_Domain);
-HPX_REGISTER_ACTION(GetTotalDomains_action_Domain);
+HPX_REGISTER_ACTION(GetNumPods_action_Domain);
+HPX_REGISTER_ACTION(GetNumDomains_action_Domain);
+HPX_REGISTER_ACTION(GetPods_action_Domain);
+HPX_REGISTER_ACTION(GetDomains_action_Domain);
 HPX_REGISTER_ACTION(GetActiveResourceIdp_action_Domain);
 HPX_REGISTER_ACTION(GetPredecessorIdp_action_Domain);
 HPX_REGISTER_ACTION(Spawn_action_Domain);

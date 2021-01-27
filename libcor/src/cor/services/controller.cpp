@@ -227,8 +227,11 @@ std::string Controller::GetLocalContext()
     return _context;
 }
 
-unsigned int Controller::GetTotalPods()
-{    
+
+
+
+unsigned int Controller::GetNumPods()
+{
     _mtx2.lock();
     auto res = _init_total_npods;
     _mtx2.unlock();
@@ -236,10 +239,33 @@ unsigned int Controller::GetTotalPods()
     return res;
 }
 
-unsigned int Controller::GetTotalDomains()
+
+unsigned int Controller::GetNumDomains()
 {
-    return _rsc_mgr->GetTotalDomains();
+    return _rsc_mgr->GetNumDomains();
 }
+
+// acabar isto
+std::vector<idp_t> Controller::GetPods()
+{
+    return GetDomains();
+}
+
+std::vector<idp_t> Controller::GetDomains()
+{
+    return _rsc_mgr->GetDomains();
+}
+
+
+
+
+
+
+
+
+
+
+
 
 idp_t Controller::GetDomainIdp(idp_t idp)
 {

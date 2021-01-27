@@ -273,28 +273,140 @@ public:
 		return action_type()(this->get_id());
 	}
 
-    hpx::future<unsigned int> GetTotalPods(hpx::launch::async_policy, hpx::launch::async_policy)
+	hpx::future<unsigned int> GetNumPods(hpx::launch::async_policy)
 	{
-		typedef Domain::GetTotalPods_action_Domain action_type;
-		return hpx::async<action_type>(this->get_id());
-	}
-	
-    unsigned int GetTotalPods()
-	{
-		typedef Domain::GetTotalPods_action_Domain action_type;
-		return action_type()(this->get_id());
-	}
-
-    hpx::future<unsigned int> GetTotalDomains(hpx::launch::async_policy)
-	{
-		typedef Domain::GetTotalDomains_action_Domain action_type;
+		typedef Domain::GetNumPods_action_Domain action_type;
 		return hpx::async<action_type>(this->get_id());
 	}
 
-    unsigned int GetTotalDomains()
+	unsigned int GetNumPods()
 	{
-		typedef Domain::GetTotalDomains_action_Domain action_type;
+		typedef Domain::GetNumPods_action_Domain action_type;
 		return action_type()(this->get_id());
+	}
+
+	hpx::future<unsigned int> GetNumDomains(hpx::launch::async_policy)
+	{
+		typedef Domain::GetNumDomains_action_Domain action_type;
+		return hpx::async<action_type>(this->get_id());
+	}
+
+	unsigned int GetNumDomains()
+	{
+		typedef Domain::GetNumDomains_action_Domain action_type;
+		return action_type()(this->get_id());
+	}
+
+	hpx::future<std::vector<idp_t>> GetPods(hpx::launch::async_policy)
+	{
+		return hpx::async([&](){
+			typedef Domain::GetPods_action_Domain action_type;
+			auto vec =  hpx::async<action_type>(this->get_id()).get();
+
+			for(int i=0; i<vec.size(); i++) {
+				if(vec[i]==0) {
+					vec.erase(vec.begin() + i);
+					return vec;
+				}
+			}
+			return vec;
+		});
+	}
+
+	std::vector<idp_t> GetPods()
+	{
+		typedef Domain::GetPods_action_Domain action_type;
+		auto vec = action_type()(this->get_id());
+
+		for(int i=0; i<vec.size(); i++) {
+			if(vec[i]==0) {
+				vec.erase(vec.begin() + i);
+				return vec;
+			}
+		}
+		return vec;
+	}
+
+	hpx::future<std::vector<idp_t>> GetDomains(hpx::launch::async_policy)
+	{
+		return hpx::async([&](){
+			typedef Domain::GetDomains_action_Domain action_type;
+			auto vec =  hpx::async<action_type>(this->get_id()).get();
+
+			for(int i=0; i<vec.size(); i++) {
+				if(vec[i]==0) {
+					vec.erase(vec.begin() + i);
+					return vec;
+				}
+			}
+			return vec;
+		});
+	}
+
+	std::vector<idp_t> GetDomains()
+	{
+		typedef Domain::GetDomains_action_Domain action_type;
+		auto vec = action_type()(this->get_id());
+
+		for(int i=0; i<vec.size(); i++) {
+			if(vec[i]==0) {
+				vec.erase(vec.begin() + i);
+				return vec;
+			}
+		}
+		return vec;
+	}
+
+	hpx::future<std::vector<idp_t>> GetRemotePods(hpx::launch::async_policy)
+	{
+		return hpx::async([&](){
+			auto vec = GetPods();
+			for(int i=0; i<vec.size(); i++) {
+				if(vec[i]==_idp) {
+					vec.erase(vec.begin() + i);
+					return vec;
+				}
+			}
+			return vec;
+		});
+	}
+
+	std::vector<idp_t> GetRemotePods()
+	{
+		auto vec = GetPods();
+		for(int i=0; i<vec.size(); i++) {
+			if(vec[i]==_idp) {
+				vec.erase(vec.begin() + i);
+				return vec;
+			}
+		}
+		return vec;
+	}
+
+	hpx::future<std::vector<idp_t>> GetRemoteDomains(hpx::launch::async_policy)
+	{
+		return hpx::async([&](){
+			auto vec = GetDomains();
+			for(int i=0; i<vec.size(); i++) {
+				if(vec[i]==_idp) {
+					vec.erase(vec.begin() + i);
+					return vec;
+				}
+			}
+			return vec;
+		});
+	}
+
+	std::vector<idp_t> GetRemoteDomains()
+	{
+		auto vec = GetDomains();
+		for(int i=0; i<vec.size(); i++) {
+			if(vec[i]==_idp) {
+				vec.erase(vec.begin() + i);
+				return vec;
+			}
+		}
+		return vec;
 	}
 
 	hpx::future<idp_t> GetActiveResourceIdp(hpx::launch::async_policy)

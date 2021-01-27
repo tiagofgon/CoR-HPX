@@ -124,7 +124,7 @@ public:
 
 	/** Executor's interface **/
 	template <typename ... Args>
-	hpx::future<R> Run(hpx::launch::async_policy, Args... args)
+	hpx::future<hpx::future<R>> Run(hpx::launch::async_policy, Args... args)
 	{
 		typedef typename cor::ProtoAgent<R(P...)>::template Run1_action_ProtoAgent<Args...> action_type;
 		return hpx::async<action_type>(this->get_id(), args... );

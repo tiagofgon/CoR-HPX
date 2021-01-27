@@ -41,8 +41,11 @@ public:
     std::string GetGlobalContext();
     std::string GetLocalContext();
 
-    unsigned int GetTotalPods();
-    unsigned int GetTotalDomains();
+    unsigned int GetNumPods();
+    unsigned int GetNumDomains();
+
+    std::vector<idp_t> GetPods();
+    std::vector<idp_t> GetDomains();
 
     idp_t GetActiveResourceIdp(size_t id);
     
@@ -98,8 +101,10 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(Pod, Finalize, Finalize_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetGlobalContext, GetGlobalContext_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetLocalContext, GetLocalContext_action_pod);
-    HPX_DEFINE_COMPONENT_ACTION(Pod, GetTotalPods, GetTotalPods_action_pod);
-    HPX_DEFINE_COMPONENT_ACTION(Pod, GetTotalDomains, GetTotalDomains_action_pod);
+    HPX_DEFINE_COMPONENT_ACTION(Pod, GetNumPods, GetNumPods_action_pod);
+    HPX_DEFINE_COMPONENT_ACTION(Pod, GetNumDomains, GetNumDomains_action_pod);
+    HPX_DEFINE_COMPONENT_ACTION(Pod, GetPods, GetPods_action_pod);
+    HPX_DEFINE_COMPONENT_ACTION(Pod, GetDomains, GetDomains_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetActiveResourceIdp, GetActiveResourceIdp_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetPredecessorIdp, GetPredecessorIdp_action_pod);
     HPX_DEFINE_COMPONENT_ACTION(Pod, GetGidFromIdp, GetGidFromIdp_action_pod);
@@ -245,8 +250,10 @@ typedef cor::Pod::Initialize_action_pod Initialize_action_pod;
 typedef cor::Pod::Finalize_action_pod Finalize_action_pod;
 typedef cor::Pod::GetGlobalContext_action_pod GetGlobalContext_action_pod;
 typedef cor::Pod::GetLocalContext_action_pod GetLocalContext_action_pod;
-typedef cor::Pod::GetTotalPods_action_pod GetTotalPods_action_pod;
-typedef cor::Pod::GetTotalDomains_action_pod GetTotalDomains_action_pod;
+typedef cor::Pod::GetNumPods_action_pod GetNumPods_action_pod;
+typedef cor::Pod::GetNumDomains_action_pod GetNumDomains_action_pod;
+typedef cor::Pod::GetPods_action_pod GetPods_action_pod;
+typedef cor::Pod::GetDomains_action_pod GetDomains_action_pod;
 typedef cor::Pod::GetActiveResourceIdp_action_pod GetActiveResourceIdp_action_pod;
 typedef cor::Pod::GetPredecessorIdp_action_pod GetPredecessorIdp_action_pod;
 typedef cor::Pod::GetGidFromIdp_action_pod GetGidFromIdp_action_pod;
@@ -273,8 +280,10 @@ HPX_REGISTER_ACTION_DECLARATION(Initialize_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(Finalize_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(GetGlobalContext_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(GetLocalContext_action_pod);
-HPX_REGISTER_ACTION_DECLARATION(GetTotalPods_action_pod);
-HPX_REGISTER_ACTION_DECLARATION(GetTotalDomains_action_pod);
+HPX_REGISTER_ACTION_DECLARATION(GetNumPods_action_pod);
+HPX_REGISTER_ACTION_DECLARATION(GetNumDomains_action_pod);
+HPX_REGISTER_ACTION_DECLARATION(GetPods_action_pod);
+HPX_REGISTER_ACTION_DECLARATION(GetDomains_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(GetActiveResourceIdp_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(GetPredecessorIdp_action_pod);
 HPX_REGISTER_ACTION_DECLARATION(GetGidFromIdp_action_pod);

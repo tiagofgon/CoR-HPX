@@ -26,14 +26,24 @@ std::string Container::GetLocalContext()
     return global::pod->GetLocalContext();
 }
 
-unsigned int Container::GetTotalPods()
-{    
-    return global::pod->GetTotalPods();
+unsigned int Container::GetNumPods()
+{
+    return global::pod->GetNumPods();
 }
 
-unsigned int Container::GetTotalDomains()
+unsigned int Container::GetNumDomains()
 {
-    return global::pod->GetTotalDomains();
+    return global::pod->GetNumDomains();
+}
+
+std::vector<idp_t> Container::GetPods()
+{
+    return global::pod->GetPods();
+}
+
+std::vector<idp_t> Container::GetDomains()
+{
+    return global::pod->GetDomains();
 }
 
 idp_t Container::GetActiveResourceIdp(size_t id)

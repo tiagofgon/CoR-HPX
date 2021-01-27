@@ -35,6 +35,8 @@ namespace cor
         template < typename Func>
         void Dispatch(Func&& func);
 
+        void Wait();
+
     private:
         idp_t _idp;
         std::size_t _num_hpx_threads;
@@ -48,6 +50,8 @@ namespace cor
         std::atomic<int> _index;
         std::atomic<int> th_ids_index; // for rank distribution
         hpx::lcos::local::spinlock _mtx2;
+
+        hpx::lcos::local::barrier barrier;
     };
 }
 

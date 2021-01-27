@@ -57,7 +57,7 @@ target_link_libraries(
 )
 
 
-# parallel2 - HPX
+# send_an_object - HPX
 add_library(send_an_object SHARED send_an_object.cpp)
 target_compile_features(send_an_object PUBLIC cxx_std_17)
 set_target_properties(send_an_object PROPERTIES CXX_EXTENSIONS OFF)
@@ -71,6 +71,19 @@ target_link_libraries(
         HPX::hpx
 )
 
+# send_an_object_simple - HPX
+add_library(send_an_object_simple SHARED send_an_object_simple.cpp)
+target_compile_features(send_an_object_simple PUBLIC cxx_std_17)
+set_target_properties(send_an_object_simple PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(send_an_object_simple PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(send_an_object_simple PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(send_an_object_simple PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    send_an_object_simple
+    PRIVATE
+        libcor
+        HPX::hpx
+)
 
 # parallel3 - HPX
 add_library(message_broadcast SHARED message_broadcast.cpp)
@@ -185,6 +198,47 @@ target_link_libraries(
 	    HPX::hpx
 )
 
+# heat
+add_library(heat SHARED heat.cpp)
+target_compile_features(heat PUBLIC cxx_std_17)
+set_target_properties(heat PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(heat PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(heat PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(heat PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    heat
+    PRIVATE
+        libcor
+	    HPX::hpx
+)
+
+# heat_local_parallel
+add_library(heat_local_parallel SHARED heat_local_parallel.cpp)
+target_compile_features(heat_local_parallel PUBLIC cxx_std_17)
+set_target_properties(heat_local_parallel PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(heat_local_parallel PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(heat_local_parallel PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(heat_local_parallel PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    heat_local_parallel
+    PRIVATE
+        libcor
+	    HPX::hpx
+)
+
+# queue_program
+add_library(queue_program SHARED queue_program.cpp)
+target_compile_features(queue_program PUBLIC cxx_std_17)
+set_target_properties(queue_program PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(queue_program PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(queue_program PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(queue_program PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    queue_program
+    PRIVATE
+        libcor
+	    HPX::hpx
+)
 
 install(
     TARGETS
@@ -193,6 +247,7 @@ install(
         callableModule
         parallel
         send_an_object
+        send_an_object_simple
         message_broadcast
         spawn
         inter_closure
@@ -200,7 +255,9 @@ install(
         create_remote
         server_rpc
         client_rpc
-        data_with_user_object
+        heat
+        heat_local_parallel
+        queue_program
     LIBRARY
         DESTINATION examples
 )

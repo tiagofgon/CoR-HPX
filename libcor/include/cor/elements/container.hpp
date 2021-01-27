@@ -32,8 +32,11 @@ public:
     std::string GetGlobalContext();
     std::string GetLocalContext();
 
-    unsigned int GetTotalPods();
-    unsigned int GetTotalDomains();
+    unsigned int GetNumPods();
+    unsigned int GetNumDomains();
+
+    std::vector<idp_t> GetPods();
+    std::vector<idp_t> GetDomains();
 
     // now receives the id parameter to propagate the id of the active thread from whoever invoked this function inside the module, necessary because the active thread changes from component to component
     idp_t GetActiveResourceIdp(size_t id);

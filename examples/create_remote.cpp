@@ -13,15 +13,15 @@ With MPI in one console only: mpirun -np 2 ./corhpx apps ctx 2 0 ../examples/lib
 #include "cor/cor.hpp"
 
 // tem de ser uma função objeto para ser serializada
-struct Funcion_object1 {
-    void operator()(int i) {
-        std::cout << "Function1: " << i << std::endl;
-        std::cout << "Locality id: " << hpx::get_locality_id() << std::endl;
+struct Funcion_object_aux {
+    void operator()(idp_t domain_idp_creater) {
+        auto domain = cor::GetDomain();
+        auto domain_idp = domain->Idp();
+        std::cout << "Function spawned from " << domain_idp_creater << " to domaind " << domain_idp << "" << std::endl;
+
     }
 };
-Funcion_object1 _Function1;
-hpx::function<void(int)> Function1(_Function1);
-
+hpx::function<void(idp_t)> Function1 = Funcion_object_aux();
 
 extern "C"
 {
@@ -32,36 +32,23 @@ void Main(int argc, char *argv[]) {
     auto domain = cor::GetDomain();
     auto domain_idp = domain->Idp();
     auto agent_idp = domain->GetActiveResourceIdp();
-    auto agent = domain->GetLocalResource<cor::Agent_Client<void(char**)>>(agent_idp);
+    auto agent = domain->GetLocalResource<cor::ProtoAgent_Client<void(char**)>>(agent_idp);
     auto clos_idp = domain->GetPredecessorIdp(agent_idp);
-    auto meta_domain_idp = domain->GetPredecessorIdp(domain_idp);
-    auto meta_domain = domain->GetLocalResource<cor::Domain_Client>(meta_domain_idp);
-    auto member_list = meta_domain->GetMemberList();
-    idp_t remote_domain_idp;
+    auto clos = domain->GetLocalResource<cor::Closure_Client>(clos_idp);
+    auto rank = clos->GetIdm(agent_idp);
 
-    // iteracao pelos dominios que estao no contexto do meta-dominio, para ir buscar o dominio remoto
-    for(auto idp : member_list) {
-        if(idp != domain_idp && idp != 0) {
-            remote_domain_idp = idp;
-            break;
-        }
-    }
-
-    std::cout << "Dominio local: " << domain_idp << std::endl;
-    std::cout << "Dominio remoto: " << remote_domain_idp << std::endl;
+    auto remote_domains = domain->GetRemoteDomains();
+    idp_t remote_domain_idp = remote_domains[0];
 
     // criacao de um novo agente no dominio remoto
-    auto remote_agent_idp = domain->Create<cor::Agent_Client<void(int)>>(remote_domain_idp, "", Function1);
+    auto remote_agent_idp = domain->Create<cor::ProtoAgent_Client<void(idp_t)>>(remote_domain_idp, "", Function1);
 
-    
-    if(hpx::get_locality_id() == 0) {
-        domain->Run<cor::Agent_Client<void(int)>>(remote_agent_idp, 0).get();
+    if(rank == 0) {
+        domain->Run<cor::ProtoAgent_Client<void(idp_t)>>(remote_agent_idp, domain_idp).get();
     }
     else {
-        domain->Run<cor::Agent_Client<void(int)>>(remote_agent_idp, 1).get();
+        domain->Run<cor::ProtoAgent_Client<void(idp_t)>>(remote_agent_idp, domain_idp).get();
     }
-
-
 }
 
 // output:

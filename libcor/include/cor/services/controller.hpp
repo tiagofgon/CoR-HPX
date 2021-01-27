@@ -50,8 +50,11 @@ public:
     std::string GetGlobalContext();
     std::string GetLocalContext();
 
-    unsigned int GetTotalPods();
-    unsigned int GetTotalDomains();
+    unsigned int GetNumPods();
+    unsigned int GetNumDomains();
+
+    std::vector<idp_t> GetPods();
+    std::vector<idp_t> GetDomains();
 
     // not global function, only local domain
     idp_t GetDomainIdp(idp_t idp);

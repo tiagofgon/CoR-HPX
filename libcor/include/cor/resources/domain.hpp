@@ -57,9 +57,12 @@ public:
     /* Container's interface */
     std::string GetGlobalContext();
     std::string GetLocalContext();
+    
+    unsigned int GetNumPods();
+    unsigned int GetNumDomains();
 
-    unsigned int GetTotalPods();
-    unsigned int GetTotalDomains();
+    std::vector<idp_t> GetPods();
+    std::vector<idp_t> GetDomains();
 
     idp_t GetActiveResourceIdp(size_t id);
     idp_t GetPredecessorIdp(idp_t idp);
@@ -97,8 +100,10 @@ public:
 
     HPX_DEFINE_COMPONENT_ACTION(Domain, GetGlobalContext, GetGlobalContext_action_Domain);
     HPX_DEFINE_COMPONENT_ACTION(Domain, GetLocalContext, GetLocalContext_action_Domain);
-    HPX_DEFINE_COMPONENT_ACTION(Domain, GetTotalPods, GetTotalPods_action_Domain);
-    HPX_DEFINE_COMPONENT_ACTION(Domain, GetTotalDomains, GetTotalDomains_action_Domain);
+    HPX_DEFINE_COMPONENT_ACTION(Domain, GetNumPods, GetNumPods_action_Domain);
+    HPX_DEFINE_COMPONENT_ACTION(Domain, GetNumDomains, GetNumDomains_action_Domain);
+    HPX_DEFINE_COMPONENT_ACTION(Domain, GetPods, GetPods_action_Domain);
+    HPX_DEFINE_COMPONENT_ACTION(Domain, GetDomains, GetDomains_action_Domain);
     HPX_DEFINE_COMPONENT_ACTION(Domain, GetActiveResourceIdp, GetActiveResourceIdp_action_Domain);
     HPX_DEFINE_COMPONENT_ACTION(Domain, GetPredecessorIdp, GetPredecessorIdp_action_Domain);
     HPX_DEFINE_COMPONENT_ACTION(Domain, Spawn, Spawn_action_Domain);
@@ -218,8 +223,10 @@ HPX_REGISTER_ACTION_DECLARATION(GetDynamicOrganizerIdp_action_Domain);
 /* Declaration of actions to interact with Container */
 typedef cor::Domain::GetGlobalContext_action_Domain GetGlobalContext_action_Domain;
 typedef cor::Domain::GetLocalContext_action_Domain GetLocalContext_action_Domain;
-typedef cor::Domain::GetTotalPods_action_Domain GetTotalPods_action_Domain;
-typedef cor::Domain::GetTotalDomains_action_Domain GetTotalDomains_action_Domain;
+typedef cor::Domain::GetNumPods_action_Domain GetNumPods_action_Domain;
+typedef cor::Domain::GetNumDomains_action_Domain GetNumDomains_action_Domain;
+typedef cor::Domain::GetPods_action_Domain GetPods_action_Domain;
+typedef cor::Domain::GetDomains_action_Domain GetDomains_action_Domain;
 typedef cor::Domain::GetActiveResourceIdp_action_Domain GetActiveResourceIdp_action_Domain;
 typedef cor::Domain::GetPredecessorIdp_action_Domain GetPredecessorIdp_action_Domain;
 typedef cor::Domain::Spawn_action_Domain Spawn_action_Domain;
@@ -227,8 +234,10 @@ typedef cor::Domain::GetContainerIdp_action_Domain GetContainerIdp_action_Domain
 
 HPX_REGISTER_ACTION_DECLARATION(GetGlobalContext_action_Domain);
 HPX_REGISTER_ACTION_DECLARATION(GetLocalContext_action_Domain);
-HPX_REGISTER_ACTION_DECLARATION(GetTotalPods_action_Domain);
-HPX_REGISTER_ACTION_DECLARATION(GetTotalDomains_action_Domain);
+HPX_REGISTER_ACTION_DECLARATION(GetNumPods_action_Domain);
+HPX_REGISTER_ACTION_DECLARATION(GetNumDomains_action_Domain);
+HPX_REGISTER_ACTION_DECLARATION(GetPods_action_Domain);
+HPX_REGISTER_ACTION_DECLARATION(GetDomains_action_Domain);
 HPX_REGISTER_ACTION_DECLARATION(GetActiveResourceIdp_action_Domain);
 HPX_REGISTER_ACTION_DECLARATION(GetPredecessorIdp_action_Domain);
 HPX_REGISTER_ACTION_DECLARATION(Spawn_action_Domain);

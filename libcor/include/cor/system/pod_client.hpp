@@ -72,17 +72,30 @@ public:
         return hpx::async<action_type>(this->get_id()).get(); 
     }
 
-    unsigned int GetTotalPods()
-    {
-        typedef cor::Pod::GetTotalPods_action_pod action_type;
-        return hpx::async<action_type>(this->get_id()).get(); 
-    }
+	unsigned int GetNumPods()
+	{
+		typedef cor::Pod::GetNumPods_action_pod action_type;
+		return hpx::async<action_type>(this->get_id()).get(); 
+	}
 
-    unsigned int GetTotalDomains()
-    {
-        typedef cor::Pod::GetTotalDomains_action_pod action_type;
-        return hpx::async<action_type>(this->get_id()).get(); 
-    }
+	unsigned int GetNumDomains()
+	{
+		typedef cor::Pod::GetNumDomains_action_pod action_type;
+		return hpx::async<action_type>(this->get_id()).get(); 
+	}
+
+	std::vector<idp_t> GetPods()
+	{
+		typedef cor::Pod::GetPods_action_pod action_type;
+		return hpx::async<action_type>(this->get_id()).get(); 
+	}
+
+	std::vector<idp_t> GetDomains()
+	{
+		typedef cor::Pod::GetDomains_action_pod action_type;
+		return hpx::async<action_type>(this->get_id()).get(); 
+	}
+
 
     // método que irá ser invocado internamente
     idp_t GetActiveResourceIdp()

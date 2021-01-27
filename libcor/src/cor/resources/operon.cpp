@@ -48,6 +48,10 @@ void Operon::Dispatch_void(hpx::function<void()> func)
     return _executor_pool.Dispatch(func);
 }
 
+void Operon::Wait() {
+    return _executor_pool.Wait();
+}
+
 
 
 

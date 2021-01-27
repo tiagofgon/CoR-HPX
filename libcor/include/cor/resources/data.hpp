@@ -107,7 +107,9 @@ private:
 #define REGISTER_DATA_DECLARATION(type)                                                                             \
     HPX_REGISTER_ACTION_DECLARATION(                                                                                \
         cor::Data<type>::Fetch_action_Data,                                                                         \
-        HPX_PP_CAT(__Data_Fetch_action_Data_, type));                                                               \
+        HPX_PP_CAT(__Data_Fetch_action_Data_, type));                                                               
+
+//
 
 #define REGISTER_DATA(type)                                                                                         \
     HPX_REGISTER_ACTION(                                                                                            \
@@ -117,7 +119,8 @@ private:
         HPX_PP_CAT(__Data_type, type);                                                                              \
     typedef cor::Data<type>                                                                                         \
         HPX_PP_CAT(__Data_, type);                                                                                  \
-    HPX_REGISTER_DERIVED_COMPONENT_FACTORY(HPX_PP_CAT(__Data_type, type), HPX_PP_CAT(__Data_, type), "ResourceMigrable")    \
+    HPX_REGISTER_DERIVED_COMPONENT_FACTORY(HPX_PP_CAT(__Data_type, type), HPX_PP_CAT(__Data_, type), "ResourceMigrable")    
 
+//
 
 #endif

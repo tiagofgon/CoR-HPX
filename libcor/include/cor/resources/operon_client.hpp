@@ -216,6 +216,12 @@ public:
 		});	
     }
 
+	void Wait()
+	{
+		ensure_ptr();
+		return ptr->Wait();
+	}
+
 
 
 	/** Local Client's interface **/

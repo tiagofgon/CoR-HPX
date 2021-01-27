@@ -45,6 +45,8 @@ public:
     template < typename Func>
     void Dispatch(Func&& func);
 
+    void Wait();
+
     HPX_DEFINE_COMPONENT_ACTION(Operon, GetRank, GetRank_action_Operon); 
     HPX_DEFINE_COMPONENT_ACTION(Operon, GetNumThreads, GetNumThreads_action_Operon);  
     HPX_DEFINE_COMPONENT_ACTION(Operon, Dispatch_void, Dispatch_void_action_Operon);

@@ -1,0 +1,5 @@
+1200            # N
+320            # M
+400000           # maxIts
+1              # nThreads
+10000           # stepReport

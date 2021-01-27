@@ -14,8 +14,10 @@ namespace cor
       _index{0},
       _mtx{},
       th_ids_index{0},
-      _mtx2{}
+      _mtx2{},
+      barrier{num_hpx_threads}
    {
+
       // std::cout << "Criado um componente \"ExecutorPool\", com idp: " << idp << ", com threads: " << _num_hpx_threads << std::endl;
    }
 
@@ -175,6 +177,20 @@ void ExecutorPool::Dispatch(hpx::function<void()> func)
    _futures.clear();
    th_ids.clear();
 }
+
+
+void ExecutorPool::Wait()
+{
+   barrier.wait();
+}
+
+
+
+
+
+
+
+
 
 
 }

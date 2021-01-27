@@ -127,15 +127,21 @@ std::string ResourceManager::SearchResource(idp_t idp)
 }
 
 
-// ACABAR ISTO
-unsigned int ResourceManager::GetTotalDomains()
+unsigned int ResourceManager::GetNumDomains()
 {
     auto gid = GetGidFromIdp(cor::MetaDomain);
     std::unique_ptr<Domain_Client> meta_domain = std::make_unique<Domain_Client>(std::move(gid));
-    auto total_members = meta_domain->GetTotalMembers();
-
-    return total_members;
+    return meta_domain->GetTotalMembers();
 }
+
+std::vector<idp_t> ResourceManager::GetDomains()
+{
+    auto gid = GetGidFromIdp(cor::MetaDomain);
+    std::unique_ptr<Domain_Client> meta_domain = std::make_unique<Domain_Client>(std::move(gid));
+    return meta_domain->GetMemberList();
+}
+
+
 
 idp_t ResourceManager::GetDomainIdp(idp_t idp)
 {
