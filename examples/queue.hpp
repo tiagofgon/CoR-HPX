@@ -1,30 +1,5 @@
 #include <hpx/hpx.hpp>
 
-class Container
-{
-
-public:
-    Container() = default;
-    virtual ~Container();
-
-    Container(int _id);
-
-    int GetID() const {
-        return _id;
-    }
-
-    template <typename Archive>
-    void serialize(Archive& ar, unsigned version)
-    {
-        ar & _id;
-    }
-
-private:
-    int _id;
-};
-
-
-
 template <typename T>
 class MyQueue
 {

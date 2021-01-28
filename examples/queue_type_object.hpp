@@ -1,6 +1,30 @@
 #include <hpx/hpx.hpp>
 
-class Object {
+class Container
+{
+
+public:
+    Container() = default;
+    ~Container() = default;
+
+    Container(int _id);
+
+    int GetID() const {
+        return _id;
+    }
+
+    template <typename Archive>
+    void serialize(Archive& ar, unsigned version)
+    {
+        ar & _id;
+    }
+
+private:
+    int _id;
+};
+
+
+class Object: public Container {
 public:
     Object() = default;
     void setA(int a) {

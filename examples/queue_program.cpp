@@ -14,10 +14,8 @@ extern "C"
     void Main(int argc, char *argv[]);
 }
 
-
 typedef MyQueue<Object> myqueue_type;
 REGISTER_DATA(myqueue_type); // need to register new Data type
-
 
 void Main(int argc, char *argv[])
 {
