@@ -176,6 +176,8 @@ int Main(int argc, char *argv[])
 
    // PrintResult(10);
    ExitJob();
+
+return 0;
 }
 
     
