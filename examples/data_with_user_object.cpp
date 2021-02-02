@@ -53,18 +53,18 @@ REGISTER_DATA(MyObject); // need to register new Data type
 
 // Functions to interact with the Data
 struct Funcion_object1 {
-    void operator()(MyObject* obj, int i) {
-        obj->setId(i);
+    void operator()(MyObject &obj, int i) {
+        obj.setId(i);
     }
 };
-hpx::function<void(MyObject*, int)> setId = Funcion_object1();
+hpx::function<void(MyObject&, int)> setId = Funcion_object1();
 
 struct Funcion_object2 {
-    size_t operator()(MyObject* obj) {
-        return obj->getId();
+    size_t operator()(MyObject &obj) {
+        return obj.getId();
     }
 };
-hpx::function<size_t(MyObject*)> getId = Funcion_object2();
+hpx::function<size_t(MyObject&)> getId = Funcion_object2();
 
 
 

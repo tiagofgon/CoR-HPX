@@ -1,32 +1,8 @@
 #include <hpx/hpx.hpp>
 
-class Container
-{
 
+class Object {
 public:
-    Container() = default;
-    ~Container() = default;
-
-    Container(int _id);
-
-    int GetID() const {
-        return _id;
-    }
-
-    template <typename Archive>
-    void serialize(Archive& ar, unsigned version)
-    {
-        ar & _id;
-    }
-
-private:
-    int _id;
-};
-
-
-class Object: public Container {
-public:
-    Object() = default;
     void setA(int a) {
         this->a = a;
     }
@@ -46,7 +22,7 @@ public:
     std::string getC(){
         return c;
     }
-    friend class hpx::serialization::access;
+    
     template <typename Archive>
     void serialize(Archive& ar, unsigned) {   
         ar& a;
@@ -55,6 +31,7 @@ public:
     }
 
 private:
+    friend class hpx::serialization::access;
     int a = 1;
     double b = 1.1;
     std::string c = "1.2";

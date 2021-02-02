@@ -4,6 +4,8 @@
 #include "cor/resources/data.hpp"
 #include "cor/services/mutexRW_service_client.hpp"
 
+#include "cor/services/resource_manager_global.hpp"
+
 #include <hpx/hpx.hpp>
 
 
@@ -145,7 +147,6 @@ public:
 		//std::cout << "AcquireRead()" << std::endl;
 		return hpx::async([&](){
 			mutex->AcquireRead();
-			ensure_ptr();
 		});
 	}
 
@@ -153,7 +154,6 @@ public:
 	{
 		//std::cout << "AcquireRead()" << std::endl;
 		mutex->AcquireRead();
-		ensure_ptr();
 	}
 
 	hpx::future<void> ReleaseRead(hpx::launch::async_policy)
@@ -175,7 +175,6 @@ public:
 		//std::cout << "AcquireWrite()" << std::endl;
 		return hpx::async([&](){
 			mutex->AcquireWrite();
-			ensure_ptr();
 		});
 	}
 
@@ -183,7 +182,6 @@ public:
 	{
 		//std::cout << "AcquireWrite()" << std::endl;
 		mutex->AcquireWrite();
-		ensure_ptr();
 	}
 
 	hpx::future<void> ReleaseWrite(hpx::launch::async_policy)
@@ -222,6 +220,7 @@ public:
 
 	T* Get()
 	{
+		ensure_ptr();
 		return ptr->Get();
 	}
 
@@ -236,36 +235,17 @@ public:
 		return res;
 	}
 
-
-	T const &operator*() const {
-		// std::cout << "AQUI_11" << std::endl;
-		HPX_ASSERT(this->get_id());
-		
-		return **ptr;
-	}
-
-	T &operator*() {
-		// std::cout << "AQUI_22" << std::endl;
-		HPX_ASSERT(this->get_id());
-		
-		return **ptr;
-	}
-
-	T const* operator->() const
+    template <typename F, typename ... Args>
+    auto Run(hpx::launch::sync_policy, hpx::function<F> func, Args... args)
 	{
-		// std::cout << "AQUI_33" << std::endl;
-		HPX_ASSERT(this->get_id());
-		
-		return &**ptr;
+		AcquireWrite();
+		typedef typename Data<T>::template Run_action_Data<F, Args...> action_type;
+		auto res = action_type()(base_type::get_id(), func, args...);
+		ReleaseWrite();
+		return res;
 	}
 
-	T* operator->()
-	{
-		// std::cout << "AQUI_44" << std::endl;
-		HPX_ASSERT(this->get_id());
-		
-		return &**ptr;
-	}
+
 
 
 	/** Local Client's interface **/
@@ -308,10 +288,20 @@ public:
 		return 6;
 	}
 
-	hpx::future<hpx::id_type> Migrate(hpx::id_type dest)
+	void Migrate(idp_t domain_target)
 	{
-		return hpx::components::migrate<Data<T>>(this->get_id(), dest);
+		hpx::id_type resource_manager_global_component = hpx::find_from_basename("ResourceManagerGlobal_basename", 0).get();
+		typedef ResourceManagerGlobal::GetGidFromIdp_action_ResourceManagerGlobal action_type;
+		hpx::id_type gid = hpx::async<action_type>(resource_manager_global_component, domain_target).get();
+
+		auto locality = hpx::get_colocation_id(hpx::launch::sync, gid);
+
+		ptr = nullptr;
+		hpx::components::migrate<Data<T>>(this->get_id(), locality).get();
+		//std::cout << "o objeto migrou para " << domain_target << std::endl;
+		return;
 	}
+
 
 	// For compilation purposes only, it is never used here!
 	hpx::future<hpx::id_type> GetMailboxGid(hpx::launch::async_policy) {
@@ -342,12 +332,18 @@ private:
 	MutexRWService_Client *mutex;
 	mutable std::shared_ptr<Data<T>> ptr;
 
+	hpx::future<hpx::id_type> Migrate_hpx(hpx::id_type dest)
+	{
+		ptr = nullptr;
+		return hpx::components::migrate<Data<T>>(this->get_id(), dest);
+	}
+	
 	void ensure_ptr() {
 		// if the Data component is not in the current locality, migrate
 		if(hpx::find_here() != hpx::get_colocation_id(hpx::launch::sync, this->get_id())) {
 
 			std::cout << "É preciso migrar" << std::endl;
-			Migrate(hpx::find_here()).get();
+			Migrate_hpx(hpx::find_here()).get();
 			std::cout << "Componente migrado" << std::endl;
 			ptr = hpx::get_ptr<Data<T>>(hpx::launch::sync, this->get_id());
 		}

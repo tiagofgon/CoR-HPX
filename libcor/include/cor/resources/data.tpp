@@ -36,7 +36,8 @@ template <typename T>
 template <typename F, typename ... Args>
 auto Data<T>::Run(hpx::function<F> func, Args... args)
 {
-    return func(Get(), args...);
+    T* value = Get();
+    return func(*value, args...);
 }
 
 

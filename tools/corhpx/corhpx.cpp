@@ -81,7 +81,7 @@ int main(int argc, char * argv[])
     std::string endereco = "hpx.parcel.address=" + ip_address;
 
     std::vector<std::string> cfg = {
-    "hpx.run_hpx_main!=1", // run this code on all localities (SPMD)
+    "hpx.run_hpx_main!=1", // run this code on all localities
     "hpx.expect_connecting_localities!=1" // Make sure networking will not be disabled
     };
     cfg.push_back(endereco); // run runtime on this ip address

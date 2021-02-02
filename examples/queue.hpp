@@ -1,32 +1,60 @@
 #include <hpx/hpx.hpp>
 
-template <typename T>
-class MyQueue
+class Container
 {
 public:
+    Container(int id = 42) :
+        _id(id)
+    {}
+
+    int GetId() const {
+        return _id;
+    }
+
+    template <typename Archive>
+    void serialize(Archive& ar, unsigned version)
+    {
+        ar & _id;
+    }
+
+private:
+    friend class hpx::serialization::access;
+    int _id;
+};
+
+
+template <typename T>
+class Queue : public Container
+{
+public:
+    Queue() = default;
+    Queue(int id) :
+        Container{id}
+    {}
+
     template <typename ... Args>
     void Push(Args ... args) {
-        (myqueue.push_back(args), ...);
+        (_fifo.push_back(args), ...);
     }
 
     T Pop() {
-        T element = myqueue.front();
-        myqueue.erase(myqueue.begin());
+        T element = _fifo.front();
+        _fifo.erase(_fifo.begin());
         return element;
     }
 
     size_t Size() {
-        return myqueue.size();
+        return _fifo.size();
     }
-
-    friend class hpx::serialization::access;
     
     template <typename Archive>
     void serialize(Archive& ar, unsigned) {   
-        ar& myqueue;
+        ar & hpx::serialization::base_object<Container>(*this);
+        ar& _fifo;
     }
 
 private:
-    std::vector<T> myqueue;
+    friend class hpx::serialization::access;
+    std::vector<T> _fifo;
 };
 

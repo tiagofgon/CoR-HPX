@@ -226,6 +226,20 @@ target_link_libraries(
 	    HPX::hpx
 )
 
+# heat_distributed_parallel
+add_library(heat_distributed_parallel SHARED heat_distributed_parallel.cpp)
+target_compile_features(heat_distributed_parallel PUBLIC cxx_std_17)
+set_target_properties(heat_distributed_parallel PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(heat_distributed_parallel PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(heat_distributed_parallel PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(heat_distributed_parallel PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    heat_distributed_parallel
+    PRIVATE
+        libcor
+	    HPX::hpx
+)
+
 # queue_program
 add_library(queue_program SHARED queue_program.cpp)
 target_compile_features(queue_program PUBLIC cxx_std_17)
@@ -255,8 +269,10 @@ install(
         create_remote
         server_rpc
         client_rpc
+        data_with_user_object
         heat
         heat_local_parallel
+        heat_distributed_parallel
         queue_program
     LIBRARY
         DESTINATION examples
