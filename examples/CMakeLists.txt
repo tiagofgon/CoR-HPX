@@ -254,6 +254,35 @@ target_link_libraries(
 	    HPX::hpx
 )
 
+# stencil2d
+add_library(stencil2d SHARED stencil2d.cpp)
+target_compile_features(stencil2d PUBLIC cxx_std_17)
+set_target_properties(stencil2d PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(stencil2d PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(stencil2d PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(stencil2d PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    stencil2d
+    PRIVATE
+        libcor
+	    HPX::hpx
+)
+
+# comunnicator_example
+add_library(comunnicator_example SHARED comunnicator_example.cpp)
+target_compile_features(comunnicator_example PUBLIC cxx_std_17)
+set_target_properties(comunnicator_example PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(comunnicator_example PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(comunnicator_example PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(comunnicator_example PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    comunnicator_example
+    PRIVATE
+        libcor
+        HPX::hpx
+        # HPX::iostreams
+)
+
 install(
     TARGETS
         module
@@ -274,6 +303,8 @@ install(
         heat_local_parallel
         heat_distributed_parallel
         queue_program
+        stencil2d
+        comunnicator_example
     LIBRARY
         DESTINATION examples
 )

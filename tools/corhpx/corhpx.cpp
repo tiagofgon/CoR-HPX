@@ -26,7 +26,6 @@
 
 int hpx_main(int argc, char *argv[])
 {
-        
     if (argc < 2) {
         // report version
         std::cout << argv[0] << " Version " << PlaCoR_VERSION_MAJOR << "."
@@ -47,18 +46,29 @@ int hpx_main(int argc, char *argv[])
         for (int i = 0; i < 6; ++i, --argc, ++argv);
     } 
 
+    hpx::util::high_resolution_timer t1;
+
     auto domain = cor::Initialize_hpx(app_group, context, npods, module);
 
+    std::cout << "Initialize_hpx : " << t1.elapsed() << std::endl;
+
+
+    hpx::util::high_resolution_timer t2;
+    //std::cout << "domain->CreateCollective" << std::endl;
     auto clos = domain->CreateCollective<cor::Closure_Client>(domain->Idp(), "", npods, total_members, parent);
+    std::cout << "CreateCollective : " << t2.elapsed() << std::endl;
 
-
+    hpx::util::high_resolution_timer t3;
     //std::cout << "************ Criação do agente principal no corhpx *******"  << std::endl;
     auto agent = domain->CreateLocal<cor::Agent_Client<void(int,char**)>>(clos->Idp(),  "", domain->GetModuleName(), "Main");
+    std::cout << "CreateLocal : " << t3.elapsed() << std::endl;
 
+
+    hpx::util::high_resolution_timer t4;
     //std::cout << "************ Execução do modulo *******"  << std::endl;
     auto fut = agent->Run(argc, argv);
     fut.get();
-
+    std::cout << "Execução do agente: " << t4.elapsed() << std::endl;
 
     return hpx::finalize();
 }
@@ -66,6 +76,7 @@ int hpx_main(int argc, char *argv[])
 
 int main(int argc, char * argv[])
 {
+    std::cout << "Hello from C++ main" << std::endl;
 
     // To retrieve hostname
     char hostbuffer[256];
@@ -82,7 +93,7 @@ int main(int argc, char * argv[])
 
     std::vector<std::string> cfg = {
     "hpx.run_hpx_main!=1", // run this code on all localities
-    "hpx.expect_connecting_localities!=1" // Make sure networking will not be disabled
+    "hpx.expect_connecting_localities!=2" // Make sure networking will not be disabled
     };
     cfg.push_back(endereco); // run runtime on this ip address
 

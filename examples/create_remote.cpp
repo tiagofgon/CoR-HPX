@@ -13,15 +13,14 @@ With MPI in one console only: mpirun -np 2 ./corhpx apps ctx 2 0 ../examples/lib
 #include "cor/cor.hpp"
 
 // tem de ser uma função objeto para ser serializada
-struct Funcion_object_aux {
-    void operator()(idp_t domain_idp_creater) {
+struct funcion_object {
+    void operator()(idp_t remote_idp) {
         auto domain = cor::GetDomain();
         auto domain_idp = domain->Idp();
-        std::cout << "Function spawned from " << domain_idp_creater << " to domaind " << domain_idp << "" << std::endl;
-
+        std::cout << "Function spawned from " << remote_idp << " executed on domain " << domain_idp << "" << std::endl;
     }
 };
-hpx::function<void(idp_t)> Function1 = Funcion_object_aux();
+hpx::function<void(idp_t)> Function = funcion_object();
 
 extern "C"
 {
@@ -41,7 +40,7 @@ void Main(int argc, char *argv[]) {
     idp_t remote_domain_idp = remote_domains[0];
 
     // criacao de um novo agente no dominio remoto
-    auto remote_agent_idp = domain->Create<cor::ProtoAgent_Client<void(idp_t)>>(remote_domain_idp, "", Function1);
+    auto remote_agent_idp = domain->Create<cor::ProtoAgent_Client<void(idp_t)>>(remote_domain_idp, "", Function);
 
     if(rank == 0) {
         domain->Run<cor::ProtoAgent_Client<void(idp_t)>>(remote_agent_idp, domain_idp).get();

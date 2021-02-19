@@ -37,9 +37,9 @@ void Main(int argc, char *argv[])
     if(rank == 0) {
         auto myqueue = domain->CreateLocal<cor::Data_Client<queue_type>>(domain->Idp(), "data");
         Object objA, objB, objC;
+
         myqueue->Run(Push<Object>, objA).get();
-        myqueue->Run(Push<Object>, objB).get();
-        myqueue->Run(Push<Object>, objC).get();
+        myqueue->Run(Push<Object, Object>, objB, objC).get();
 
         std::vector<idp_t> remote_domains = domain->GetRemoteDomains();
         idp_t dest = remote_domains[0];

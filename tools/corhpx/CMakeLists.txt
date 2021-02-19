@@ -5,6 +5,7 @@ add_hpx_executable(corhpx
 		LibSSH
 		-ldl
 		-lpthread
+	COMPONENT_DEPENDENCIES iostreams
 )
 
 
