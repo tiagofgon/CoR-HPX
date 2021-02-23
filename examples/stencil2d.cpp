@@ -1,5 +1,7 @@
 
 
+
+
 // #include "communicator.hpp"
 
 
@@ -15,14 +17,14 @@
 // #include <hpx/include/util.hpp>
 // #include <hpx/init.hpp>
 // #include <hpx/program_options.hpp>
-
+// // #include <hpx/iostream.hpp>
 
 
 // std::shared_ptr<cor::Operon_Client> operon;
 // typedef hpx::lcos::channel<std::vector<double>> channel_type;
 
 
-// void worker(std::size_t global_rank, std::size_t num, std::size_t Nx, std::size_t Ny, std::size_t steps)
+// void worker(std::shared_ptr<cor::Domain_Client> domain, std::size_t global_rank, std::size_t num, std::size_t Nx, std::size_t Ny, std::size_t steps)
 // {
 
 //     auto rank = global_rank + operon->GetRank() - 1;
@@ -37,6 +39,7 @@
 //     typedef communicator<std::vector<double>> communicator_type;
 //     communicator_type comm(rank, num);
 
+    
     
 
 
@@ -93,6 +96,37 @@
 //         comm.set(communicator_type::down,
 //             std::vector<double>(U[0].end() - Nx, U[0].end()), 0);
 //     }
+    
+// std::size_t upper_neighbor = 0;
+// std::size_t bottom_neighbor = 0;
+// std::unique_ptr<cor::DuplexChannel_Client<std::vector<double>>> upper_channel;
+// std::unique_ptr<cor::DuplexChannel_Client<std::vector<double>>> bottom_channel;
+
+//         if (num > 1)
+//         {
+//             // We have an upper neighbor if our rank is greater than zero.
+//             if (rank > 0)
+//             {
+//                 upper_neighbor = 1;
+//                 std::string partner1 = "rank" + std::to_string(rank);
+//                 std::string partner2 = "rank" + std::to_string(rank-1);
+//                 upper_channel = std::move(domain->CreateLocal<cor::DuplexChannel_Client<std::vector<double>>>(domain->Idp(), "",  partner1, partner2));
+
+//                 // send initial value to our upper neighbor
+//                 upper_channel->Set(std::vector<double>(U[0].begin(), U[0].begin() + Nx), 0);
+//             }
+//             if (rank < num - 1)
+//             {
+//                 bottom_neighbor = 1;
+//                 std::string partner2 = "rank" + std::to_string(rank);
+//                 std::string partner1 = "rank" + std::to_string(rank+1);
+//                 bottom_channel = std::move(domain->CreateLocal<cor::DuplexChannel_Client<std::vector<double>>>(domain->Idp(), "",  partner2, partner1));
+
+//                 // send initial value to our neighbor below
+//                 bottom_channel->Set(std::vector<double>(U[0].end() - Nx, U[0].end()), 0);
+//             }
+//         }
+
 
 
 //     using namespace hpx::execution;
@@ -107,13 +141,13 @@
 //     hpx::future<void> step_future = hpx::make_ready_future();
 //     for (std::size_t t = 0; t < steps; ++t) {
 
-//         step_future = step_future.then([&U, &comm, Ny, Nx, t, policy](hpx::future<void>&& prev) mutable
+//         step_future = step_future.then([&U, &upper_channel, &bottom_channel, upper_neighbor, bottom_neighbor, Ny, Nx, t, policy](hpx::future<void>&& prev) mutable
 //         {
 
 //             hpx::future<void> top_boundary_future;
-//             if (comm.has_neighbor(communicator_type::up)) {
-//                 //std::cout << "vizinho_cima" << std::endl;
-//                 top_boundary_future = comm.get(communicator_type::up, t).then([&U, &comm, Nx, Ny, t](hpx::future<std::vector<double>>&& up_future){
+//             if (upper_neighbor) {
+//                 // std::cout << "vizinho_cima" << std::endl;
+//                 top_boundary_future = upper_channel->Get(t).then([&U, &upper_channel, Nx, Ny, t](hpx::future<std::vector<double>>&& up_future){
 //                     std::vector<double> up = up_future.get();
 
 //                     // Iterate over the interior: skip the last and first element
@@ -123,8 +157,8 @@
 //                     }
 
 //                     std::vector<double> newVec(U[1].begin(), U[1].begin()+Nx);
-//                     comm.set(communicator_type::up, std::move(newVec), t + 1);
-//                     //std::cout << "vizinho_cima enviou" << std::endl;
+//                     upper_channel->Set(std::move(newVec), t + 1);
+//                     // std::cout << "vizinho_cima enviou" << std::endl;
 //                 });
 
 //             }
@@ -160,10 +194,10 @@
 
 
 //             hpx::future<void> bottom_boundary_future;
-//             if (comm.has_neighbor(communicator_type::down))
+//             if (bottom_neighbor)
 //             {
-//                 //std::cout << "vizinho_baixo" << std::endl;
-//                 bottom_boundary_future = comm.get(communicator_type::down, t).then([&U, &comm, Nx, Ny, t](hpx::future<std::vector<double>>&& bottom_future){
+//                 // std::cout << "vizinho_baixo" << std::endl;
+//                 bottom_boundary_future = bottom_channel->Get(t).then([&U, &bottom_channel, Nx, Ny, t](hpx::future<std::vector<double>>&& bottom_future){
 //                     std::vector<double> down = bottom_future.get();
 
 //                     // Iterate over the interior: skip the last and first element
@@ -173,8 +207,8 @@
 //                     }
 
 //                     std::vector<double> newVec(U[1].end() - Nx, U[1].end());
-//                     comm.set(communicator_type::down, std::move(newVec), t + 1);
-//                     //std::cout << "vizinho_baixo enviou" << std::endl;
+//                     bottom_channel->Set(std::move(newVec), t + 1);
+//                     // std::cout << "vizinho_baixo enviou" << std::endl;
 //                 });
 //             }
 //             else {
@@ -271,14 +305,13 @@
 
 
 //     operon = domain->CreateLocal<cor::Operon_Client>(domain->Idp(),  "", num_local_partitions);
-//     auto res = operon->Dispatch(&worker, (locality * num_local_partitions), num_partitions, Nx, Ny, steps);
+//     auto res = operon->Dispatch(&worker, domain, (locality * num_local_partitions), num_partitions, Nx, Ny, steps);
 //     res.get();
 
 
 //     std::cout << "Job finnished" << std::endl;
 
 // }
-
 
 
 
@@ -366,49 +399,49 @@ void worker(std::shared_ptr<cor::Domain_Client> domain, std::size_t global_rank,
     // }std::cout << std::endl;
 
 
-    std::cout << "criacao dos canais" << std::endl;
-    if (comm.has_neighbor(communicator_type::up))
-    {
-        // send initial value to our upper neighbor
-        comm.set(communicator_type::up,
-            std::vector<double>(U[0].begin(), U[0].begin() + Nx), 0);
-    }
-    if (comm.has_neighbor(communicator_type::down))
-    {
-            // send initial value to our neighbor below
-        comm.set(communicator_type::down,
-            std::vector<double>(U[0].end() - Nx, U[0].end()), 0);
-    }
-    
-std::size_t upper_neighbor = 0;
-std::size_t bottom_neighbor = 0;
-std::unique_ptr<cor::DuplexChannel_Client<std::vector<double>>> upper_channel;
-std::unique_ptr<cor::DuplexChannel_Client<std::vector<double>>> bottom_channel;
 
-        if (num > 1)
+    std::string myself = "rank" + std::to_string(rank);
+    std::string upper_neighbor = "";
+    std::string bottom_neighbor = "";
+
+    std::unique_ptr<cor::Switch_Client<std::vector<double>>> myswitch;
+
+    if (num > 1)
+    {
+        // We have an upper and bottom neighbors
+        if ((rank > 0) && (rank < num - 1))
         {
-            // We have an upper neighbor if our rank is greater than zero.
-            if (rank > 0)
-            {
-                upper_neighbor = 1;
-                std::string partner1 = "rank" + std::to_string(rank);
-                std::string partner2 = "rank" + std::to_string(rank-1);
-                upper_channel = std::move(domain->CreateLocal<cor::DuplexChannel_Client<std::vector<double>>>(domain->Idp(), "",  partner1, partner2));
+            // std::cout << "tenho vizinho de cima e de baixo" << std::endl;
+            upper_neighbor = "rank" + std::to_string(rank-1);
+            bottom_neighbor = "rank" + std::to_string(rank+1);
+            myswitch = std::move(domain->CreateLocal<cor::Switch_Client<std::vector<double>>>(domain->Idp(), "",  myself, upper_neighbor, bottom_neighbor));
 
-                // send initial value to our upper neighbor
-                upper_channel->Set(std::vector<double>(U[0].begin(), U[0].begin() + Nx), 0);
-            }
-            if (rank < num - 1)
-            {
-                bottom_neighbor = 1;
-                std::string partner2 = "rank" + std::to_string(rank);
-                std::string partner1 = "rank" + std::to_string(rank+1);
-                bottom_channel = std::move(domain->CreateLocal<cor::DuplexChannel_Client<std::vector<double>>>(domain->Idp(), "",  partner2, partner1));
-
-                // send initial value to our neighbor below
-                bottom_channel->Set(std::vector<double>(U[0].end() - Nx, U[0].end()), 0);
-            }
+            // send initial value to our upper and bottom neighbors
+            myswitch->Set(std::vector<double>(U[0].begin(), U[0].begin() + Nx), upper_neighbor, 0);
+            myswitch->Set(std::vector<double>(U[0].end() - Nx, U[0].end()), bottom_neighbor, 0);
         }
+        // We have an upper neighbor, only
+        else if (rank > 0) 
+        {
+            // std::cout << "tenho vizinho de cima" << std::endl;
+            upper_neighbor = "rank" + std::to_string(rank-1);
+            myswitch = std::move(domain->CreateLocal<cor::Switch_Client<std::vector<double>>>(domain->Idp(), "",  myself, upper_neighbor));
+
+            // send initial value to our upper neighbor
+            myswitch->Set(std::vector<double>(U[0].begin(), U[0].begin() + Nx), upper_neighbor, 0);
+        }
+        // We have an bottom neighbor, only
+        else if (rank < num - 1)
+        {
+            // std::cout << "tenho vizinho de baixo" << std::endl;
+            myself = "rank" + std::to_string(rank);
+            bottom_neighbor = "rank" + std::to_string(rank+1);
+            myswitch = std::move(domain->CreateLocal<cor::Switch_Client<std::vector<double>>>(domain->Idp(), "",  myself, bottom_neighbor));
+
+            // send initial value to our neighbor below
+            myswitch->Set(std::vector<double>(U[0].end() - Nx, U[0].end()), bottom_neighbor, 0);
+        }
+    }
 
 
 
@@ -424,13 +457,13 @@ std::unique_ptr<cor::DuplexChannel_Client<std::vector<double>>> bottom_channel;
     hpx::future<void> step_future = hpx::make_ready_future();
     for (std::size_t t = 0; t < steps; ++t) {
 
-        step_future = step_future.then([&U, &upper_channel, &bottom_channel, upper_neighbor, bottom_neighbor, Ny, Nx, t, policy](hpx::future<void>&& prev) mutable
-        {
+        // step_future = step_future.then([&U, &myswitch, upper_neighbor, bottom_neighbor, Ny, Nx, t, policy](hpx::future<void>&& prev) mutable
+        // {
 
             hpx::future<void> top_boundary_future;
-            if (upper_neighbor) {
+            if (upper_neighbor != "") {
                 // std::cout << "vizinho_cima" << std::endl;
-                top_boundary_future = upper_channel->Get(t).then([&U, &upper_channel, Nx, Ny, t](hpx::future<std::vector<double>>&& up_future){
+                top_boundary_future = myswitch->Get(upper_neighbor, t).then([&U, &myswitch, upper_neighbor, Nx, Ny, t](hpx::future<std::vector<double>>&& up_future){
                     std::vector<double> up = up_future.get();
 
                     // Iterate over the interior: skip the last and first element
@@ -440,7 +473,7 @@ std::unique_ptr<cor::DuplexChannel_Client<std::vector<double>>> bottom_channel;
                     }
 
                     std::vector<double> newVec(U[1].begin(), U[1].begin()+Nx);
-                    upper_channel->Set(std::move(newVec), t + 1);
+                    myswitch->Set(std::move(newVec), upper_neighbor, t + 1);
                     // std::cout << "vizinho_cima enviou" << std::endl;
                 });
 
@@ -477,10 +510,10 @@ std::unique_ptr<cor::DuplexChannel_Client<std::vector<double>>> bottom_channel;
 
 
             hpx::future<void> bottom_boundary_future;
-            if (bottom_neighbor)
+            if (bottom_neighbor != "")
             {
                 // std::cout << "vizinho_baixo" << std::endl;
-                bottom_boundary_future = bottom_channel->Get(t).then([&U, &bottom_channel, Nx, Ny, t](hpx::future<std::vector<double>>&& bottom_future){
+                bottom_boundary_future = myswitch->Get(bottom_neighbor, t).then([&U, &myswitch, bottom_neighbor, Nx, Ny, t](hpx::future<std::vector<double>>&& bottom_future){
                     std::vector<double> down = bottom_future.get();
 
                     // Iterate over the interior: skip the last and first element
@@ -490,7 +523,7 @@ std::unique_ptr<cor::DuplexChannel_Client<std::vector<double>>> bottom_channel;
                     }
 
                     std::vector<double> newVec(U[1].end() - Nx, U[1].end());
-                    bottom_channel->Set(std::move(newVec), t + 1);
+                    myswitch->Set(std::move(newVec), bottom_neighbor, t + 1);
                     // std::cout << "vizinho_baixo enviou" << std::endl;
                 });
             }
@@ -499,16 +532,16 @@ std::unique_ptr<cor::DuplexChannel_Client<std::vector<double>>> bottom_channel;
             }
 
         
-            return hpx::when_all(top_boundary_future, interior_future, bottom_boundary_future);
+            //return hpx::when_all(top_boundary_future, interior_future, bottom_boundary_future);
 
-            //hpx::wait_all(top_boundary_future, interior_future, bottom_boundary_future);
+            hpx::wait_all(top_boundary_future, interior_future, bottom_boundary_future);
 
-        });
+        // });
 
         U[0].swap(U[1]);
     }
     
-    step_future.get();
+    // step_future.get();
     double elapsed = t.elapsed();
 
 
@@ -516,6 +549,16 @@ std::unique_ptr<cor::DuplexChannel_Client<std::vector<double>>> bottom_channel;
     {
         double mlups = (((Nx - 2.) * (Ny * num - 2.) * steps) / 1e6)/ elapsed;
         std::cout << "MLUPS: " << mlups << "\n";
+
+
+        // std::ofstream file("stencil2d_output");
+        // for(std::size_t y = 0; y != Ny; ++y)
+        // {
+        //     for(std::size_t x = 0; x != Nx; ++x)
+        //     {
+        //         file << x << " " << y << " " << U[0][y * Nx + x] << '\n';
+        //     }
+        // }
     }
 
 
@@ -527,6 +570,7 @@ std::unique_ptr<cor::DuplexChannel_Client<std::vector<double>>> bottom_channel;
     //     }
     //     std::cout << std::endl;
     // }std::cout << std::endl;
+
 
 
 
