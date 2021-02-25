@@ -1,19 +1,19 @@
-#ifndef COR_SWITCHHPX_HPP
-#define COR_SWITCHHPX_HPP
+#ifndef COR_SMULTICHANNEL_HPP
+#define COR_SMULTICHANNEL_HPP
 
 #include <hpx/include/lcos.hpp>
 
 #include <array>
 
 template <typename T>
-struct SwitchHpx
+struct SMultiChannel
 {
 
 public:
     typedef hpx::lcos::channel<T> channel_type;
 
     template <typename ... Args>
-    SwitchHpx(idp_t idp, std::string const& myself, Args ... args) :
+    SMultiChannel(idp_t idp, std::string const& myself, Args ... args) :
         _idp{idp},
         _myself{myself}
     {

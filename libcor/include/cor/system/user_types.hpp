@@ -15,7 +15,8 @@
 #include "cor/resources/agent_client.hpp"
 #include "cor/resources/operon_client.hpp"
 #include "cor/resources/duplex_channel_client.hpp"
-#include "cor/resources/switch_client.hpp"
+#include "cor/resources/multi_channel_client.hpp"
+#include "cor/resources/uni_channel_client.hpp"
 
 
 typedef char *arg[];
@@ -70,10 +71,15 @@ HPX_REGISTER_CHANNEL(data_type2);
 REGISTER_DUPLEXCHANNEL(data_type2)
 
 
-// Switch types
-REGISTER_SWITCH(int)
-REGISTER_SWITCH(double)
-REGISTER_SWITCH(data_type2)
+// MultiChannel types
+REGISTER_MULTICHANNEL(int)
+REGISTER_MULTICHANNEL(double)
+REGISTER_MULTICHANNEL(data_type2)
 
+
+// UniChannel types
+REGISTER_UNICHANNEL(int)
+REGISTER_UNICHANNEL(double)
+REGISTER_UNICHANNEL(data_type2)
 
 #endif

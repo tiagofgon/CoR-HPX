@@ -404,7 +404,7 @@ void worker(std::shared_ptr<cor::Domain_Client> domain, std::size_t global_rank,
     std::string upper_neighbor = "";
     std::string bottom_neighbor = "";
 
-    std::unique_ptr<cor::Switch_Client<std::vector<double>>> myswitch;
+    std::unique_ptr<cor::MultiChannel_Client<std::vector<double>>> myswitch;
 
     if (num > 1)
     {
@@ -414,7 +414,7 @@ void worker(std::shared_ptr<cor::Domain_Client> domain, std::size_t global_rank,
             // std::cout << "tenho vizinho de cima e de baixo" << std::endl;
             upper_neighbor = "rank" + std::to_string(rank-1);
             bottom_neighbor = "rank" + std::to_string(rank+1);
-            myswitch = std::move(domain->CreateLocal<cor::Switch_Client<std::vector<double>>>(domain->Idp(), "",  myself, upper_neighbor, bottom_neighbor));
+            myswitch = std::move(domain->CreateLocal<cor::MultiChannel_Client<std::vector<double>>>(domain->Idp(), "",  myself, upper_neighbor, bottom_neighbor));
 
             // send initial value to our upper and bottom neighbors
             myswitch->Set(std::vector<double>(U[0].begin(), U[0].begin() + Nx), upper_neighbor, 0);
@@ -425,7 +425,7 @@ void worker(std::shared_ptr<cor::Domain_Client> domain, std::size_t global_rank,
         {
             // std::cout << "tenho vizinho de cima" << std::endl;
             upper_neighbor = "rank" + std::to_string(rank-1);
-            myswitch = std::move(domain->CreateLocal<cor::Switch_Client<std::vector<double>>>(domain->Idp(), "",  myself, upper_neighbor));
+            myswitch = std::move(domain->CreateLocal<cor::MultiChannel_Client<std::vector<double>>>(domain->Idp(), "",  myself, upper_neighbor));
 
             // send initial value to our upper neighbor
             myswitch->Set(std::vector<double>(U[0].begin(), U[0].begin() + Nx), upper_neighbor, 0);
@@ -436,7 +436,7 @@ void worker(std::shared_ptr<cor::Domain_Client> domain, std::size_t global_rank,
             // std::cout << "tenho vizinho de baixo" << std::endl;
             myself = "rank" + std::to_string(rank);
             bottom_neighbor = "rank" + std::to_string(rank+1);
-            myswitch = std::move(domain->CreateLocal<cor::Switch_Client<std::vector<double>>>(domain->Idp(), "",  myself, bottom_neighbor));
+            myswitch = std::move(domain->CreateLocal<cor::MultiChannel_Client<std::vector<double>>>(domain->Idp(), "",  myself, bottom_neighbor));
 
             // send initial value to our neighbor below
             myswitch->Set(std::vector<double>(U[0].end() - Nx, U[0].end()), bottom_neighbor, 0);

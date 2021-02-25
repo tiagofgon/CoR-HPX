@@ -1,7 +1,7 @@
-#ifndef COR_SWITCH_CLIENT_HPP
-#define COR_SWITCH_CLIENT_HPP
+#ifndef COR_UNICHANNEL_CLIENT_HPP
+#define COR_UNICHANNEL_CLIENT_HPP
 
-#include "cor/resources/switch.hpp"
+#include "cor/resources/uni_channel.hpp"
 
 #include <hpx/hpx.hpp>
 
@@ -10,11 +10,11 @@
 namespace cor {
 
 template <typename T>
-class Switch_Client : hpx::components::client_base<Switch_Client<T>, Switch<T>> 
+class UniChannel_Client : hpx::components::client_base<UniChannel_Client<T>, UniChannel<T>> 
 {
 
 public:
-	typedef hpx::components::client_base<Switch_Client<T>, Switch<T>> base_type;
+	typedef hpx::components::client_base<UniChannel_Client<T>, UniChannel<T>> base_type;
 
 	friend class hpx::serialization::access;
 
@@ -22,54 +22,53 @@ public:
 
 	// Default construct an empty client side representation (not
 	// connected to any existing component). Also needed for serialization
-    Switch_Client()
+    UniChannel_Client()
     {}
 
 	// Create a client side representation for the existing
-	// Switch instance with the given GID
-    Switch_Client(hpx::future<hpx::id_type> && id) :
+	// UniChannel instance with the given GID
+    UniChannel_Client(hpx::future<hpx::id_type> && id) :
         base_type(std::move(id)),
 		_idp(IdpGlobal())
     {}
 
-    Switch_Client(hpx::shared_future<hpx::id_type> && id) :
+    UniChannel_Client(hpx::shared_future<hpx::id_type> && id) :
         base_type(std::move(id)),
 		_idp(IdpGlobal())
     {}
 
-    Switch_Client(hpx::id_type && id) :
+    UniChannel_Client(hpx::id_type && id) :
         base_type(std::move(id)),
 		_idp(IdpGlobal())
     {}
 
 	// Constructor for replicas
-    Switch_Client(idp_t idp, hpx::future<hpx::id_type> && id) :
+    UniChannel_Client(idp_t idp, hpx::future<hpx::id_type> && id) :
         base_type(std::move(id)),
 		_idp(idp)
     {}
 
-    Switch_Client(idp_t idp, hpx::shared_future<hpx::id_type> && id) :
+    UniChannel_Client(idp_t idp, hpx::shared_future<hpx::id_type> && id) :
         base_type(std::move(id)),
 		_idp(idp)
     {}
 
-    Switch_Client(idp_t idp, hpx::id_type && id) :
+    UniChannel_Client(idp_t idp, hpx::id_type && id) :
         base_type(std::move(id)),
 		_idp(idp)
     {}
 
 	// Standard constructor with parameters
-	template <typename ... Args>
-    Switch_Client(idp_t idp, std::string const& myself, Args ... args) :
-        base_type(create_server(idp, myself, args...)),
+    UniChannel_Client(idp_t idp) :
+        base_type(create_server(idp)),
 		_idp(idp)
     {}
 
-	template <typename ... Args>
-    Switch_Client(idp_t idp, hpx::id_type locality, std::string const& myself, Args ... args) :
-        base_type(create_server_remote(idp, locality, myself, args...)),
-		_idp(idp)
-    {}
+    // UniChannel_Client(idp_t idp, hpx::id_type locality) :
+    //     base_type(create_server_remote(idp, locality)),
+	// 	_idp(idp)
+    // {}
+
 
 
 	/** Resource's interface **/
@@ -115,17 +114,17 @@ public:
 
 
 
-	/** Switch's interface **/
-    hpx::future<T> Get(std::string const& partner, std::size_t step) 
+	/** UniChannel's interface **/
+    hpx::future<T> Get(std::size_t step) 
 	{
-		typedef typename Switch<T>::Get_action_Switch action_type;
-		return action_type()(this->get_id(), partner, step); 	
+		typedef typename UniChannel<T>::Get_action_UniChannel action_type;
+		return action_type()(this->get_id(), step); 	
 	}
 
-    void Set(T&& t, std::string const& partner, std::size_t step) 
+    void Set(T&& t, std::size_t step) 
 	{
-		typedef typename Switch<T>::Set_action_Switch action_type;
-		return action_type()(this->get_id(), std::move(t), partner, step); 	
+		typedef typename UniChannel<T>::Set_action_UniChannel action_type;
+		return action_type()(this->get_id(), std::move(t), step); 	
 	}
 
 
@@ -162,11 +161,11 @@ public:
 		3 - Clousure
 		4 - ProtoAgent
 		5 - Agent
-		6 - Switch
+		6 - UniChannel
 		7 - Barrier
 		8 - Mutex
 		9 - RWMutex
-		10 - Switch
+		10 - UniChannel
 		*/
 		return hpx::make_ready_future(10);
 	}
@@ -187,14 +186,12 @@ public:
 	
 
 private:
-	template <typename ... Args>
-	hpx::future<hpx::id_type> create_server(idp_t idp, std::string const& myself, Args ... args) {
-		return hpx::local_new<Switch<T>>(idp, myself, args...);
+	hpx::future<hpx::id_type> create_server(idp_t idp) {
+		return hpx::local_new<UniChannel<T>>(idp);
 	}
 
-	template <typename ... Args>
-	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, std::string const& myself, Args ... args) {
-		return hpx::new_<Switch<T>>(locality, idp, myself, args...);
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality) {
+		return hpx::new_<UniChannel<T>>(locality, idp);
 	}
 
 	template <typename Archive>

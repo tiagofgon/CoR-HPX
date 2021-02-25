@@ -268,15 +268,30 @@ target_link_libraries(
 	    HPX::hpx
 )
 
-# comunnicator_example
-add_library(comunnicator_example SHARED comunnicator_example.cpp)
-target_compile_features(comunnicator_example PUBLIC cxx_std_17)
-set_target_properties(comunnicator_example PROPERTIES CXX_EXTENSIONS OFF)
-set_target_properties(comunnicator_example PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(comunnicator_example PROPERTIES COMPILE_FLAGS -O2)
-set_target_properties(comunnicator_example PROPERTIES PREFIX "lib" SUFFIX ".so")
+# multichannel_example
+add_library(multichannel_example SHARED multichannel_example.cpp)
+target_compile_features(multichannel_example PUBLIC cxx_std_17)
+set_target_properties(multichannel_example PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(multichannel_example PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(multichannel_example PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(multichannel_example PROPERTIES PREFIX "lib" SUFFIX ".so")
 target_link_libraries(
-    comunnicator_example
+    multichannel_example
+    PRIVATE
+        libcor
+        HPX::hpx
+        # HPX::iostreams
+)
+
+# unichannel_example
+add_library(unichannel_example SHARED unichannel_example.cpp)
+target_compile_features(unichannel_example PUBLIC cxx_std_17)
+set_target_properties(unichannel_example PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(unichannel_example PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(unichannel_example PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(unichannel_example PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    unichannel_example
     PRIVATE
         libcor
         HPX::hpx
@@ -304,7 +319,8 @@ install(
         heat_distributed_parallel
         queue_program
         stencil2d
-        comunnicator_example
+        multichannel_example
+        unichannel_example
     LIBRARY
         DESTINATION examples
 )
