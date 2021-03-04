@@ -34,9 +34,8 @@ friend class ResourceManager;
 
 public:
     Controller();
-    explicit Controller(std::string const& id, std::string const& app_group, std::string const& context, unsigned int npods);
+    explicit Controller(std::string const& id, unsigned int pod_id, std::string const& app_group, std::string const& context, unsigned int npods);
     
-
     void StartService();
     void StopService();
 
@@ -98,7 +97,10 @@ public:
     template <typename T, typename ... Args>
     std::unique_ptr<T> CreateCollective(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, Args ... args);
 
-    idp_t Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
+    idp_t Spawn(std::string const& context, unsigned int npods, unsigned int total_pods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
+
+    //idp_t SpawnVirtualPod(std::string const& context, idp_t parent, std::string const& module, std::vector<std::string> const& args);
+
     // accessed by Container
     std::string SearchResource(idp_t idp);
     bool ContainsResource(idp_t idp);
@@ -176,6 +178,7 @@ private:
     // Componente para decidir quem é o primeiro processo. Útil para saber quem cria a clausura
     AccessManager_Client *accessManager_object;
 
+    unsigned int _pod_id;
 };
 
 }

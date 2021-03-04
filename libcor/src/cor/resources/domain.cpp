@@ -6,13 +6,15 @@ namespace cor {
 
 Domain::~Domain() = default;
 
-Domain::Domain(idp_t idp, std::string const& module) :
+Domain::Domain(idp_t idp, unsigned int pod_id, std::string const& module) :
     Resource{idp},
-    _dynamic_organizer{idp, module},
-    _container{idp}
+    _dynamic_organizer{idp, pod_id, module},
+    _container{idp, pod_id},
+    _pod_id{pod_id}
 {
-    //std::cout << "Criado um componente \"Domain\", com idp: " << idp << std::endl;
+    // std::cout << "Criado um componente \"Domain\", com idp: " << idp << "com pod_id: " << pod_id << std::endl;
 }
+
 
 
 /* DynamicOrganizer's interface */
@@ -98,14 +100,21 @@ idp_t Domain::GetPredecessorIdp(idp_t idp)
     return _container.GetPredecessorIdp(idp);
 }
 
-idp_t Domain::Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+idp_t Domain::Spawn(std::string const& context, unsigned int npods, unsigned int total_pods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 {
-    return _container.Spawn(context, npods, parent, module, args, hosts);  
+    return _container.Spawn(context, npods, total_pods, parent, module, args, hosts);  
 }
 
 idp_t Domain::GetContainerIdp()
 {
     return _container.GetContainerIdp();  
+}
+
+
+/* Container's interface */
+unsigned int Domain::GetPodId()
+{
+    return _pod_id;
 }
 
 
@@ -164,3 +173,8 @@ HPX_REGISTER_ACTION(GetActiveResourceIdp_action_Domain);
 HPX_REGISTER_ACTION(GetPredecessorIdp_action_Domain);
 HPX_REGISTER_ACTION(Spawn_action_Domain);
 HPX_REGISTER_ACTION(GetContainerIdp_action_Domain);
+
+
+/* Declaration of actions to interact with Domain */
+typedef cor::Domain::GetPodId_action_Domain GetPodId_action_Domain;
+HPX_REGISTER_ACTION(GetPodId_action_Domain);

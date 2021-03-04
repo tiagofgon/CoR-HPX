@@ -97,7 +97,7 @@ std::string getIpAddress(std::string ip_name) {
 
 namespace cor {
 
-Controller::Controller(std::string const& id, std::string const& app_group, std::string const& context, unsigned int npods) :
+Controller::Controller(std::string const& id, unsigned int pod_id, std::string const& app_group, std::string const& context, unsigned int npods) :
     _app_group{app_group},
     _context{context},
     _npods{npods},
@@ -109,7 +109,8 @@ Controller::Controller(std::string const& id, std::string const& app_group, std:
     _mtx{},
     _pg_mgr{nullptr},
     _rsc_mgr{nullptr},
-    _sess_mgr{nullptr}
+    _sess_mgr{nullptr},
+    _pod_id{pod_id}
 {
     idpManager_object = new IdpManager_Client();
     resourceManagerGlobal_object = new ResourceManagerGlobal_Client();
@@ -124,6 +125,8 @@ Controller::Controller(std::string const& id, std::string const& app_group, std:
     hpx_port = std::stoi(hpx::get_config_entry("hpx.parcel.port", std::to_string(HPX_INITIAL_IP_PORT)));
     // std::cout << "AddConnection " << hpx_address << ":" << hpx_port << std::endl; 
 }
+
+
 
 void Controller::StartService()
 {
@@ -157,12 +160,12 @@ void Controller::Initialize()
     // join app group and synchronize
     // _mbox->join(_app_group);
     bool _is_main_ctrl=false;
-    if(hpx::get_locality_id()==0)
+    if(hpx::get_locality_id()==0 && _pod_id==0)
         _is_main_ctrl = true;
 
     // // create page and resource managers
     _pg_mgr = new PageManager(this);
-    _rsc_mgr = new ResourceManager(this, _is_main_ctrl);
+    _rsc_mgr = new ResourceManager(this, _is_main_ctrl, _pod_id);
     _sess_mgr = new SessionManager();
 }
 
@@ -378,7 +381,7 @@ hpx::id_type Controller::GetAgentMailboxGlobal(idp_t idp)
 
 
 
-idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+idp_t Controller::Spawn(std::string const& context, unsigned int npods, unsigned int total_pods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 {
 
     // Para os processos filho saberem quem é o primeiro, é adicionado um novo context ao accessManager_object
@@ -403,6 +406,8 @@ idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t pa
     cmd.append(context);
     cmd.append(" ");
     cmd.append(std::to_string(npods));
+    cmd.append(" ");
+    cmd.append(std::to_string(total_pods));
     cmd.append(" ");
     cmd.append(std::to_string(parent));
     cmd.append(" ");
@@ -452,7 +457,40 @@ idp_t Controller::Spawn(std::string const& context, unsigned int npods, idp_t pa
 }
 
 
+// idp_t Controller::SpawnVirtualPod(std::string const& context, idp_t parent, std::string const& module, std::vector<std::string> const& args)
+// {
+//     // generate a random id for cor services
+//     auto id = utils::random_string(9);
 
+//     auto index = global::pod_index.fetch_add(1);
+//     global::pods[index] = new Pod_Client(id, index, _app_group, context, 1); // not thread safe
+//     global::pods[index]->Initialize();
+
+//     auto domain = global::pods[index]->CreateLocal<Domain_Client>(parent, "", module);
+
+
+// ////
+
+
+//     hpx::util::high_resolution_timer t2;
+//     //std::cout << "domain->CreateCollective" << std::endl;
+//     auto clos = domain->CreateCollective<cor::Closure_Client>(domain->Idp(), "", npods, total_members, parent);
+//     std::cout << "CreateCollective : " << t2.elapsed() << std::endl;
+
+//     hpx::util::high_resolution_timer t3;
+//     //std::cout << "************ Criação do agente principal no corhpx *******"  << std::endl;
+//     auto agent = domain->CreateLocal<cor::Agent_Client<void(int,char**)>>(clos->Idp(),  "", domain->GetModuleName(), "Main");
+//     std::cout << "CreateLocal : " << t3.elapsed() << std::endl;
+
+
+//     hpx::util::high_resolution_timer t4;
+//     //std::cout << "************ Execução do modulo *******"  << std::endl;
+//     auto fut = agent->Run(argc, argv);
+//     fut.get();
+//     std::cout << "Execução do agente: " << t4.elapsed() << std::endl;
+
+
+// }
 
 
 std::string Controller::GetName() const

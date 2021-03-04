@@ -9,10 +9,11 @@ namespace cor {
 Mailbox::Mailbox() = default;
 Mailbox::~Mailbox() = default;
 
-Mailbox::Mailbox(idp_t idp) : 
+Mailbox::Mailbox(idp_t idp, unsigned int pod_id) : 
     _idp{idp},
     _channel{hpx::find_here()},
-    _channel_ctx{hpx::find_here()}
+    _channel_ctx{hpx::find_here()},
+    _pod_id{pod_id}
 {
     //std::cout << "Criado um objeto da classe \"Mailbox\", com idp: " << _idp << std::endl;
 
@@ -120,21 +121,21 @@ Message Mailbox::Receive2(idp_t source)
 
 void Mailbox::Broadcast(idp_t clos, Message const& msg)
 {
-    auto sorg = global::pod->GetLocalResource<cor::Closure_Client>(clos);
+    auto sorg = global::pods[_pod_id]->GetLocalResource<cor::Closure_Client>(clos);
     auto dests = sorg->GetMemberList();
     Send2(dests, msg);
 }
 
 void Mailbox::Send3(idm_t rank, idp_t clos, Message const& msg)
 {
-    auto sorg = global::pod->GetLocalResource<cor::Closure_Client>(clos);
+    auto sorg = global::pods[_pod_id]->GetLocalResource<cor::Closure_Client>(clos);
     auto dest = sorg->GetIdp(rank);
     Send1(dest, msg);
 }
 
 Message Mailbox::Receive3(idm_t rank, idp_t clos)
 {
-    auto sorg = global::pod->GetLocalResource<cor::Closure_Client>(clos);
+    auto sorg = global::pods[_pod_id]->GetLocalResource<cor::Closure_Client>(clos);
     auto source = sorg->GetIdp(rank);
     return Receive2(source);
 }

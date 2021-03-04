@@ -5,9 +5,9 @@ namespace cor {
 
 Group::~Group() = default;
 
-Group::Group(idp_t idp, std::string const& module) :
+Group::Group(idp_t idp, unsigned int pod_id, std::string const& module) :
     Resource{idp},
-    _dynamic_organizer{idp, module}
+    _dynamic_organizer{idp, pod_id, module}
 {
     //std::cout << "Criado um componente \"Grupo\", com idp: " << idp << std::endl;
 }

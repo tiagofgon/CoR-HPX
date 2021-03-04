@@ -17,8 +17,8 @@ class Pod_Client : hpx::components::client_base<Pod_Client, Pod>
 {
 
 private:
-	static hpx::future<hpx::id_type> create_server(std::string const& id, std::string const& app_group, std::string const& context, unsigned int npods) {
-		return hpx::local_new<Pod>(id, app_group, context, npods);
+	static hpx::future<hpx::id_type> create_server(std::string const& id, unsigned int pod_id, std::string const& app_group, std::string const& context, unsigned int npods) {
+		return hpx::local_new<Pod>(id, pod_id, app_group, context, npods);
 	}
 
 public:
@@ -44,9 +44,11 @@ public:
     {}
 
 	/// Standard constructor with parameters
-	Pod_Client(std::string const& id, std::string const& app_group, std::string const& context, unsigned int npods) :
-		base_type(create_server(id, app_group, context, npods))
+	Pod_Client(std::string const& id, unsigned int pod_id, std::string const& app_group, std::string const& context, unsigned int npods) :
+		base_type(create_server(id, pod_id, app_group, context, npods))
 	{}
+
+
 
     void Initialize()
     {
@@ -207,10 +209,10 @@ public:
     }
     
 
-	idp_t Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+	idp_t Spawn(std::string const& context, unsigned int npods, unsigned int total_pods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 	{
 		typedef cor::Pod::Spawn_action_pod action_type2;
-		return hpx::async<action_type2>(this->get_id(), context, npods, parent, module, args, hosts).get(); 
+		return hpx::async<action_type2>(this->get_id(), context, npods, total_pods, parent, module, args, hosts).get(); 
 	}
     
     std::string SearchResource(idp_t idp)

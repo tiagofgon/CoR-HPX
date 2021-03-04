@@ -59,28 +59,26 @@ public:
 		_idp(idp)
 	{}
 
-	// /// Standard constructor with parameters
-	Agent_Client(idp_t idp, std::function<R(P...)> const& f) :
-		base_type(create_server(idp, f)),
+	// Standard constructor with parameters
+	Agent_Client(idp_t idp, unsigned int pod_id, std::function<R(P...)> const& f) :
+		base_type(create_server(idp, pod_id, f)),
 		_idp(idp)
 	{
 		// std::cout << "Criado um componente \"Agent_Client\", com idp: " << idp << std::endl;
 	}
-
-	Agent_Client(idp_t idp, hpx::id_type locality, hpx::function<R(P...)> const& f) :
-		base_type(create_server_remote(idp, locality, f)),
+	Agent_Client(idp_t idp, unsigned int pod_id, hpx::id_type locality, hpx::function<R(P...)> const& f) :
+		base_type(create_server_remote(idp, pod_id, locality, f)),
+		_idp(idp)
+	{}
+	Agent_Client(idp_t idp, unsigned int pod_id, std::string const& module, std::string const& function) :
+		base_type(create_server(idp, pod_id, module, function)),
+		_idp(idp)
+	{}
+	Agent_Client(idp_t idp, unsigned int pod_id, hpx::id_type locality, std::string const& module, std::string const& function) :
+		base_type(create_server_remote(idp, pod_id, locality, module, function)),
 		_idp(idp)
 	{}
 
-	Agent_Client(idp_t idp, std::string const& module, std::string const& function) :
-		base_type(create_server(idp, module, function)),
-		_idp(idp)
-	{}
-
-	Agent_Client(idp_t idp, hpx::id_type locality, std::string const& module, std::string const& function) :
-		base_type(create_server_remote(idp, locality, module, function)),
-		_idp(idp)
-	{}
 
 
 	/** Resource's interface **/
@@ -124,7 +122,35 @@ public:
 	}
 
 
+
 	/** Executor's interface **/
+	// // This function is synchronous but returns a future which was returned by executor.
+	// // In the end this function is asynchronous
+	// template <typename ... Args>
+	// hpx::future<R> Run(Args... args)
+	// {
+	// 	typedef typename cor::Agent<R(P...)>::template Run1_action_Agent<Args...> action_type;
+	// 	return action_type()(this->get_id(), args...);
+	// }
+
+	// template <typename ... Args>
+	// R Run(hpx::launch::sync_policy, Args... args)
+	// {
+	// 	typedef typename cor::Agent<R(P...)>::template Run1_action_Agent<Args...> action_type;
+	// 	return action_type()(this->get_id(), args...).get();
+	// }
+
+	// /* 
+	// - Universal reference: can cause problems if executed in an action.
+	// - This function accesses the component directly, not allowed for API coherence
+	// template <typename ... Args>
+	// hpx::future<R> Run(Args&&... args)
+	// {
+	// 	std::shared_ptr<Agent<R(P...)>> ptr = hpx::get_ptr<Agent<R(P...)>>(hpx::launch::sync, this->get_id());
+	// 	return ptr->Run2(std::forward<Args>(args)...);
+	// }
+	// */
+
 	template <typename ... Args>
 	hpx::future<hpx::future<R>> Run(hpx::launch::async_policy, Args... args)
 	{
@@ -139,6 +165,8 @@ public:
 		std::shared_ptr<Agent<R(P...)>> ptr = hpx::get_ptr<Agent<R(P...)>>(hpx::launch::sync, this->get_id());
 		return ptr->Run2(std::forward<Args>(args)...);
 	}
+	
+	//
 
 	hpx::future<void> ChangeIdp(hpx::launch::async_policy, idp_t idp)
 	{
@@ -199,8 +227,6 @@ public:
 		typedef typename cor::Agent<R(P...)>::GetExecutorIdp_action_Agent action_type;
 		return action_type()(this->get_id());
 	}
-
-
 
 
 
@@ -302,6 +328,7 @@ public:
 	}
 
 
+
 	/** Local Client's interface **/
 	// local idp of this resource
 	hpx::future<idp_t> Idp(hpx::launch::async_policy) {
@@ -333,6 +360,8 @@ public:
 		7 - Barrier
 		8 - Mutex
 		9 - RWMutex
+		10 - UniChanel
+		11 - MultiChannel
 		*/
 		return hpx::make_ready_future(5);
 	}
@@ -343,19 +372,21 @@ public:
 	}
 
 
+
 private:
-	hpx::future<hpx::id_type> create_server(idp_t idp, std::function<R(P...)> const& f) {
-		return hpx::local_new<Agent<R(P...)>>(idp, f);
+	hpx::future<hpx::id_type> create_server(idp_t idp, unsigned int pod_id, std::function<R(P...)> const& f) {
+		return hpx::local_new<Agent<R(P...)>>(idp, pod_id, f);
 	}
-	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, hpx::function<R(P...)> const& f) {
-		return hpx::new_<Agent<R(P...)>>(locality, idp, f);
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, unsigned int pod_id, hpx::id_type locality, hpx::function<R(P...)> const& f) {
+		return hpx::new_<Agent<R(P...)>>(locality, idp, pod_id, f);
 	}
-	hpx::future<hpx::id_type> create_server(idp_t idp, std::string const& module, std::string const& function) {
-		return hpx::local_new<Agent<R(P...)>>(idp, module, function);
+	hpx::future<hpx::id_type> create_server(idp_t idp, unsigned int pod_id, std::string const& module, std::string const& function) {
+		return hpx::local_new<Agent<R(P...)>>(idp, pod_id, module, function);
 	}
-	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, std::string const& module, std::string const& function) {
-		return hpx::new_<Agent<R(P...)>>(locality, idp, module, function);
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, unsigned int pod_id, hpx::id_type locality, std::string const& module, std::string const& function) {
+		return hpx::new_<Agent<R(P...)>>(locality, idp, pod_id, module, function);
 	}
+
 
 	template <typename Archive>
 	void serialize(Archive& ar, unsigned) {   

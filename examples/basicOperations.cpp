@@ -1,10 +1,8 @@
-/*|────────────────────────────────────────────────────────|*/
-/*|   Tiago Gonçalves - University of Minho - LIP, 2021    |*/
-/*|────────────────────────────────────────────────────────|*/
+// Tiago Gonçalves & António Pina - University of Minho - LIP, 2021
+//
+// To run: ./corhpx apps ctx 1 1 0 ../examples/libbasicOperations.so
+//
 
-/*
-    To run: ./corhpx apps ctx 1 0 ../examples/libbasicOperations.so
-*/
 
 #include "cor/cor.hpp"
 
@@ -35,7 +33,6 @@ void Main(int argc, char *argv[])
     
     // executa a função solicitada, passando os parâmetros correspondentes
     auto fut1 = new_agent->Run(agent_idp);
-    //auto fut1 = new_agent->Run(hpx::launch::async, 55).get();
     fut1.wait();
     auto res1 = fut1.get();
 
@@ -43,7 +40,7 @@ void Main(int argc, char *argv[])
     auto msg = agent->Receive();
     // obtém o idp presente no conteúdo da mensagem
     auto res2 = msg.Get<idp_t>();
-
+    // obtem uma copia dos dados albergados por data
     auto res3 = data->Fetch();
 
     std::cout << res1 << "\t" << res2 << "\t" << res3 << std::endl;

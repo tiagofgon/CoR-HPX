@@ -65,22 +65,24 @@ public:
 	{}
 
 	// Standard constructor with parameters
-	Domain_Client(idp_t idp, std::string const& module) :
-		base_type(create_server(idp, module)),
+	Domain_Client(idp_t idp, unsigned int pod_id, std::string const& module) :
+		base_type(create_server(idp, pod_id, module)),
 		_idp(idp),
 		_idp_agent(0)
 	{
-		global::pod->setDomainIdp(idp); // Update domain idp variable's Pod
+		global::pods[pod_id]->setDomainIdp(idp); // Update domain idp variable's Pod
 	}
 
 	// This can only be done when remote domains will be implemented!
-	Domain_Client(idp_t idp, hpx::id_type locality, std::string const& module) :
-		base_type(create_server_remote(idp, locality, module)),
+	Domain_Client(idp_t idp, unsigned int pod_id, hpx::id_type locality, std::string const& module) :
+		base_type(create_server_remote(idp, pod_id, locality, module)),
 		_idp(idp),
 		_idp_agent(0)
 	{
-		global::pod->setDomainIdp(idp); // Update domain idp variable's Pod
+		global::pods[pod_id]->setDomainIdp(idp); // Update domain idp variable's Pod
 	}
+
+
 
 
 	/** Resource's interface **/
@@ -586,19 +588,32 @@ public:
 		return action_type()(this->get_id(), idp, args...);
 	}
 
-	hpx::future<idp_t> Spawn(hpx::launch::async_policy, std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+	hpx::future<idp_t> Spawn(hpx::launch::async_policy, std::string const& context, unsigned int npods, unsigned int total_pods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 	{
 		auto parent = GetActiveResourceIdp(hpx::launch::async).get();
 		typedef cor::Domain::Spawn_action_Domain action_type;
-		return hpx::async<action_type>(this->get_id(), context, npods, parent, module, args, hosts); 
+		return hpx::async<action_type>(this->get_id(), context, npods, total_pods, parent, module, args, hosts); 
 	}
 
-	idp_t Spawn(std::string const& context, unsigned int npods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+	idp_t Spawn(std::string const& context, unsigned int npods, unsigned int total_pods, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 	{
 		auto parent = GetActiveResourceIdp();
 		typedef cor::Domain::Spawn_action_Domain action_type;
-		return action_type()(this->get_id(), context, npods, parent, module, args, hosts); 
+		return action_type()(this->get_id(), context, npods, total_pods, parent, module, args, hosts); 
 	}
+
+
+
+
+	/** Domain's interface **/
+	unsigned int GetPodId()
+	{
+		typedef Domain::GetPodId_action_Domain action_type;
+		return action_type()(this->get_id());
+	}
+
+
+
 
 
 	/** Local Client's interface **/
@@ -652,12 +667,11 @@ public:
 	
 
 private:
-	hpx::future<hpx::id_type> create_server(idp_t idp, std::string const& module) {
-		return hpx::local_new<Domain>(idp, module);
+	hpx::future<hpx::id_type> create_server(idp_t idp, unsigned int pod_id, std::string const& module) {
+		return hpx::local_new<Domain>(idp, pod_id, module);
 	}
-
-	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, std::string const& module) {
-		return hpx::new_<Domain>(locality, idp, module);
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, unsigned int pod_id, hpx::id_type locality, std::string const& module) {
+		return hpx::new_<Domain>(locality, idp, pod_id, module);
 	}
 
 	template <typename Archive>

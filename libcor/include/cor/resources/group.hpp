@@ -15,7 +15,7 @@ typedef Group type_holder;
 typedef Resource base_type_holder;
 
 protected:
-    explicit Group(idp_t idp, std::string const& module);
+    explicit Group(idp_t idp, unsigned int pod_id, std::string const& module);
 
 public:
     Group() = delete;

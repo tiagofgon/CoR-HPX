@@ -58,15 +58,19 @@ public:
 	{}
 
 	/// Standard constructor with parameters
-	Group_Client(idp_t idp, std::string const& module) :
-		base_type(create_server(idp, module)),
+	Group_Client(idp_t idp, unsigned int pod_id, std::string const& module) :
+		base_type(create_server(idp, pod_id, module)),
 		_idp(idp)
 	{}
 
-	Group_Client(idp_t idp, hpx::id_type locality, std::string const& module) :
-		base_type(create_server_remote(idp, locality, module)),
+	Group_Client(idp_t idp, unsigned int pod_id, hpx::id_type locality, std::string const& module) :
+		base_type(create_server_remote(idp, pod_id, locality, module)),
 		_idp(idp)
 	{}
+
+
+
+
 
 
 	/** Resource's interface **/
@@ -285,12 +289,12 @@ public:
 	
 
 private:
-	hpx::future<hpx::id_type> create_server(idp_t idp, std::string const& module) {
-		return hpx::local_new<Group>(idp, module);
+	hpx::future<hpx::id_type> create_server(idp_t idp, unsigned int pod_id, std::string const& module) {
+		return hpx::local_new<Group>(idp, pod_id, module);
 	}
 
-	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, std::string const& module) {
-		return hpx::new_<Group>(locality, idp, module);
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, unsigned int pod_id, hpx::id_type locality, std::string const& module) {
+		return hpx::new_<Group>(locality, idp, pod_id, module);
 	}
 
 	template <typename Archive>

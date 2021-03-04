@@ -57,12 +57,13 @@ public:
 	{}
 
 	// Standard constructor with parameters
-	Operon_Client(idp_t idp, std::size_t num_hpx_threads) :
-		base_type(create_server(idp, num_hpx_threads)),
+	Operon_Client(idp_t idp, unsigned int pod_id, std::size_t num_hpx_threads) :
+		base_type(create_server(idp, pod_id, num_hpx_threads)),
 		_idp(idp)
 	{
 
 	}
+
 
 
 	/** Resource's interface **/
@@ -275,8 +276,8 @@ public:
 	}
 	
 private:
-	hpx::future<hpx::id_type> create_server(idp_t idp, std::size_t num_hpx_threads) {
-		return hpx::local_new<Operon>(idp, num_hpx_threads);
+	hpx::future<hpx::id_type> create_server(idp_t idp, unsigned int pod_id, std::size_t num_hpx_threads) {
+		return hpx::local_new<Operon>(idp, pod_id, num_hpx_threads);
 	}
 
 	template <typename Archive>

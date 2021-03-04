@@ -24,7 +24,7 @@ typedef Resource base_type_holder;
 public:
     Operon() = delete;
     ~Operon();
-    Operon(idp_t idp, std::size_t num_hpx_threads);
+    Operon(idp_t idp, unsigned int pod_id, std::size_t num_hpx_threads);
 
     int GetRank();
     int GetNumThreads();

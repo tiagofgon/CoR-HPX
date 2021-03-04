@@ -17,7 +17,7 @@ friend class Group;
 
 protected:
     DynamicOrganizer();
-    explicit DynamicOrganizer(idp_t idp, std::string const& module);
+    explicit DynamicOrganizer(idp_t idp, unsigned int pod_id, std::string const& module);
 
 public:
     ~DynamicOrganizer();
@@ -60,6 +60,7 @@ private:
     idm_t _next_idm;
     hpx::lcos::local::shared_mutex _mtx;
 
+    unsigned int _pod_id;
 };
 
 

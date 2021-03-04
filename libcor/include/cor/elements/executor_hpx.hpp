@@ -28,8 +28,9 @@ public:
 
 // protected:
     Executor() = delete;
-    Executor(idp_t idp, std::function<R(P...)> const& f);
-    Executor(idp_t idp, std::string const& module, std::string const& function);
+    
+    Executor(idp_t idp, unsigned int pod_id, std::function<R(P...)> const& f);
+    Executor(idp_t idp, unsigned int pod_id, std::string const& module, std::string const& function);
 
     // Executor(const Executor&) = delete;
     // Executor& operator=(const Executor&) = delete;
@@ -54,6 +55,7 @@ public:
 
 private:
     idp_t _idp;
+    unsigned int _pod_id;
     std::string _module_name;
     std::string _function;
     std::function<R(P...)> _f;

@@ -26,7 +26,7 @@ class ResourceManager
 // template <typename> friend class ResourcePtr;
 
 public:
-    explicit ResourceManager(Controller *ctrl, bool first);
+    explicit ResourceManager(Controller *ctrl, bool first, unsigned int pod_id);
     ~ResourceManager();
 
     void CreateInitialContext(std::string const& ctrl);
@@ -117,7 +117,7 @@ private:
     idp_t GenerateIdp();
     
     void AttachResource(idp_t ctx, hpx::id_type ctx_gid, idp_t idp, std::string const& name);
-    hpx::id_type AttachResourceRemote(hpx::id_type ctx_gid, idp_t idp, std::string const& name);
+    std::pair<hpx::id_type, unsigned int> AttachResourceRemote(hpx::id_type ctx_gid, idp_t idp, std::string const& name);
 
     Controller *_ctrl;
 
@@ -134,6 +134,8 @@ private:
 
     std::set<idp_t> dynamicOrganizer_idps;
     std::set<idp_t> staticOrganizer_idps;
+
+    unsigned int _pod_id;
 };
 
 }

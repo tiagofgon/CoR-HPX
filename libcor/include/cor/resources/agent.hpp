@@ -22,20 +22,22 @@ template <typename R, typename ... P>
 struct Agent<R(P...)>: public Resource, public hpx::components::component_base<Agent<R(P...)>>
 {
 
+// hpx stuff for Resource hierarchy
 typedef typename hpx::components::component_base<Agent<R(P...)>>::wrapping_type wrapping_type;
 typedef Agent type_holder;
 typedef Resource base_type_holder;
 
 protected:
-    Agent(idp_t idp, std::function<R(P...)> const& f);
-    Agent(idp_t idp, std::string const& module, std::string const& function);
+    Agent(idp_t idp, unsigned int pod_id, std::function<R(P...)> const& f);
+    Agent(idp_t idp, unsigned int pod_id, std::string const& module, std::string const& function);
 
 public:
     Agent() = delete;
-    ~Agent();
+    ~Agent() = default;
 
 
-    /* Executor's interface */
+
+    /** Executor's interface **/
     template <typename ... Args>
     hpx::future<R> Run1(Args... args);
 
@@ -72,7 +74,9 @@ public:
     >::type
     {};
 
-    /* Mailbox's interface */
+
+
+    /** Mailbox's interface **/
     void Send1(idp_t dest, Message const& msg);                          // Unicast
     void Send2(std::vector<idp_t> const& dests, Message const& msg);
     Message Receive1();
@@ -95,6 +99,7 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(Agent, GetMailboxGid, GetMailboxGid_action_Agent);
 
 
+
 private:
     Executor<R(P...)> _executor;
     Mailbox_Client _mailBox;
@@ -109,8 +114,8 @@ private:
 
 // auxiliary function to join the parameters
 #define CONCATENATE(...)                                        \
-    BOOST_PP_SEQ_CAT(BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))     \
-
+    BOOST_PP_SEQ_CAT(BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
+/**/
 
 #define REGISTER_AGENT_DECLARATION(res, ...)                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                      \
@@ -151,8 +156,8 @@ private:
         HPX_PP_CAT(__Agent_Receive3_action_Agent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));           \
     HPX_REGISTER_ACTION_DECLARATION(                                                                      \
         cor::Agent<res(__VA_ARGS__)>::GetMailboxGid_action_Agent,                                         \
-        HPX_PP_CAT(__Agent_GetMailboxGid_action_Agent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))));      \
-
+        HPX_PP_CAT(__Agent_GetMailboxGid_action_Agent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__)))); 
+/**/
 
 #define REGISTER_AGENT(res, ...)                                                                          \
     HPX_REGISTER_ACTION(                                                                                  \
@@ -198,7 +203,7 @@ private:
       HPX_PP_CAT(__Agent_type, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__)));                                \
   typedef cor::Agent<res(__VA_ARGS__)>                                                                    \
       HPX_PP_CAT(__Agent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__)));                                    \
-  HPX_REGISTER_DERIVED_COMPONENT_FACTORY(HPX_PP_CAT(__Agent_type, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))), HPX_PP_CAT(__Agent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))), "Resource")               \
-
+  HPX_REGISTER_DERIVED_COMPONENT_FACTORY(HPX_PP_CAT(__Agent_type, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))), HPX_PP_CAT(__Agent_, HPX_PP_CAT(res, CONCATENATE(__VA_ARGS__))), "Resource")
+/**/
 
 #endif

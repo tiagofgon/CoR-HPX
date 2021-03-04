@@ -12,8 +12,9 @@ namespace cor {
 template <typename T>
 std::unique_ptr<T> Container::GetLocalResource(idp_t idp)
 {
-    return global::pod->GetLocalResource<T>(idp);
+    return global::pods[_pod_id]->GetLocalResource<T>(idp);
 }
+
 
 // template <typename T>
 // std::unique_ptr<T> Container::CreateLocal_agent(idp_t ctx, std::string const& name, hpx::function<void(int)> const& func)
@@ -25,14 +26,14 @@ template <typename T, typename ... Args>
 std::unique_ptr<T> Container::CreateLocal(idp_t ctx, std::string const& name, Args ... args)
 {
     // std::cout << "Container::CreateLocal" << std::endl;
-    return global::pod->CreateLocal<T, Args...>(ctx, name, args...);
+    return global::pods[_pod_id]->CreateLocal<T>(ctx, name, args...);
 }
 
 template <typename T, typename ... Args>
 std::unique_ptr<T> Container::CreateLocal_test(idp_t ctx, std::string const& name, Args ... args)
 {
     std::cout << "Container::CreateLocal_test" << std::endl;
-    return global::pod->CreateLocal_test<T, Args...>(ctx, name, args...);
+    return global::pods[_pod_id]->CreateLocal_test<T, Args...>(ctx, name, args...);
     //return nullptr;
 }
 
@@ -40,9 +41,9 @@ template <typename T, typename ... Args>
 idp_t Container::Create(idp_t ctx, std::string const& name, Args ... args)
 {
     // If the ctx resource belongs to the _predecessors list, the resource is created in this pod, if it does not create remotely
-    if (global::pod->ContainsResource(ctx)) {
+    if (global::pods[_pod_id]->ContainsResource(ctx)) {
         //std::cout << "Create - local" << std::endl;
-        return global::pod->Create<T, Args...>(ctx, name, args...);
+        return global::pods[_pod_id]->Create<T, Args...>(ctx, name, args...);
     }
     else {
         //std::cout << "Create - remoto" << std::endl;
@@ -54,9 +55,9 @@ idp_t Container::Create(idp_t ctx, std::string const& name, Args ... args)
 template <typename T, typename ... Args>
 idp_t Container::CreateRemote(idp_t ctx, std::string const& name, Args ... args)
 {
-    auto ctrl = global::pod->SearchResource(ctx);
+    auto ctrl = global::pods[_pod_id]->SearchResource(ctx);
     ctrl[1] = 'R'; // nao serve para nada isto, está aqui porque veio assim da versao anterior
-    return global::pod->CreateRemote<T, Args...>(ctx, name, ctrl, args...);
+    return global::pods[_pod_id]->CreateRemote<T, Args...>(ctx, name, ctrl, args...);
 }
 
 // template <typename T, typename ... Args>
@@ -76,19 +77,19 @@ idp_t Container::CreateRemote(idp_t ctx, std::string const& name, Args ... args)
 template <typename T>
 std::unique_ptr<T> Container::CreateReference(idp_t idp, idp_t ctx, std::string const& name)
 {
-    return global::pod->CreateReference<T>(idp, ctx, name);
+    return global::pods[_pod_id]->CreateReference<T>(idp, ctx, name);
 }
 
 template <typename T, typename ... Args>
 std::unique_ptr<T> Container::CreateCollective(idp_t ctx, std::string const& name, unsigned int total_members, Args ... args)
 {
-    return global::pod->CreateCollective<T, Args...>(ctx, name, total_members, args...);
+    return global::pods[_pod_id]->CreateCollective<T, Args...>(ctx, name, total_members, args...);
 }
 
 template <typename T, typename ... Args>
 std::unique_ptr<T> Container::CreateCollective(idp_t active_rsc_idp, idp_t clos, idp_t ctx, std::string const& name, Args ... args)
 {
-    return global::pod->CreateCollective<T, Args...>(active_rsc_idp, clos, ctx, name, args...);
+    return global::pods[_pod_id]->CreateCollective<T, Args...>(active_rsc_idp, clos, ctx, name, args...);
 }
 
 // ACABAR AQUI

@@ -18,7 +18,7 @@ friend class Domain;
 
 protected:
     Container();
-    explicit Container(idp_t idp);
+    explicit Container(idp_t idp, unsigned int pod_id);
 
 public:
     ~Container();
@@ -79,7 +79,7 @@ public:
     template <typename T>
     auto Get(idp_t idp);
 
-    idp_t Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
+    idp_t Spawn(std::string const& context, unsigned int npods, unsigned int total_pods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
 
     idp_t GetContainerIdp() const;
 
@@ -91,6 +91,7 @@ private:
 	}
 
     idp_t _idp;
+    unsigned int _pod_id;
 
 };
 

@@ -36,7 +36,7 @@ void Main(int argc, char *argv[])
     idp_t const& agent_idpp = agent_idp;
     auto global_clos = domain->CreateLocal<cor::Closure_Client>(domain->Idp(), "Global Closure", total_spawned, agent_idpp);
     auto global_clos_idp = global_clos->Idp();
-    auto server_clos_idp = domain->Spawn("server", spawned_domains, "/share/apps/placor-hpx/examples/libserver_rpc.so", {}, { "127.0.0.1" });
+    auto server_clos_idp = domain->Spawn("server", spawned_domains, 1, "/share/apps/placor-hpx/examples/libserver_rpc.so", {}, { "127.0.0.1" });
     auto server_clos = domain->CreateReference<cor::Closure_Client>(server_clos_idp, domain->Idp(), "Server Closure");
     auto server_domain_idp = domain->GetPredecessorIdp(server_clos_idp);
 

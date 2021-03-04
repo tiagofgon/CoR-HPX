@@ -1,8 +1,10 @@
-/* ---------- 
--- Tiago Gonçalves - University of Minho, 2021 --
-
-To run: ./corhpx apps ctx 1 0 ../examples/libmodule.so
----------- */
+// Tiago Gonçalves & António Pina - University of Minho - LIP, 2021
+//
+// This is a purely local version demonstrating how to print
+// the active resource idp, synchronously and asynchronously
+//
+// To run: ./corhpx apps ctx 1 1 0 ../examples/libmodule.so
+//
 
 #include "cor/cor.hpp"
 

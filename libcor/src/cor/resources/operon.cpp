@@ -4,10 +4,10 @@ namespace cor {
 
 Operon::~Operon() = default;
 
-Operon::Operon(idp_t idp, std::size_t num_hpx_threads) :
+Operon::Operon(idp_t idp, unsigned int pod_id, std::size_t num_hpx_threads) :
     Resource{idp},
     _executor_pool{idp, num_hpx_threads},
-    _mailBox{idp}
+    _mailBox{idp, pod_id}
 {
     // std::cout << "Criado um componente \"Operon\", com idp: " << idp << ", com threads: " << num_hpx_threads << std::endl;
 }

@@ -67,6 +67,12 @@ public:
 		_idp(idp)
 	{}
 
+	Mutex_Client(idp_t idp, unsigned int pod_id) :
+		base_type(create_server(idp)),
+		_idp(idp)
+	{}
+
+
 
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource

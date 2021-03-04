@@ -34,7 +34,7 @@ std::unique_ptr<T> ResourceManager::CreateLocal(idp_t ctx, std::string const& na
     auto idp = GenerateIdp();
     //std::cout << "ResourceManager::CreateLocal" << std::endl;
     // (std::cout << ... << args); std::cout << std::endl;
-    std::unique_ptr<T> rsc = std::make_unique<T>(idp, args...);
+    std::unique_ptr<T> rsc = std::make_unique<T>(idp, _pod_id, args...);
     //std::cout << "ResourceManager::CreateLocal2" << std::endl;
     rsc = AllocateResource(idp, ctx, name, std::move(rsc), ctrl);
     // std::cout << "ResourceManager::CreateLocal3" << std::endl;
@@ -47,7 +47,7 @@ idp_t ResourceManager::Create(idp_t ctx, std::string const& name, std::string co
 {
     // std::cout << "ResourceManager:: 1" << std::endl;
     auto idp = GenerateIdp();
-    std::unique_ptr<T> rsc = std::make_unique<T>(idp, args...);
+    std::unique_ptr<T> rsc = std::make_unique<T>(idp, _pod_id, args...);
     // std::cout << "ResourceManager:: 2" << std::endl;
     rsc = AllocateResource(idp, ctx, name, std::move(rsc), ctrl);
     // std::cout << "ResourceManager:: 5" << std::endl;
@@ -74,11 +74,11 @@ idp_t ResourceManager::CreateRemote(idp_t ctx, std::string const& name, std::str
             auto ctx_gid = GetGidFromIdp(ctx);
             // retornar a localidade do ctx remoto e adicionar ao seu elemento organizador o idp criado
             // std::cout << "---aqui 2" << std::endl;
-            auto ctx_locality = AttachResourceRemote(ctx_gid, idp, name);
+            auto [ctx_locality, remote_pod_id] = AttachResourceRemote(ctx_gid, idp, name);
             // std::cout << "Localidade do dominio remoto: " << ctx_locality << std::endl;
             // Criar o recurso na localidade do remote Domain
             // std::cout << "---aqui 3" << std::endl;
-            std::unique_ptr<T> rsc_remote = std::make_unique<T>(idp, ctx_locality, args...);
+            std::unique_ptr<T> rsc_remote = std::make_unique<T>(idp, remote_pod_id, ctx_locality, args...);
             // insert association between gids and idps
             // std::cout << "---aqui 4" << std::endl;
             InsertIdp(idp, rsc_remote->GetGid()); // Informar o componente global da associação idp-gid

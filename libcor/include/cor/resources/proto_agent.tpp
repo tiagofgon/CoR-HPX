@@ -7,17 +7,17 @@ template <typename R, typename ... P>
 ProtoAgent<R(P...)>::~ProtoAgent() = default;
 
 template <typename R, typename ... P>
-ProtoAgent<R(P...)>::ProtoAgent(idp_t idp, std::function<R(P...)> const& f) :
+ProtoAgent<R(P...)>::ProtoAgent(idp_t idp, unsigned int pod_id, std::function<R(P...)> const& f) :
     Resource{idp},
-    _executor{idp, f}
+    _executor{idp, pod_id, f}
 {
     //std::cout << "Criado um componente \"ProtoAgent\", com idp: " << idp << std::endl;
 }
 
 template <typename R, typename ... P>
-ProtoAgent<R(P...)>::ProtoAgent(idp_t idp, std::string const& module, std::string const& function) :
+ProtoAgent<R(P...)>::ProtoAgent(idp_t idp, unsigned int pod_id, std::string const& module, std::string const& function) :
     Resource{idp},
-    _executor{idp, module, function}
+    _executor{idp, pod_id, module, function}
 {
     //std::cout << "Criado um componente \"ProtoAgent\", com idp: " << idp << std::endl;
 }

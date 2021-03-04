@@ -67,8 +67,6 @@ struct Funcion_object2 {
 hpx::function<size_t(MyObject&)> getId = Funcion_object2();
 
 
-
-
 void Main(int argc, char *argv[])
 {
     // obter o domínio local
@@ -76,8 +74,7 @@ void Main(int argc, char *argv[])
     auto agent_idp = domain->GetActiveResourceIdp();
     auto agent = domain->GetLocalResource<cor::Agent_Client<void(int,char**)>>(agent_idp);
 
-
-    // // criar um dado no qual irá ser escrito o idp do agente que irá ser criado
+    // criar um recurso Data do tipo MyObject
     auto data = domain->CreateLocal<cor::Data_Client<MyObject>>(domain->Idp(), "data");
 
     // setId with 6 through an action
@@ -87,7 +84,7 @@ void Main(int argc, char *argv[])
     size_t res = data->Run(getId).get();
     std::cout << res << std::endl;
 
-    // getId directly on the object
+    // getId directly through the object pointer
     data->AcquireWrite();
     auto obj = data->Get();
     std::cout << obj->getId() << std::endl;

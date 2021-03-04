@@ -71,15 +71,15 @@ target_link_libraries(
         HPX::hpx
 )
 
-# send_an_object_simple - HPX
-add_library(send_an_object_simple SHARED send_an_object_simple.cpp)
-target_compile_features(send_an_object_simple PUBLIC cxx_std_17)
-set_target_properties(send_an_object_simple PROPERTIES CXX_EXTENSIONS OFF)
-set_target_properties(send_an_object_simple PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(send_an_object_simple PROPERTIES COMPILE_FLAGS -O2)
-set_target_properties(send_an_object_simple PROPERTIES PREFIX "lib" SUFFIX ".so")
+# access_remote - HPX
+add_library(access_remote SHARED access_remote.cpp)
+target_compile_features(access_remote PUBLIC cxx_std_17)
+set_target_properties(access_remote PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(access_remote PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(access_remote PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(access_remote PROPERTIES PREFIX "lib" SUFFIX ".so")
 target_link_libraries(
-    send_an_object_simple
+    access_remote
     PRIVATE
         libcor
         HPX::hpx
@@ -305,7 +305,7 @@ install(
         callableModule
         parallel
         send_an_object
-        send_an_object_simple
+        access_remote
         message_broadcast
         spawn
         inter_closure

@@ -38,7 +38,7 @@ void Main(int argc, char *argv[])
         if (rank == 0) {
             //std::cout << "rank " << rank << std::endl;
             global_clos = domain->CreateLocal<cor::Closure_Client>(domain->Idp(), "Global Closure", clos_size+spawned_domains, agent_idp);
-            auto remote_clos_idp = domain->Spawn("ctx2", spawned_domains, "libinter_closure.so", {}, { "localhost" });
+            auto remote_clos_idp = domain->Spawn("ctx2", spawned_domains, 1, "libinter_closure.so", {}, { "localhost" });
         } else {
             //std::cout << "rank " << rank << std::endl;
             auto master_idp = clos->GetIdp(0);

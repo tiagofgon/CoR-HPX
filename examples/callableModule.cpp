@@ -1,6 +1,8 @@
-/* ---------- 
--- Tiago Gonçalves - University of Minho, 2021 --
----------- */
+// Tiago Gonçalves & António Pina - University of Minho - LIP, 2021
+//
+// This module can only be loaded from other modules,
+// shouldn't be executed directly
+// 
 
 #include "cor/cor.hpp"
 
@@ -22,6 +24,7 @@ idp_t Test(idp_t rsc_idp)
     auto data_idp = group->GetIdp("data");
     auto data = domain->GetLocalResource<cor::Data_Client<idp_t>>(data_idp);
 
+    // o valor de data é alterados diretamente atraves do apontador, obtido de Get()
     data->AcquireWrite();
     auto value = data->Get();
     *value = agent_idp;

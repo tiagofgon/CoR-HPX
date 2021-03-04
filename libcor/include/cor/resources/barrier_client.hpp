@@ -70,6 +70,13 @@ public:
 		_idp(idp)
 	{}
 
+	Barrier_Client(idp_t idp, unsigned int pod_id, idp_t clos) :
+		base_type(create_server(idp, clos)),
+		_idp(idp)
+	{}
+
+
+
 
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource

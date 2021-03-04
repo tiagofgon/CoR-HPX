@@ -80,6 +80,27 @@ public:
 		_idp(idp)
 	{}
 
+///////////////
+	ProtoAgent_Client(idp_t idp, unsigned int pod_id, std::function<R(P...)> const& f) :
+		base_type(create_server(idp, pod_id, f)),
+		_idp(idp)
+	{}
+
+	ProtoAgent_Client(idp_t idp, unsigned int pod_id, std::string const& module, std::string const& function) :
+		base_type(create_server(idp, pod_id, module, function)),
+		_idp(idp)
+	{}
+
+	ProtoAgent_Client(idp_t idp, unsigned int pod_id, hpx::id_type locality, hpx::function<R(P...)> const& f) :
+		base_type(create_server_remote(idp, pod_id, locality, f)),
+		_idp(idp)
+	{}
+
+	ProtoAgent_Client(idp_t idp, unsigned int pod_id, hpx::id_type locality, std::string const& module, std::string const& function) :
+		base_type(create_server_remote(idp, pod_id, locality, module, function)),
+		_idp(idp)
+	{}
+
 
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource
@@ -248,21 +269,19 @@ public:
 	}
 	
 private:
-	hpx::future<hpx::id_type> create_server(idp_t idp, std::function<R(P...)> const& f) {
-		return hpx::local_new<ProtoAgent<R(P...)>>(idp, f);
+	hpx::future<hpx::id_type> create_server(idp_t idp, unsigned int pod_id, std::function<R(P...)> const& f) {
+		return hpx::local_new<ProtoAgent<R(P...)>>(idp, pod_id, f);
+	}
+	hpx::future<hpx::id_type> create_server(idp_t idp, unsigned int pod_id, std::string const& module, std::string const& function) {
+		return hpx::local_new<ProtoAgent<R(P...)>>(idp, pod_id, module, function);
+	}
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, unsigned int pod_id, hpx::id_type locality, hpx::function<R(P...)> const& f) {
+		return hpx::new_<ProtoAgent<R(P...)>>(locality, idp, pod_id, f);
+	}
+	hpx::future<hpx::id_type> create_server_remote(idp_t idp, unsigned int pod_id, hpx::id_type locality, std::string const& module, std::string const& function) {
+		return hpx::new_<ProtoAgent<R(P...)>>(locality, idp, pod_id, module, function);
 	}
 
-	hpx::future<hpx::id_type> create_server(idp_t idp, std::string const& module, std::string const& function) {
-		return hpx::local_new<ProtoAgent<R(P...)>>(idp, module, function);
-	}
-
-	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, hpx::function<R(P...)> const& f) {
-		return hpx::new_<ProtoAgent<R(P...)>>(locality, idp, f);
-	}
-
-	hpx::future<hpx::id_type> create_server_remote(idp_t idp, hpx::id_type locality, std::string const& module, std::string const& function) {
-		return hpx::new_<ProtoAgent<R(P...)>>(locality, idp, module, function);
-	}
 
 	template <typename Archive>
 	void serialize(Archive& ar, unsigned) {   

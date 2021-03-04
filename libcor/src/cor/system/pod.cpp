@@ -10,14 +10,12 @@ using namespace dll;
 
 namespace cor {
 
-Pod::Pod(std::string const& id, std::string const& app_group, std::string const& context, unsigned int npods) :
-    // _mlr{nullptr},
+Pod::Pod(std::string const& id, unsigned int pod_id, std::string const& app_group, std::string const& context, unsigned int npods) :
     _ctrl{nullptr},
     _modules{},
     _active_rscs{}
 {
-    // _mlr = new Mailer{id, app_group};
-    _ctrl = new Controller(id, app_group, context, npods);
+    _ctrl = new Controller(id, pod_id, app_group, context, npods);
 }
 
 Pod::~Pod()
@@ -100,9 +98,9 @@ hpx::id_type Pod::GetGidFromIdp(idp_t idp)
     return _ctrl->GetGidFromIdp(idp);
 }
 
-idp_t Pod::Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
+idp_t Pod::Spawn(std::string const& context, unsigned int npods, unsigned int total_pods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts)
 {
-    return _ctrl->Spawn(context, npods, parent, module, args, hosts);
+    return _ctrl->Spawn(context, npods, total_pods, parent, module, args, hosts);
 }
 
 void Pod::LoadModule(std::string const& module)

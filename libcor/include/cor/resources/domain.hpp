@@ -18,7 +18,7 @@ typedef Domain type_holder;
 typedef Resource base_type_holder;
 
 protected:
-    explicit Domain(idp_t idp, std::string const& module);
+    explicit Domain(idp_t idp, unsigned int pod_id, std::string const& module);
 
 public:
     Domain() = delete;
@@ -94,7 +94,7 @@ public:
     template <typename T, typename ... Args>
     auto Run(idp_t idp, Args... args);
 
-    idp_t Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
+    idp_t Spawn(std::string const& context, unsigned int npods, unsigned int total_pods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
 
     idp_t GetContainerIdp();
 
@@ -185,9 +185,16 @@ public:
     {};
 
 
+
+    /* Domain's interface */
+    unsigned int GetPodId();
+
+    HPX_DEFINE_COMPONENT_ACTION(Domain, GetPodId, GetPodId_action_Domain);
+
 private:
     DynamicOrganizer _dynamic_organizer;
     Container _container;
+    unsigned int _pod_id;
 };
 
 }
@@ -242,6 +249,11 @@ HPX_REGISTER_ACTION_DECLARATION(GetActiveResourceIdp_action_Domain);
 HPX_REGISTER_ACTION_DECLARATION(GetPredecessorIdp_action_Domain);
 HPX_REGISTER_ACTION_DECLARATION(Spawn_action_Domain);
 HPX_REGISTER_ACTION_DECLARATION(GetContainerIdp_action_Domain);
+
+
+/* Declaration of actions to interact with Domain */
+typedef cor::Domain::GetPodId_action_Domain GetPodId_action_Domain;
+HPX_REGISTER_ACTION_DECLARATION(GetPodId_action_Domain);
 
 
 #endif

@@ -79,6 +79,22 @@ public:
 	{}
 
 
+	Closure_Client(idp_t idp, unsigned int pod_id, unsigned int total_members, idp_t parent) :
+		base_type(create_server(idp, total_members, parent)),
+		_idp(idp),
+		_total_members(total_members)
+	{}
+
+
+
+
+
+
+
+
+
+
+
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource
 	hpx::future<idp_t> IdpGlobal(hpx::launch::async_policy)

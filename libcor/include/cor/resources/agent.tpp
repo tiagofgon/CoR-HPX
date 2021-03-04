@@ -4,25 +4,23 @@
 namespace cor {
 
 template <typename R, typename ... P>
-Agent<R(P...)>::~Agent() = default;
-
-template <typename R, typename ... P>
-Agent<R(P...)>::Agent(idp_t idp, std::function<R(P...)> const& f) :
+Agent<R(P...)>::Agent(idp_t idp, unsigned int pod_id, std::function<R(P...)> const& f) :
     Resource{idp},
-    _executor{idp, f},
-    _mailBox{idp}
+    _executor{idp, pod_id, f},
+    _mailBox{idp, pod_id}
 {
     // std::cout << "Criado um componente \"Agent\", com idp: " << idp << std::endl;
 }
 
 template <typename R, typename ... P>
-Agent<R(P...)>::Agent(idp_t idp, std::string const& module, std::string const& function) :
+Agent<R(P...)>::Agent(idp_t idp, unsigned int pod_id, std::string const& module, std::string const& function) :
     Resource{idp},
-    _executor{idp, module, function},
-    _mailBox{idp}
+    _executor{idp, pod_id, module, function},
+    _mailBox{idp, pod_id}
 {
     // std::cout << "Criado um componente \"Agent\", com idp: " << idp << std::endl;
 }
+
 
 
 /* Executor's interface */

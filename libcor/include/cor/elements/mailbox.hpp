@@ -20,7 +20,7 @@ struct Mailbox: public hpx::components::locking_hook< hpx::components::component
 public:
     Mailbox();
     ~Mailbox();
-    explicit Mailbox(idp_t idp);
+    explicit Mailbox(idp_t idp, unsigned int pod_id);
     
     // Mailbox(const Mailbox&) = delete;
     // Mailbox& operator=(const Mailbox&) = delete;
@@ -61,7 +61,7 @@ private:
 
     hpx::lcos::channel<data_type> _channel_ctx;
     std::map<std::string, idp_t> _mailboxes_ctr; // context -> clausure's new idp
-
+    unsigned int _pod_id;
 };
 
 

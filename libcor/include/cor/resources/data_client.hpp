@@ -98,6 +98,20 @@ public:
 	}
 
 
+	template <typename ... Args>
+    Data_Client(idp_t idp, unsigned int pod_id, Args&&... args) :
+        base_type(create_server(idp, std::forward<Args>(args)...)),
+		_idp(idp)
+    {
+		// mutex necessary to guarantee mutual exclusion in data access
+		mutex = new MutexRWService_Client();
+		std::string basename = std::to_string(idp) + "Datamutex";
+		auto future = hpx::register_with_basename(basename, mutex->GetGid(), 0).get();
+	}
+
+
+
+
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource
 	hpx::future<idp_t> IdpGlobal(hpx::launch::async_policy)

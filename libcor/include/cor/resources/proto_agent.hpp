@@ -32,8 +32,8 @@ typedef Resource base_type_holder;
 public:
     ProtoAgent() = delete;
     ~ProtoAgent();
-    ProtoAgent(idp_t idp, std::function<R(P...)> const& f);
-    ProtoAgent(idp_t idp, std::string const& module, std::string const& function);
+    ProtoAgent(idp_t idp, unsigned int pod_id, std::function<R(P...)> const& f);
+    ProtoAgent(idp_t idp, unsigned int pod_id, std::string const& module, std::string const& function);
 
     template <typename ... Args>
     hpx::future<R> Run1(Args... args);

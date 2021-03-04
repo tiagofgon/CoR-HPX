@@ -71,6 +71,13 @@ public:
 		_idp(idp)
     {}
 
+	template <typename ... Args>
+    MultiChannel_Client(idp_t idp, unsigned int pod_id, std::string const& myself, Args ... args) :
+        base_type(create_server(idp, myself, args...)),
+		_idp(idp)
+    {}
+
+
 
 	/** Resource's interface **/
 	// method that returns the global idp of the resource, which is present in the class Resource

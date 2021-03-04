@@ -19,17 +19,19 @@
 
 namespace cor {
 
-ResourceManager::ResourceManager(Controller *ctrl, bool first) :
+ResourceManager::ResourceManager(Controller *ctrl, bool first, unsigned int pod_id) :
     _ctrl{ctrl},
     _is_main_mgr{first},
     _predecessors{},
     _mtx{},
     _mtx2{},
     dynamicOrganizer_idps{},
-    staticOrganizer_idps{}
+    staticOrganizer_idps{},
+    _pod_id{pod_id}
 {
     InsertDynamicOrganizer_idps(cor::MetaDomain); // insert the meta-domain idp into the dynamicOrganizer set 
 }
+
 
 ResourceManager::~ResourceManager() = default;
 
@@ -53,11 +55,11 @@ void ResourceManager::CleanInitialContext()
 void ResourceManager::CreateMetaDomain(std::string const& ctrl)
 {
     // create meta-domain resource
-    std::unique_ptr<Domain_Client> rsc = std::make_unique<Domain_Client>(cor::MetaDomain, "");
-
+    std::unique_ptr<Domain_Client> rsc = std::make_unique<Domain_Client>(cor::MetaDomain, _pod_id, "");
+    //std::unique_ptr<Domain_Client> rsc = std::make_unique<Domain_Client>(cor::MetaDomain, "");
     // insert association between idp and gid on gids map
     InsertIdp(cor::MetaDomain, rsc->GetGid()); // Inform the global component of the idp-gid association, as well as the local association
-    
+
     // insert relationship of ancestry
     InsertPredecessorIdp(cor::MetaDomain, cor::MetaDomain);
 
@@ -444,17 +446,20 @@ void ResourceManager::AttachResource(idp_t ctx, hpx::id_type ctx_gid, idp_t idp,
 
 }
 
-hpx::id_type ResourceManager::AttachResourceRemote(hpx::id_type ctx_gid, idp_t idp, std::string const& name)
+std::pair<hpx::id_type, unsigned int> ResourceManager::AttachResourceRemote(hpx::id_type ctx_gid, idp_t idp, std::string const& name)
 {
     // Criar um componente cliente localmente, que se refere ao componente remoto
     std::unique_ptr<Domain_Client> rsc_remote = std::make_unique<Domain_Client>(std::move(ctx_gid));
+
+    auto remote_pod_id = rsc_remote->GetPodId();
 
     // Retornar a localidade de onde o Domain está
     auto locality = rsc_remote->GetLocalityGID();
     // attach resource to the context (remote domain)
     rsc_remote->Join(idp, name);
 
-    return locality;
+    //return locality;
+    return std::make_pair(locality, remote_pod_id);
 }
 
 

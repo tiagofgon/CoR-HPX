@@ -37,8 +37,8 @@ public:
 	{}
 
 	/// Standard constructor with parameters
-	Mailbox_Client(idp_t idp) :
-		base_type(create_server(idp)),
+	Mailbox_Client(idp_t idp, unsigned int pod_id) :
+		base_type(create_server(idp, pod_id)),
 		_idp(idp)
 	{}
 
@@ -107,8 +107,8 @@ public:
 
 
 private:
-	hpx::future<hpx::id_type> create_server(idp_t idp) {
-		return hpx::local_new<Mailbox>(idp);
+	hpx::future<hpx::id_type> create_server(idp_t idp, unsigned int pod_id) {
+		return hpx::local_new<Mailbox>(idp, pod_id);
 	}
 
 	template <typename Archive>

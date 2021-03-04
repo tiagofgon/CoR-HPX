@@ -31,7 +31,7 @@ template <typename> friend class Value;
 template <typename> friend class Executor;
 
 public:
-    explicit Pod(std::string const& id, std::string const& app_group, std::string const& context, unsigned int npods);
+    explicit Pod(std::string const& id, unsigned int pod_id, std::string const& app_group, std::string const& context, unsigned int npods);
 
     ~Pod();
 
@@ -83,7 +83,7 @@ public:
     template <typename T, typename ... Args>
     std::unique_ptr<T> CreateCollective2(idm_t rank, idp_t comm, idp_t ctx, std::string const& name, Args ... args);
 
-    idp_t Spawn(std::string const& context, unsigned int npods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
+    idp_t Spawn(std::string const& context, unsigned int npods, unsigned int total_pods, idp_t parent, std::string const& module, std::vector<std::string> const& args, std::vector<std::string> const& hosts);
 
     
     // to remove

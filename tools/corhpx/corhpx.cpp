@@ -33,50 +33,69 @@ int hpx_main(int argc, char *argv[])
         return hpx::finalize();
     }
     std::string app_group, context, module;
-    unsigned int npods;
-    unsigned int total_members;
+    unsigned int fisical_pods;
+    unsigned int total_members = 1;
+    unsigned int total_pods;
     idp_t parent;
  
-    if (argc >= 6) {
+    if (argc >= 7) {
         app_group.assign(argv[1]);
         context.assign(argv[2]);
-        total_members = npods = std::strtoul(argv[3], nullptr, 0);
-        parent = std::strtoul(argv[4], nullptr, 0);
-        module.assign(argv[5]);
-        for (int i = 0; i < 6; ++i, --argc, ++argv);
+        fisical_pods = std::strtoul(argv[3], nullptr, 0);
+        total_pods = std::strtoul(argv[4], nullptr, 0);
+        parent = std::strtoul(argv[5], nullptr, 0);
+        module.assign(argv[6]);
+        for (int i = 0; i < 7; ++i, --argc, ++argv);
     } 
 
-    hpx::util::high_resolution_timer t1;
+    total_members = fisical_pods*total_pods;
 
-    auto domain = cor::Initialize_hpx(app_group, context, npods, module);
-
-    std::cout << "Initialize_hpx : " << t1.elapsed() << std::endl;
+    std::vector<hpx::future<void>> futures;
 
 
-    hpx::util::high_resolution_timer t2;
-    //std::cout << "domain->CreateCollective" << std::endl;
-    auto clos = domain->CreateCollective<cor::Closure_Client>(domain->Idp(), "", npods, total_members, parent);
-    std::cout << "CreateCollective : " << t2.elapsed() << std::endl;
 
-    hpx::util::high_resolution_timer t3;
-    //std::cout << "************ Criação do agente principal no corhpx *******"  << std::endl;
-    auto agent = domain->CreateLocal<cor::Agent_Client<void(int,char**)>>(clos->Idp(),  "", domain->GetModuleName(), "Main");
-    std::cout << "CreateLocal : " << t3.elapsed() << std::endl;
+    for(int i=0; i<total_pods; i++) {
+        futures.push_back(hpx::async([=](){
 
 
-    hpx::util::high_resolution_timer t4;
-    //std::cout << "************ Execução do modulo *******"  << std::endl;
-    auto fut = agent->Run(argc, argv);
-    fut.get();
-    std::cout << "Execução do agente: " << t4.elapsed() << std::endl;
+            //hpx::util::high_resolution_timer t1;
 
+            auto domain = cor::Initialize_hpx(app_group, context, fisical_pods, module);
+
+            //std::cout << "Initialize_hpx : " << t1.elapsed() << std::endl;
+
+
+            //hpx::util::high_resolution_timer t2;
+            //std::cout << "domain->CreateCollective" << std::endl;
+            auto clos = domain->CreateCollective<cor::Closure_Client>(domain->Idp(), "", total_members, total_members, parent);
+            //std::cout << "CreateCollective : " << t2.elapsed() << std::endl;
+
+            //hpx::util::high_resolution_timer t3;
+            std::cout << "************ Criação do agente principal no corhpx *******"  << std::endl;
+            auto agent = domain->CreateLocal<cor::Agent_Client<void(int,char**)>>(clos->Idp(),  "", domain->GetModuleName(), "Main");
+            //std::cout << "CreateLocal : " << t3.elapsed() << std::endl;
+
+
+            //hpx::util::high_resolution_timer t4;
+            std::cout << "************ Execução do modulo *******"  << std::endl;
+            auto fut = agent->Run(argc, argv);
+            fut.get();
+            //std::cout << "Execução do agente: " << t4.elapsed() << std::endl;
+
+
+
+        }));
+    }
+
+    hpx::wait_all(futures);
+    
     return hpx::finalize();
 }
 
 
 int main(int argc, char * argv[])
 {
-    std::cout << "Hello from C++ main" << std::endl;
+    // std::cout << "Hello from C++ main" << std::endl;
 
     // To retrieve hostname
     char hostbuffer[256];

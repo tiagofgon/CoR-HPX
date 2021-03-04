@@ -17,45 +17,18 @@ namespace cor {
 // hpx::id_type Initialize_hpx(std::string const& app_group, std::string const& context, unsigned int npods, std::string const& module)
 std::unique_ptr<Domain_Client> Initialize_hpx(std::string const& app_group, std::string const& context, unsigned int npods, std::string const& module)
 {
-	// std::cout << "OLA_COR.CPP_id:" << hpx::get_locality_id() << std::endl;
-    // enable libevent multithreaded environment
-    // ev::thread::evthread_use_pthreads();
-	
+
     // generate a random id for cor services
     auto id = utils::random_string(9);
 
-    // create and start rpc manager
-    // global::rpc = new RpcManager(id);
-    // global::rpc->StartService();
 
-    // // create and initialize pod
-    // auto id2 = utils::random_string(9);
-    // global::pod = new Pod(id2, app_group, context, npods);
-    // global::pod->Initialize();
+    auto index = global::pod_index.fetch_add(1);
+    global::pods[index] = new Pod_Client(id, index, app_group, context, npods); // not thread safe
+    global::pods[index]->Initialize();
+
+    return global::pods[index]->CreateLocal<Domain_Client>(cor::MetaDomain, "", module);
 
 
-    // // create and initialize pod_component
-    // auto newpod = hpx::local_new<cor::Pod_Component>(id, app_group, context, npods);
-    // global::podid = newpod.get();
-
-    // // create local domain_component
-    // typedef cor::Pod_Component::CreateLocal_action_pod<Domain> action_type;
-	// hpx::async<action_type>(global::podid, cor::MetaDomain, "", module).get();
-
-    // Create pod component and their client object for interface
-    // hpx::shared_future<hpx::id_type> newpod = hpx::local_new<cor::Pod_Component>(id, app_group, context, npods);
-    // cor::Pod_Component_Client pod_object2(std::move(newpod));
-    // global::podid = newpod.get();
-    // global::pod_object = new Pod_Component_Client(std::move(newpod));
-    global::pod = new Pod_Client(id, app_group, context, npods);
-    global::pod->Initialize();
-
-    // create local domain and return their Client object
-    return global::pod->CreateLocal<Domain_Client>(cor::MetaDomain, "", module);
-    
-    // Domain_Client domain(std::move(domain_gid));
-    // return domain;
-    // return global::podid;
 }
 
 void Finalize_hpx()
@@ -75,11 +48,29 @@ hpx::future<std::shared_ptr<Domain_Client>> GetDomain(hpx::launch::async_policy)
     });
 }
 
+// std::shared_ptr<Domain_Client> GetDomain()
+// {
+//     idp_t domain_idp = global::pod->GetDomainIdp();
+//     // std::cout << "domain_idp: " << domain_idp << std::endl;
+//     auto dom = global::pod->GetLocalResource<Domain_Client>(domain_idp);
+//     std::shared_ptr<Domain_Client> dom_shared = std::move(dom);
+//     dom_shared->GetActiveResourceIdp();
+
+//     return dom_shared;
+// }
+
+
 std::shared_ptr<Domain_Client> GetDomain()
 {
-    idp_t domain_idp = global::pod->GetDomainIdp();
+    auto id = hpx::threads::get_self_id();
+    uint64_t* ptr=(uint64_t*) &id;
+    auto id_hpx_thread = (*ptr);
+
+    auto pod_id = global::active_rscs[id_hpx_thread];
+
+    idp_t domain_idp = global::pods[pod_id]->GetDomainIdp();
     // std::cout << "domain_idp: " << domain_idp << std::endl;
-    auto dom = global::pod->GetLocalResource<Domain_Client>(domain_idp);
+    auto dom = global::pods[pod_id]->GetLocalResource<Domain_Client>(domain_idp);
     std::shared_ptr<Domain_Client> dom_shared = std::move(dom);
     dom_shared->GetActiveResourceIdp();
 
@@ -87,5 +78,8 @@ std::shared_ptr<Domain_Client> GetDomain()
 
 
 }
+
+
+
 
 }
