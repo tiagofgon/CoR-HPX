@@ -1,18 +1,18 @@
 // Tiago Gonçalves & António Pina - University of Minho - LIP, 2021
 //
-// Queue it's a class derived from Container.
+// MyQueue it's a class derived from Container.
 // This program is intended to access a resource created on another context, in this case, on another pod
 //
 // Program to be run in parallel with two pods, only.
 // Each pod will remotely create an agent in the location of the other pod.
 //    Compile with: --hpx:ini=hpx.component_paths= "location of the example"
 //
-// Console 1: ./corhpx apps ctx 2 1 0 ../examples/libaccess_remote.so --hpx:hpx=localhost:1337 --hpx:expect-connecting-localities --hpx:ini=hpx.component_paths=../examples
-// Console 2: ./corhpx apps ctx 2 1 0 ../examples/libaccess_remote.so --hpx:hpx=localhost:1338 --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:expect-connecting-localities --hpx:worker --hpx:ini=hpx.component_paths=../examples
+// Console 1: ./corhpx apps ctx 2 1 0 ../examples/libaccess_remote_2.so --hpx:hpx=localhost:1337 --hpx:expect-connecting-localities --hpx:ini=hpx.component_paths=../examples
+// Console 2: ./corhpx apps ctx 2 1 0 ../examples/libaccess_remote_2.so --hpx:hpx=localhost:1338 --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:expect-connecting-localities --hpx:worker --hpx:ini=hpx.component_paths=../examples
 // 
-// With MPI in one console only: mpirun -np 2 ./corhpx apps ctx 2 1 0 ../examples/libaccess_remote.so --hpx:ini=hpx.component_paths=../examples
+// With MPI in one console only: mpirun -np 2 ./corhpx apps ctx 2 1 0 ../examples/libaccess_remote_2.so --hpx:ini=hpx.component_paths=../examples
 //
-// With virtual pods: ./corhpx apps ctx 1 2 0 ../examples/libaccess_remote.so --hpx:ini=hpx.component_paths=../examples
+// With virtual pods: ./corhpx apps ctx 1 2 0 ../examples/libaccess_remote_2.so --hpx:ini=hpx.component_paths=../examples
 //
 
 #include "cor/cor.hpp"
@@ -21,6 +21,8 @@ extern "C"
 {
     void Main(int argc, char *argv[]);
 }
+
+
 
 class Container
 {
@@ -80,9 +82,8 @@ private:
     std::vector<T> _fifo;
 };
 
-
-typedef Queue<int> queue_type;
-REGISTER_DATA(queue_type); // need to register new Data type
+typedef Queue<int> object_type;
+REGISTER_DATA(object_type); // need to register new Data type
 
 void Main(int argc, char *argv[])
 {
@@ -97,13 +98,12 @@ void Main(int argc, char *argv[])
 
     // create resource Data in rank 1
     if(rank == 1) {
-        auto data = domain->CreateLocal<cor::Data_Client<queue_type>>(domain->Idp(), "data");
+        auto data = domain->CreateLocal<cor::Data_Client<object_type>>(domain->Idp(), "data");
 
         // Push 5 in the queue through local resource pointer
         data->AcquireWrite();
         auto obj = data->Get();
-        // obj->Push(5);
-        // obj = nullptr;
+        //*obj = 5;
         data->ReleaseWrite();
 
         auto data_idp1 = domain->GetIdp("data");
@@ -125,12 +125,12 @@ void Main(int argc, char *argv[])
         std::cout << "data idp: " << data_idp << std::endl;
 
         // create replica from remote Data
-        auto data = domain->CreateReference<cor::Data_Client<queue_type>>(data_idp, domain->Idp(), "dataReplica");
+        auto data = domain->CreateReference<cor::Data_Client<object_type>>(data_idp, domain->Idp(), "dataReplica");
 
         // print size of queue
         data->AcquireWrite();
         auto obj = data->Get();
-        //std::cout << obj->Size() << std::endl;
+        //std::cout << *obj << std::endl;
         data->ReleaseWrite();
     }
 

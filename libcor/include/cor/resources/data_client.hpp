@@ -174,6 +174,7 @@ public:
 	{
 		//std::cout << "ReleaseRead()" << std::endl;
 		return hpx::async([&](){
+			ptr = nullptr;
 			mutex->ReleaseRead();
 		});
 	}
@@ -181,6 +182,7 @@ public:
 	void ReleaseRead()
 	{
 		//std::cout << "ReleaseRead()" << std::endl;
+		ptr = nullptr;
 		mutex->ReleaseRead();
 	}
 
@@ -202,6 +204,7 @@ public:
 	{
 		//std::cout << "ReleaseWrite()" << std::endl;
 		return hpx::async([&](){
+			ptr = nullptr;
 			mutex->ReleaseWrite();
 		});
 	}
@@ -209,6 +212,7 @@ public:
 	void ReleaseWrite()
 	{
 		//std::cout << "ReleaseWrite()" << std::endl;
+		ptr = nullptr;
 		mutex->ReleaseWrite();
 	}
 
@@ -311,8 +315,9 @@ public:
 		auto locality = hpx::get_colocation_id(hpx::launch::sync, gid);
 
 		ptr = nullptr;
+		std::cout << "o objeto vai migrar" << std::endl;
 		hpx::components::migrate<Data<T>>(this->get_id(), locality).get();
-		//std::cout << "o objeto migrou para " << domain_target << std::endl;
+		std::cout << "o objeto migrou para " << domain_target << std::endl;
 		return;
 	}
 

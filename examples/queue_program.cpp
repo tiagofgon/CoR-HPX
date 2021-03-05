@@ -37,14 +37,15 @@ void Main(int argc, char *argv[])
     if(rank == 0) {
         auto myqueue = domain->CreateLocal<cor::Data_Client<queue_type>>(domain->Idp(), "data");
         Object objA, objB, objC;
-
+        std::cout << "aqui 1" << std::endl;
         myqueue->Run(Push<Object>, objA).get();
         myqueue->Run(Push<Object, Object>, objB, objC).get();
-
+        std::cout << "aqui 2" << std::endl;
         std::vector<idp_t> remote_domains = domain->GetRemoteDomains();
         idp_t dest = remote_domains[0];
+        std::cout << "aqui 3" << std::endl;
         myqueue->Migrate(dest);
-
+        std::cout << "aqui 4" << std::endl;
         auto element = myqueue->Run(Pop).get();
 
         std::cout << myqueue->Run(Size).get() << std::endl; // irá imprimir 2

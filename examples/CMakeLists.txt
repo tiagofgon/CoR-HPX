@@ -298,6 +298,36 @@ target_link_libraries(
         # HPX::iostreams
 )
 
+# send_an_object_simple
+add_library(send_an_object_simple SHARED send_an_object_simple.cpp)
+target_compile_features(send_an_object_simple PUBLIC cxx_std_17)
+set_target_properties(send_an_object_simple PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(send_an_object_simple PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(send_an_object_simple PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(send_an_object_simple PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    send_an_object_simple
+    PRIVATE
+        libcor
+        HPX::hpx
+        # HPX::iostreams
+)
+
+# access_remote_2
+add_library(access_remote_2 SHARED access_remote_2.cpp)
+target_compile_features(access_remote_2 PUBLIC cxx_std_17)
+set_target_properties(access_remote_2 PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(access_remote_2 PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(access_remote_2 PROPERTIES COMPILE_FLAGS -O2)
+set_target_properties(access_remote_2 PROPERTIES PREFIX "lib" SUFFIX ".so")
+target_link_libraries(
+    access_remote_2
+    PRIVATE
+        libcor
+        HPX::hpx
+        # HPX::iostreams
+)
+
 install(
     TARGETS
         module
@@ -321,6 +351,8 @@ install(
         stencil2d
         multichannel_example
         unichannel_example
+        send_an_object_simple
+        access_remote_2
     LIBRARY
         DESTINATION examples
 )

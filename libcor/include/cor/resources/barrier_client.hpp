@@ -72,7 +72,8 @@ public:
 
 	Barrier_Client(idp_t idp, unsigned int pod_id, idp_t clos) :
 		base_type(create_server(idp, clos)),
-		_idp(idp)
+		_idp(idp),
+		_pod_id(pod_id)
 	{}
 
 
@@ -127,10 +128,10 @@ public:
 			hpx::async<action_type>(this->get_id()).get();
 
 			auto _clos = GetIdpClos(hpx::launch::async).get();
-			auto sorg = global::pod->GetLocalResource<cor::Closure_Client>(_clos);
+			auto sorg = global::pods[_pod_id]->GetLocalResource<cor::Closure_Client>(_clos);
 			std::size_t total_members = sorg->GetTotalMembers(hpx::launch::async).get();
 
-			auto active_rsc_idp = global::pod->GetActiveResourceIdp();
+			auto active_rsc_idp = global::pods[_pod_id]->GetActiveResourceIdp();
 			auto idm = sorg->GetIdm(hpx::launch::async, active_rsc_idp).get();
 
 			// this barrier had to be placed here, and not inside SBarrier component because it only works outside of components
@@ -145,10 +146,10 @@ public:
 		hpx::async<action_type>(this->get_id()).get();
 
 		auto _clos = GetIdpClos();
-		auto sorg = global::pod->GetLocalResource<cor::Closure_Client>(_clos);
+		auto sorg = global::pods[_pod_id]->GetLocalResource<cor::Closure_Client>(_clos);
 		std::size_t total_members = sorg->GetTotalMembers();
 
-		auto active_rsc_idp = global::pod->GetActiveResourceIdp();
+		auto active_rsc_idp = global::pods[_pod_id]->GetActiveResourceIdp();
 		auto idm = sorg->GetIdm(active_rsc_idp);
 
 		// this barrier had to be placed here, and not inside SBarrier component because it only works outside of components
@@ -234,7 +235,7 @@ private:
 	}
 
 	idp_t _idp; // local idp
-
+	unsigned int _pod_id;
 };
 
 

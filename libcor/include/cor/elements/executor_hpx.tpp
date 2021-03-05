@@ -57,7 +57,13 @@ hpx::future<R> Executor<R(P...)>::Run(Args&&... args)
             global::active_rscs[id_hpx_thread] = _pod_id;
             global::pods[_pod_id]->InsertActiveResource(id_hpx_thread, _idp);
 
+            std::cout << "antes execução main - executor" << std::endl;
+            std::cout << "_dominio " << _pod_id << "com id_task " << id_hpx_thread << std::endl;
+
             _f(std::forward<Args>(args)...);
+
+            std::cout << "depois execução main - executor" << std::endl;
+
 
             global::pods[_pod_id]->RemoveActiveResource(id_hpx_thread);
             global::active_rscs.erase(id_hpx_thread);
@@ -67,7 +73,12 @@ hpx::future<R> Executor<R(P...)>::Run(Args&&... args)
             global::active_rscs[id_hpx_thread] = _pod_id;
             global::pods[_pod_id]->InsertActiveResource(id_hpx_thread, _idp);
 
+            std::cout << "antes execução main - executor" << std::endl;
+            std::cout << "_dominio " << _pod_id << "com id_task " << id_hpx_thread << std::endl;
+
             auto ret = _f(std::forward<Args>(args)...);
+
+            std::cout << "depois execução main - executor" << std::endl;
 
             global::pods[_pod_id]->RemoveActiveResource(id_hpx_thread);
             global::active_rscs.erase(id_hpx_thread);

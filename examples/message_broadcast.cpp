@@ -1,15 +1,14 @@
-/* ---------- 
--- Tiago Gonçalves - University of Minho, 2021 --
-
-Program that sends an integer from process with rank 0 
-
-For execution in two separated consoles (two processes):
-    $ ./corhpx apps ctx 2 0 ../examples/libmessage_broadcast.so --hpx:hpx=localhost:1337 --hpx:expect-connecting-localities
-    $ ./corhpx apps ctx 2 0 ../examples/libmessage_broadcast.so --hpx:hpx=localhost:1338 --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:expect-connecting-localities --hpx:worker
-or using mpi:
-    $ mpirun -np N ./corhpx apps ctx N 0 ../examples/libmessage_broadcast.so
-
----------- */
+// Tiago Gonçalves & António Pina - University of Minho - LIP, 2021
+//
+// Program that sends an integer from pod 0 to others from same closure
+//
+// Console 1: ./corhpx apps ctx 2 1 0 ../examples/libmessage_broadcast.so --hpx:hpx=localhost:1337 --hpx:expect-connecting-localities
+// Console 2: ./corhpx apps ctx 2 1 0 ../examples/libmessage_broadcast.so --hpx:hpx=localhost:1338 --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:expect-connecting-localities --hpx:worker
+// 
+// With MPI in one console only: mpirun -np 2 ./corhpx apps ctx 2 1 0 ../examples/libmessage_broadcast.so
+//
+// With virtual pods: ./corhpx apps ctx 1 2 0 ../examples/libmessage_broadcast.so
+//
 
 #include "cor/cor.hpp"
 
