@@ -94,11 +94,12 @@ void Main(int argc, char *argv[])
     auto clos = domain->GetLocalResource<cor::Closure_Client>(clos_idp);
     auto rank = clos->GetIdm(agent_idp);
 
+    std::cout << "ola 1, com rank = " << rank << std::endl;
 
     // create resource Data in rank 1
     if(rank == 1) {
         auto data = domain->CreateLocal<cor::Data_Client<queue_type>>(domain->Idp(), "data");
-
+        std::cout << "ola 2" << std::endl;
         // Push 5 in the queue through local resource pointer
         data->AcquireWrite();
         auto obj = data->Get();
@@ -110,29 +111,29 @@ void Main(int argc, char *argv[])
         std::cout << "data idp: " << data_idp1 << std::endl;
     }
 
-    // make sure Data is created to be accessed on rank 0
-    auto barrier = domain->CreateCollective<cor::Barrier_Client>(clos_idp, domain->Idp(), "barrier", clos_idp);
-    barrier->Synchronize();
+    // // make sure Data is created to be accessed on rank 0
+    // auto barrier = domain->CreateCollective<cor::Barrier_Client>(clos_idp, domain->Idp(), "barrier", clos_idp);
+    // barrier->Synchronize();
 
-    // Access Data in rank 0
-    if(rank == 0) {
-        std::vector<idp_t> remote_domains = domain->GetRemoteDomains();
+    // // Access Data in rank 0
+    // if(rank == 0) {
+    //     std::vector<idp_t> remote_domains = domain->GetRemoteDomains();
 
-        // create replica from remote domain
-        auto remote_domain = domain->CreateReference<cor::Domain_Client>(remote_domains[0], domain->Idp(), "");
+    //     // create replica from remote domain
+    //     auto remote_domain = domain->CreateReference<cor::Domain_Client>(remote_domains[0], domain->Idp(), "");
 
-        auto data_idp = remote_domain->GetIdp("data");
-        std::cout << "data idp: " << data_idp << std::endl;
+    //     auto data_idp = remote_domain->GetIdp("data");
+    //     std::cout << "data idp: " << data_idp << std::endl;
 
-        // create replica from remote Data
-        auto data = domain->CreateReference<cor::Data_Client<queue_type>>(data_idp, domain->Idp(), "dataReplica");
+    //     // create replica from remote Data
+    //     auto data = domain->CreateReference<cor::Data_Client<queue_type>>(data_idp, domain->Idp(), "dataReplica");
 
-        // print size of queue
-        data->AcquireWrite();
-        auto obj = data->Get();
-        //std::cout << obj->Size() << std::endl;
-        data->ReleaseWrite();
-    }
+    //     // print size of queue
+    //     data->AcquireWrite();
+    //     auto obj = data->Get();
+    //     //std::cout << obj->Size() << std::endl;
+    //     data->ReleaseWrite();
+    // }
 
 
 }

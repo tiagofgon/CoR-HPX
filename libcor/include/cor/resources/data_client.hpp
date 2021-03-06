@@ -76,18 +76,7 @@ public:
 
 	// Standard constructor with parameters
 	template <typename ... Args>
-    Data_Client(idp_t idp, Args&&... args) :
-        base_type(create_server(idp, std::forward<Args>(args)...)),
-		_idp(idp)
-    {
-		// mutex necessary to guarantee mutual exclusion in data access
-		mutex = new MutexRWService_Client();
-		std::string basename = std::to_string(idp) + "Datamutex";
-		auto future = hpx::register_with_basename(basename, mutex->GetGid(), 0).get();
-	}
-
-	template <typename ... Args>
-    Data_Client(idp_t idp, hpx::id_type locality, Args&&... args) :
+    Data_Client(idp_t idp, unsigned int pod_id, hpx::id_type locality, Args&&... args) :
         base_type(create_server_remote(idp, locality, std::forward<Args>(args)...)),
 		_idp(idp)
     {
@@ -107,6 +96,7 @@ public:
 		mutex = new MutexRWService_Client();
 		std::string basename = std::to_string(idp) + "Datamutex";
 		auto future = hpx::register_with_basename(basename, mutex->GetGid(), 0).get();
+		std::cout << "Criado um componente \"Data_Client\", com idp: " << idp << std::endl;
 	}
 
 

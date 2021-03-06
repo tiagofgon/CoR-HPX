@@ -2,10 +2,10 @@
 -- Tiago Gonçalves - University of Minho, 2021 --
 
 For execution in two separated consoles (two processes):
-    $ ./corhpx apps ctx 2 0 ../examples/parallel.so --hpx:hpx=localhost:1337 --hpx:expect-connecting-localities
-    $ ./corhpx apps ctx 2 0 ../examples/parallel.so --hpx:hpx=localhost:1338 --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:expect-connecting-localities --hpx:worker
+    $ ./corhpx apps ctx 2 1 0 ../examples/libparallel.so --hpx:hpx=localhost:1337 --hpx:expect-connecting-localities
+    $ ./corhpx apps ctx 2 1 0 ../examples/libparallel.so --hpx:hpx=localhost:1338 --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:expect-connecting-localities --hpx:worker
 or using mpi:
-    $ mpirun -np 2 ./corhpx apps ctx 2 0 ../examples/parallel.so
+    $ mpirun -np 2 ./corhpx apps ctx 2 0 ../examples/libparallel.so
 
 ---------- */
 

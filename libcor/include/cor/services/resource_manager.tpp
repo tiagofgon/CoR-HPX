@@ -32,10 +32,10 @@ template <typename T, typename ... Args>
 std::unique_ptr<T> ResourceManager::CreateLocal(idp_t ctx, std::string const& name, std::string const& ctrl, Args ... args)
 {
     auto idp = GenerateIdp();
-    //std::cout << "ResourceManager::CreateLocal" << std::endl;
+    std::cout << "ResourceManager::CreateLocal" << std::endl;
     // (std::cout << ... << args); std::cout << std::endl;
     std::unique_ptr<T> rsc = std::make_unique<T>(idp, _pod_id, args...);
-    //std::cout << "ResourceManager::CreateLocal2" << std::endl;
+    std::cout << "ResourceManager::CreateLocal2" << std::endl;
     rsc = AllocateResource(idp, ctx, name, std::move(rsc), ctrl);
     // std::cout << "ResourceManager::CreateLocal3" << std::endl;
     return GetLocalResource<T>(idp);
