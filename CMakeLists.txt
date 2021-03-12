@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(PlaCoR LANGUAGES CXX VERSION 1.0)
+project(CoR-HPX LANGUAGES CXX VERSION 1.0)
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/libcor/include/cor/PlaCoRConfig.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/libcor/include/cor/PlaCoRConfig.h" )
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/libcor/include/cor/CoR-HPXConfig.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/libcor/include/cor/CoR-HPXConfig.h" )
 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -28,7 +28,6 @@ find_package(LibSSH REQUIRED)
 add_subdirectory(libcor)
 add_subdirectory(tools)
 add_subdirectory(examples)
-add_subdirectory(tests)
 add_subdirectory(cap6)
 
 install(
@@ -57,7 +56,7 @@ install(
 
 
 set(DEF_INSTALL_CMAKE_DIR CMake)
-set(DEF_INSTALL_CMAKE_DIR lib/CMake/PlaCor)
+set(DEF_INSTALL_CMAKE_DIR lib/CMake/CoR-HPX)
 
 set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH
   "Installation directory for CMake files")
@@ -79,32 +78,32 @@ include_directories(
 # ===============================
 
 # Add all targets to the build-tree export set
-export(TARGETS libcor FILE "${PROJECT_BINARY_DIR}/PlaCoRTargets.cmake")
+export(TARGETS libcor FILE "${PROJECT_BINARY_DIR}/CoR-HPXTargets.cmake")
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
-export(PACKAGE PlaCoR)
+export(PACKAGE CoR-HPX)
 
-# Create the PlaCoRConfig.cmake and PlaCoRConfigVersion files
+# Create the CoR-HPXConfig.cmake and CoR-HPXConfigVersion files
 file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
    "${INSTALL_INCLUDE_DIR}")
 # ... for the build tree
 set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
-configure_file(PlaCoRConfig.cmake.in
-  "${PROJECT_BINARY_DIR}/PlaCoRConfig.cmake" @ONLY)
+configure_file(CoR-HPXConfig.cmake.in
+  "${PROJECT_BINARY_DIR}/CoR-HPXConfig.cmake" @ONLY)
 # ... for the install tree
-set(CONF_INCLUDE_DIRS "\${PLACOR_CMAKE_DIR}/${REL_INCLUDE_DIR}")
-configure_file(PlaCoRConfig.cmake.in
-  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PlaCoRConfig.cmake" @ONLY)
+set(CONF_INCLUDE_DIRS "\${CoR-HPX_CMAKE_DIR}/${REL_INCLUDE_DIR}")
+configure_file(CoR-HPXConfig.cmake.in
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CoR-HPXConfig.cmake" @ONLY)
 # ... for both
-configure_file(PlaCoRConfigVersion.cmake.in
-  "${PROJECT_BINARY_DIR}/PlaCoRConfigVersion.cmake" @ONLY)
+configure_file(CoR-HPXConfigVersion.cmake.in
+  "${PROJECT_BINARY_DIR}/CoR-HPXConfigVersion.cmake" @ONLY)
 
-# Install the PlaCoRConfig.cmake and PlaCoRConfigVersion.cmake
+# Install the CoR-HPXConfig.cmake and CoR-HPXConfigVersion.cmake
 install(FILES
-  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/PlaCoRConfig.cmake"
-  "${PROJECT_BINARY_DIR}/PlaCoRConfigVersion.cmake"
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CoR-HPXConfig.cmake"
+  "${PROJECT_BINARY_DIR}/CoR-HPXConfigVersion.cmake"
   DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
 # Install the export set for use with the install-tree
-#install(EXPORT PlaCoRTargets DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+#install(EXPORT CoR-HPXTargets DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
