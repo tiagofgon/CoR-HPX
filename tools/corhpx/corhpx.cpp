@@ -6,7 +6,7 @@
 #include <cstdlib>
 
 #include "cor/cor.hpp"
-#include "cor/CoR-HPXConfig.h"
+#include "cor/CORHPXConfig.h"
 
 #include "cor/services/access_manager_client.hpp"
 
@@ -28,8 +28,8 @@ int hpx_main(int argc, char *argv[])
 {
     if (argc < 2) {
         // report version
-        std::cout << argv[0] << " Version " << CoR-HPX_VERSION_MAJOR << "."
-                << CoR-HPX_VERSION_MINOR << std::endl;
+        std::cout << argv[0] << " Version " << CORHPX_VERSION_MAJOR << "."
+                << CORHPX_VERSION_MINOR << std::endl;
         return hpx::finalize();
     }
     std::string app_group, context, module;
@@ -76,7 +76,7 @@ int hpx_main(int argc, char *argv[])
 
 int main(int argc, char * argv[])
 {
-    std::cout << "Hello from C++ main" << std::endl;
+    // std::cout << "Hello from C++ main" << std::endl;
 
     // To retrieve hostname
     char hostbuffer[256];
