@@ -24,13 +24,6 @@ void worker(std::shared_ptr<cor::Domain_Client> domain, std::size_t global_rank,
     std::cout << "steps " << steps << std::endl;
 
 
-    // Setup our communicator
-    typedef communicator<std::vector<double>> communicator_type;
-    communicator_type comm(rank, num);
-
-    
-    
-
 
     typedef std::vector<double> data_type;
     std::array<data_type, 2> U;
