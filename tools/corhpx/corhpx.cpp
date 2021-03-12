@@ -6,7 +6,7 @@
 #include <cstdlib>
 
 #include "cor/cor.hpp"
-#include "cor/PlaCoRConfig.h"
+#include "cor/CoR-HPXConfig.h"
 
 #include "cor/services/access_manager_client.hpp"
 
@@ -28,8 +28,8 @@ int hpx_main(int argc, char *argv[])
 {
     if (argc < 2) {
         // report version
-        std::cout << argv[0] << " Version " << PlaCoR_VERSION_MAJOR << "."
-                << PlaCoR_VERSION_MINOR << std::endl;
+        std::cout << argv[0] << " Version " << CoR-HPX_VERSION_MAJOR << "."
+                << CoR-HPX_VERSION_MINOR << std::endl;
         return hpx::finalize();
     }
     std::string app_group, context, module;
