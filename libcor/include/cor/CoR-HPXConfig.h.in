@@ -1,0 +1,3 @@
+// the configured options and settings for PlaCoR
+#define CoRHPX_VERSION_MAJOR @CoRHPX_VERSION_MAJOR@
+#define CoRHPX_VERSION_MINOR @CoRHPX_VERSION_MINOR@
