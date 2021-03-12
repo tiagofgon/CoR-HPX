@@ -1,3 +1,0 @@
-// the configured options and settings for PlaCoR
-#define PlaCoR_VERSION_MAJOR @PlaCoR_VERSION_MAJOR@
-#define PlaCoR_VERSION_MINOR @PlaCoR_VERSION_MINOR@
