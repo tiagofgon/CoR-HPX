@@ -1,0 +1,22 @@
+### Initialisation performed by CONFIGURE_PACKAGE_CONFIG_FILE:
+@PACKAGE_INIT@
+
+# - Config file for the FooBar package
+# It defines the following variables
+#  CORHPX_INCLUDE_DIRS - include directories for FooBar
+#  CORHPX_LIBRARIES    - libraries to link against
+#  CORHPX_EXECUTABLE   - the bar executable
+
+# Compute paths
+get_filename_component(CORHPX_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(CORHPX_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+include("${CORHPX_CMAKE_DIR}/CORHPXTargets.cmake")
+
+# These are IMPORTED targets created by CORHPXTargets.cmake
+set(CORHPX_LIBRARIES libcor)
+#set(CORHPX_INCLUDE_DIRS "")
+set(CORHPX_LIBRARY_DIR "")
+set(CORHPX_LINK_LIBRARIES "")
+set(CORHPX_LINKER_FLAGS "")

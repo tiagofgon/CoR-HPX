@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(CoR-HPX LANGUAGES CXX VERSION 1.0)
+project(CORHPX LANGUAGES CXX VERSION 1.0)
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/libcor/include/cor/CoR-HPXConfig.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/libcor/include/cor/CoR-HPXConfig.h" )
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/libcor/include/cor/CORHPXConfig.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/libcor/include/cor/CORHPXConfig.h" )
 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -56,7 +56,7 @@ install(
 
 
 set(DEF_INSTALL_CMAKE_DIR CMake)
-set(DEF_INSTALL_CMAKE_DIR lib/CMake/CoR-HPX)
+set(DEF_INSTALL_CMAKE_DIR lib/CMake/CORHPX)
 
 set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH
   "Installation directory for CMake files")
@@ -78,32 +78,32 @@ include_directories(
 # ===============================
 
 # Add all targets to the build-tree export set
-export(TARGETS libcor FILE "${PROJECT_BINARY_DIR}/CoR-HPXTargets.cmake")
+export(TARGETS libcor FILE "${PROJECT_BINARY_DIR}/CORHPXTargets.cmake")
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
-export(PACKAGE CoR-HPX)
+export(PACKAGE CORHPX)
 
-# Create the CoR-HPXConfig.cmake and CoR-HPXConfigVersion files
+# Create the CORHPXConfig.cmake and CORHPXConfigVersion files
 file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
    "${INSTALL_INCLUDE_DIR}")
 # ... for the build tree
 set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
-configure_file(CoR-HPXConfig.cmake.in
-  "${PROJECT_BINARY_DIR}/CoR-HPXConfig.cmake" @ONLY)
+configure_file(CORHPXConfig.cmake.in
+  "${PROJECT_BINARY_DIR}/CORHPXConfig.cmake" @ONLY)
 # ... for the install tree
-set(CONF_INCLUDE_DIRS "\${CoR-HPX_CMAKE_DIR}/${REL_INCLUDE_DIR}")
-configure_file(CoR-HPXConfig.cmake.in
-  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CoR-HPXConfig.cmake" @ONLY)
+set(CONF_INCLUDE_DIRS "\${CORHPX_CMAKE_DIR}/${REL_INCLUDE_DIR}")
+configure_file(CORHPXConfig.cmake.in
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CORHPXConfig.cmake" @ONLY)
 # ... for both
-configure_file(CoR-HPXConfigVersion.cmake.in
-  "${PROJECT_BINARY_DIR}/CoR-HPXConfigVersion.cmake" @ONLY)
+configure_file(CORHPXConfigVersion.cmake.in
+  "${PROJECT_BINARY_DIR}/CORHPXConfigVersion.cmake" @ONLY)
 
-# Install the CoR-HPXConfig.cmake and CoR-HPXConfigVersion.cmake
+# Install the CORHPXConfig.cmake and CORHPXConfigVersion.cmake
 install(FILES
-  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CoR-HPXConfig.cmake"
-  "${PROJECT_BINARY_DIR}/CoR-HPXConfigVersion.cmake"
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CORHPXConfig.cmake"
+  "${PROJECT_BINARY_DIR}/CORHPXConfigVersion.cmake"
   DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
 # Install the export set for use with the install-tree
-#install(EXPORT CoR-HPXTargets DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+#install(EXPORT CORHPXTargets DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
