@@ -1,3 +1,2 @@
 #!/bin/sh
-mkdir build && cd build
-make ..
+echo "hello world"
