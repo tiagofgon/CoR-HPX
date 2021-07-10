@@ -1,12 +1,12 @@
-# PlaCoR-HPX
+# CoR-HPX
 Resource Oriented Computing Platform
 
 # Installation
 
 ## Requirements
-The PlaCoRHPX library requires C++17 features, if you use GCC you need GCC >= 7 (GCC 7.4.0 are used for development and testing). CMake 3.12 (or later) is required for the build and testing process of the Runtime. Libssh 0.8 (or later) is also required to spawning processes dynamicly. 
+The CoR-HPX library requires C++17 features. If you use GCC you would need GCC >= 7 (GCC 7.4.0 are used for development and testing). CMake 3.12 (or later) is required for the build and testing process of the Runtime. Libssh 0.8 (or later) is also required to spawning processes dynamicly. 
 
-The PlaCoR-HPX library is built on HPX. In order to build HPX as the necessary requirement, please refer to either:
+The CoR-HPX library is built on HPX. In order to build HPX as the necessary requirement, please refer to either:
 <br />
 **HPX Wiki:** [https://github.com/STEllAR-GROUP/hpx/wiki/HPX-Resource-Guide](https://github.com/STEllAR-GROUP/hpx/wiki/HPX-Resource-Guide)
 <br />
@@ -21,17 +21,17 @@ summary:
 
 ## Getting the Source
 ~~~
-git clone https://github.com/tiagofgon/placor-hpx
+git clone https://github.com/tiagofgon/CoR-HPX
 ~~~
 
 ## Running the Setup
 
 - $HPX_LOCATION -> hpx library location
 - $Libssh_LOCATION -> Libssh library location
-- $INSTALATION_DIR -> PlaCoR-HPX target installation
+- $INSTALATION_DIR -> CoR-HPX target installation
 
 ~~~
-cd placor-hpx
+cd cor-hpx
 mkdir build
 cd build
 cmake -DCMAKE_PREFIX_PATH=$HPX_LOCATION -DLibSSH_ROOT=$Libssh_LOCATION -DCMAKE_INSTALL_PREFIX=$INSTALATION_DIR ..
@@ -68,13 +68,13 @@ $ corhpx app ctx 1 0 libbasicOperations.so
 Launching a program with multiple domains(processes): using two consoles or using mpi
 
 ~~~ 
-$ corhpx app ctx 2 0 /placor-hpx_installation_dir/examples/libparallel.so --hpx:hpx=localhost:1337
-$ corhpx app ctx 2 0 /placor-hpx_installation_dir/examples/libparallel.so --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:worker
+$ corhpx app ctx 2 0 /cor-hpx_installation_dir/examples/libparallel.so --hpx:hpx=localhost:1337
+$ corhpx app ctx 2 0 /cor-hpx_installation_dir/examples/libparallel.so --hpx:agas=localhost:1337 --hpx:run-hpx-main --hpx:worker
 ~~~ 
 
 using mpi: (N == number of domains(processes))<br />
 ~~~ 
-$ mpirun -np N corhpx apps ctx N 0 /placor-hpx_installation_dir/examples/libparallel.so
+$ mpirun -np N corhpx apps ctx N 0 /cor-hpx_installation_dir/examples/libparallel.so
 ~~~ 
 
 ### spawn
@@ -82,9 +82,3 @@ Dynamically spawn a new process
 ~~~ 
 $ corhpx app ctx 1 0 libspawn.so
 ~~~ 
-
-
-# Acknowledgements
-
-
-

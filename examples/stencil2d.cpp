@@ -2,7 +2,7 @@
 //     Tiago Gonçalves & António Pina, UM - LIP, 2021
 
 //     To run: 
-//         With MPI: mpirun -np N ./corhpx apps ctx N 0 ../examples/libstencil2d.so
+//         With slurm: srun -N1 ./corhpx apps ctx 1 0 ../examples/libstencil2d.so [lines] [columns] [steps] [partitions]
 // */
 
 #include "cor/cor.hpp"
@@ -20,13 +20,27 @@
 // #include <hpx/iostream.hpp>
 
 
-std::shared_ptr<cor::Operon_Client> operon;
+std::shared_ptr<cor::Operon_Client> operon; // Apontador global do operao
 typedef hpx::lcos::channel<std::vector<double>> channel_type;
 
-
+/*
+domain - Apontador do recurso dominio
+global_rank - rank inicial que todas as partições irao ter dentro de um dominio.
+    dominio A
+        particao 0: global_rank 0
+        particao 1: global_rank 0
+    dominio B
+        particao 0: global_rank 2
+        particao 1: global_rank 2
+num - numero global de particoes
+Nx - numero de linhas
+Ny - numero de colunas
+steps - numero de ciclos
+*/
 void worker(std::shared_ptr<cor::Domain_Client> domain, std::size_t global_rank, std::size_t num, std::size_t Nx, std::size_t Ny, std::size_t steps)
 {
 
+    // atribuicao do rank final a esta particao
     auto rank = global_rank + operon->GetRank() - 1;
 
     std::cout << "rank " << rank << std::endl;
@@ -89,9 +103,10 @@ void worker(std::shared_ptr<cor::Domain_Client> domain, std::size_t global_rank,
         // We have an upper and bottom neighbors
         if ((rank > 0) && (rank < num - 1))
         {
-            // std::cout << "tenho vizinho de cima e de baixo" << std::endl;
             upper_neighbor = "rank" + std::to_string(rank-1);
             bottom_neighbor = "rank" + std::to_string(rank+1);
+
+            // criar um recurso multichannel com dois parceiros
             myswitch = std::move(domain->CreateLocal<cor::MultiChannel_Client<std::vector<double>>>(domain->Idp(), "",  myself, upper_neighbor, bottom_neighbor));
 
             // send initial value to our upper and bottom neighbors
@@ -101,7 +116,6 @@ void worker(std::shared_ptr<cor::Domain_Client> domain, std::size_t global_rank,
         // We have an upper neighbor, only
         else if (rank > 0) 
         {
-            // std::cout << "tenho vizinho de cima" << std::endl;
             upper_neighbor = "rank" + std::to_string(rank-1);
             myswitch = std::move(domain->CreateLocal<cor::MultiChannel_Client<std::vector<double>>>(domain->Idp(), "",  myself, upper_neighbor));
 
@@ -132,94 +146,67 @@ void worker(std::shared_ptr<cor::Domain_Client> domain, std::size_t global_rank,
 
     hpx::chrono::high_resolution_timer t;
 
-    hpx::future<void> step_future = hpx::make_ready_future();
     for (std::size_t t = 0; t < steps; ++t) {
 
-        // step_future = step_future.then([&U, &myswitch, upper_neighbor, bottom_neighbor, Ny, Nx, t, policy](hpx::future<void>&& prev) mutable
-        // {
+        hpx::future<void> top_boundary_future;
+        if (upper_neighbor != "") {
+            // std::cout << "vizinho_cima" << std::endl;
+            top_boundary_future = myswitch->Get(upper_neighbor, t).then([&U, &myswitch, upper_neighbor, Nx, Ny, t](hpx::future<std::vector<double>>&& up_future){
+                std::vector<double> up = up_future.get();
 
-            hpx::future<void> top_boundary_future;
-            if (upper_neighbor != "") {
-                // std::cout << "vizinho_cima" << std::endl;
-                top_boundary_future = myswitch->Get(upper_neighbor, t).then([&U, &myswitch, upper_neighbor, Nx, Ny, t](hpx::future<std::vector<double>>&& up_future){
-                    std::vector<double> up = up_future.get();
+                // Iterate over the interior: skip the last and first element
+                for(int j = 1; j < Nx-1; j++)
+                {
+                    U[1][j] = 0.25 * (up[j-1] + up[j+1] + U[0][(j + Nx) - 1] + U[0][(j + Nx) + 1]) - U[0][j];
+                }
 
-                    // Iterate over the interior: skip the last and first element
-                    for(int j = 1; j < Nx-1; j++)
-                    {
-                        U[1][j] = 0.25 * (up[j-1] + up[j+1] + U[0][(j + Nx) - 1] + U[0][(j + Nx) + 1]) - U[0][j];
-                    }
+                std::vector<double> newVec(U[1].begin(), U[1].begin()+Nx);
+                myswitch->Set(std::move(newVec), upper_neighbor, t + 1);
+                // std::cout << "vizinho_cima enviou" << std::endl;
+            });
 
-                    std::vector<double> newVec(U[1].begin(), U[1].begin()+Nx);
-                    myswitch->Set(std::move(newVec), upper_neighbor, t + 1);
-                    // std::cout << "vizinho_cima enviou" << std::endl;
-                });
-
-            }
-            else {
-                top_boundary_future = hpx::make_ready_future();
-            }
+        }
+        else {
+            top_boundary_future = hpx::make_ready_future();
+        }
 
 
+        hpx::future<void> interior_future = hpx::for_loop(policy, 1, Ny-1,
+            [&U, Nx, Ny](std::size_t i) {
+                for(std::size_t j = 1; j < Nx-1; ++j)
+                {
+                    U[1][i*Nx + j] = 0.25 * (U[0][(i-1)*Nx + j-1] + U[0][(i-1)*Nx + j+1] + U[0][(i+1)*Nx + j-1] + U[0][(i+1)*Nx + j+1]) - U[0][i*Nx + j];
+                }
 
-            // // Update our interior spatial domain
-            // hpx::future<void> interior_future = hpx::async([&U, Nx, Ny](){
-            //     // Iterate over the interior: skip the last and first element
-            //     for(std::size_t i = 1; i < Ny-1; ++i)
-            //     {
-            //         for(std::size_t j = 1; j < Nx-1; ++j)
-            //         {
-            //             U[1][i*Nx + j] = 0.25 * (U[0][(i-1)*Nx + j-1] + U[0][(i-1)*Nx + j+1] + U[0][(i+1)*Nx + j-1] + U[0][(i+1)*Nx + j+1]) - U[0][i*Nx + j];
-            //         }
-            //     }
-            // });
-
-
-            hpx::future<void> interior_future = hpx::for_loop(policy, 1, Ny-1,
-                [&U, Nx, Ny](std::size_t i) {
-                    for(std::size_t j = 1; j < Nx-1; ++j)
-                    {
-                        U[1][i*Nx + j] = 0.25 * (U[0][(i-1)*Nx + j-1] + U[0][(i-1)*Nx + j+1] + U[0][(i+1)*Nx + j-1] + U[0][(i+1)*Nx + j+1]) - U[0][i*Nx + j];
-                    }
-
-                });
-            
-
-
-
-            hpx::future<void> bottom_boundary_future;
-            if (bottom_neighbor != "")
-            {
-                // std::cout << "vizinho_baixo" << std::endl;
-                bottom_boundary_future = myswitch->Get(bottom_neighbor, t).then([&U, &myswitch, bottom_neighbor, Nx, Ny, t](hpx::future<std::vector<double>>&& bottom_future){
-                    std::vector<double> down = bottom_future.get();
-
-                    // Iterate over the interior: skip the last and first element
-                    for(int j = 1; j < Nx-1; j++)
-                    {
-                        U[1][(Ny-1)*Nx + j] = 0.25 * (U[0][(Ny-2)*Nx + j-1] + U[0][(Ny-2)*Nx + j+1] + down[j-1] + down[j+1]) - U[0][(Ny-1)*Nx + j];
-                    }
-
-                    std::vector<double> newVec(U[1].end() - Nx, U[1].end());
-                    myswitch->Set(std::move(newVec), bottom_neighbor, t + 1);
-                    // std::cout << "vizinho_baixo enviou" << std::endl;
-                });
-            }
-            else {
-                bottom_boundary_future = hpx::make_ready_future();
-            }
-
+            });
         
-            //return hpx::when_all(top_boundary_future, interior_future, bottom_boundary_future);
 
-            hpx::wait_all(top_boundary_future, interior_future, bottom_boundary_future);
+        hpx::future<void> bottom_boundary_future;
+        if (bottom_neighbor != "")
+        {
+            // std::cout << "vizinho_baixo" << std::endl;
+            bottom_boundary_future = myswitch->Get(bottom_neighbor, t).then([&U, &myswitch, bottom_neighbor, Nx, Ny, t](hpx::future<std::vector<double>>&& bottom_future){
+                std::vector<double> down = bottom_future.get();
 
-        // });
+                // Iterate over the interior: skip the last and first element
+                for(int j = 1; j < Nx-1; j++)
+                {
+                    U[1][(Ny-1)*Nx + j] = 0.25 * (U[0][(Ny-2)*Nx + j-1] + U[0][(Ny-2)*Nx + j+1] + down[j-1] + down[j+1]) - U[0][(Ny-1)*Nx + j];
+                }
 
+                std::vector<double> newVec(U[1].end() - Nx, U[1].end());
+                myswitch->Set(std::move(newVec), bottom_neighbor, t + 1);
+                // std::cout << "vizinho_baixo enviou" << std::endl;
+            });
+        }
+        else {
+            bottom_boundary_future = hpx::make_ready_future();
+        }
+
+        hpx::wait_all(top_boundary_future, interior_future, bottom_boundary_future);
         U[0].swap(U[1]);
     }
     
-    // step_future.get();
     double elapsed = t.elapsed();
 
 
@@ -238,17 +225,6 @@ void worker(std::shared_ptr<cor::Domain_Client> domain, std::size_t global_rank,
         //     }
         // }
     }
-
-
-    // for(std::size_t i = 0; i < Ny; i++)
-    // {
-    //     for(std::size_t j = 0; j < Nx; j++)
-    //     {
-    //         std::cout << U[0][i*Nx + j] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }std::cout << std::endl;
-
 
 
 
@@ -280,7 +256,7 @@ void Main(int argc, char *argv[]) {
     std::size_t Nx = 1024; // numero de colunas
     std::size_t Ny_global = 1024; // numero de linhas totais
     std::size_t steps = 100; // numero de steps
-    std::size_t num_local_partitions = 1; // numero de particoes locais
+    std::size_t num_local_partitions = 1; // numero de particoes por dominio
 
     if(argc >= 1) {
         Nx = atoi(argv[0]);
@@ -302,15 +278,22 @@ void Main(int argc, char *argv[]) {
     // std::cout << "Ny_global " << Ny_global << std::endl;
     // std::cout << "steps " << steps << std::endl;
 
-    std::size_t num_partitions = num_localities * num_local_partitions; // o numero total de particoes = numeros de localidades * particoes locais
+    std::size_t num_partitions = num_localities * num_local_partitions; // o numero total de particoes = numeros de localidades (dominios) * particoes locais
 
     // We divide our grid in stripes along the y axis.
-    std::size_t Ny = Ny_global / num_partitions; // dividir blocos de linhas para cada localidade
+    std::size_t Ny = Ny_global / num_partitions; // dividir blocos de linhas para cada particao
 
 
+    /*
+        O operao é usado para criar partições. Por exemplo, se o programa tiver duas partições,
+        em cada dominio é criado um operao com duas threads. Cada thread irá ser responsável por 
+        arrancar o trabalho de cada partição, ou seja, bloco de linhas.
 
-    operon = domain->CreateLocal<cor::Operon_Client>(domain->Idp(),  "", num_local_partitions);
-    auto res = operon->Dispatch(&worker, domain, (locality * num_local_partitions), num_partitions, Nx, Ny, steps);
+        NOTA: A paralelização em cada partição irá ser feita com novas threads! A thread do operao serve
+        unicamente para arrancar a função worker e exeutar o código sequencial.
+    */
+    operon = domain->CreateLocal<cor::Operon_Client>(domain->Idp(),  "", num_local_partitions); //  operao com uma hpx thread para cada particao 
+    auto res = operon->Dispatch(&worker, domain, (locality * num_local_partitions), num_partitions, Nx, Ny, steps); // executa a funcao worker
     res.get();
 
 
