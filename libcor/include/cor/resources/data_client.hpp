@@ -4,6 +4,7 @@
 #include "cor/resources/data.hpp"
 #include "cor/services/mutexRW_service_client.hpp"
 #include "cor/services/resource_manager_global.hpp"
+#include "hpx/modules/async_colocated.hpp"
 
 #include <hpx/hpx.hpp>
 
